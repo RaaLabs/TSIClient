@@ -1,0 +1,5 @@
+__pycache__/
+test.py
+test_raw.py
+*.DS_Store
+*.json
