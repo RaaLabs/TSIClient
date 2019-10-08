@@ -309,7 +309,7 @@ class TSIClient():
         return df
 
 
-    def getDataByDescription(self, variables, timespan, interval, aggregate, columnNames):
+    def getDataByDescription(self, variables, columnNames, timespan, interval, aggregate):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
