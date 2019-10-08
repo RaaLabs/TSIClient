@@ -309,7 +309,7 @@ class TSIClient():
         return df
 
 
-    def getDataByDescription(self,variables,timespan,interval,aggregate):
+    def getDataByDescription(self, variables, timespan, interval, aggregate, columnNames):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
@@ -362,9 +362,9 @@ class TSIClient():
             # Handle error if deserialization fails (because of no text or bad format)
             try:
                 assert i == 0
-                df=pd.DataFrame({'timestamp':response['timestamps'],variables[i]:response['properties'][0]['values']})
+                df=pd.DataFrame({'timestamp':response['timestamps'],columnNames[i]:response['properties'][0]['values']})
             except:
-                df[variables[i]]=response['properties'][0]['values']                
+                df[columnNames[i]]=response['properties'][0]['values']                
             finally:
-                print("Loaded data for tag: " + variables[i])               
+                print("Loaded data for tag: " + columnNames[i])               
         return df
