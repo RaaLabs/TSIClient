@@ -6,14 +6,14 @@ with open('README.md') as f:
 setup(
   name = 'TSIClient',         # How you named your package folder (MyLib)
   packages = ['TSIClient'],   # Chose the same as "name"
-  version = '0.5',      # Start with a small number and increase it with every change you make
+  version = '0.6',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   long_description=long_description,
   long_description_content_type='text/markdown',  # This is important!
   author = 'Anders Gill',                   # Type in your name
   author_email = 'gill@outlook.com',      # Type in your E-Mail
   url = 'https://github.com/RaaLabs/TSIClient',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/RaaLabs/TSIClient/archive/v_0.5.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/RaaLabs/TSIClient/archive/v_0.6.tar.gz',    # I explain this later on
   keywords = ['Time Series Insight', 'TSI', 'TSI SDK'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'requests',
