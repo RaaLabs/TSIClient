@@ -25,7 +25,7 @@ Here is an example of how you provide the variables:
 
 ```python
 def getTSIkeysTags(vessel):
-    tsiKeys = tsiApi(enviroment = 'ENVIRONMENT_NAME',
+    client = TSIClient(enviroment = 'ENVIRONMENT_NAME',
                      client_id = "CLIENT_ID",
                      client_secret = "CLIENT_SECRET",
                      applicationName = "APPLICATION_NAME",
@@ -40,19 +40,6 @@ def getTSIkeysTags(vessel):
            ]
     
     return Tags, TagsShort , tsiKeys
-```
-
-After that, you can check if the authorization has been completed:
-
-```python
-def getAuth():
-    try:
-        tsiKeys
-    except NameError:
-        tsiKeys_exists = False
-    else:
-        tsiKeys_exists = True
-        print("TSI Authorization completed")
 ```
 
 ## Getting data from TSI after authorization completed
@@ -76,14 +63,14 @@ class Tag:
 TAG_POWER = Tag("PropulsionAndSteeringArrangements/PropulsionEngine/Shaft/ShaftPower+(kW)","ME_ShaftPower")
 ```
 
-After that, you need to concatinate the vessel name together with the long description that TSI expects.
+After that, you need to concatinate the asset name together with the long description that TSI expects.
 This can be done with the following method:
 
 ```python
-def addVesselNameToTags(tags, vessel):
+def addAssetNameToTags(tags, asset):
     concatVariables = []
     for tag in tags:
-        concatVariables.append(vessel+tag)
+        concatVariables.append(asset+tag)
     
     if concatVariables:
         print("Tag-array has items")
@@ -96,7 +83,7 @@ def addVesselNameToTags(tags, vessel):
 
 In order to get data by description from TSI, you have to provide the following parameters to the method:
 
-1. name of "vessel"
+1. name of asset
 2. timespan (from time, to time)
 3. interval
 4. aggregate type
@@ -105,7 +92,7 @@ In order to get data by description from TSI, you have to provide the following 
 Example: 
 
 ```python
-dataFrame = tsiKeys.getDataByDescription(addVesselNameToTags(Tags,vesselName),timespan=[timeFrom,timeTo],interval=intervalRequested,aggregate=aggType,TagsShort=TagsShort)
+dataFrame = client.getDataByDescription(addAssetNameToTags(Tags,assetName),timespan=[timeFrom,timeTo],interval=intervalRequested,aggregate=aggType,TagsShort=TagsShort)
 ```
 Now you should have all the data for the provided tags in a dataframe which is returned by the above function (getDataByDescription)
 
