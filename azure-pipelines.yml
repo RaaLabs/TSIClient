@@ -35,5 +35,6 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'TSIClientArtifact'
+    ArtifactName: 'dist'
     publishLocation: 'Container'
+
