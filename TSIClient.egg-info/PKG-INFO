@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: TSIClient
-Version: 0.5
+Version: 0.6
 Summary: UNKNOWN
 Home-page: https://github.com/RaaLabs/TSIClient
 Author: Anders Gill
 Author-email: gill@outlook.com
 License: MIT
-Download-URL: https://github.com/RaaLabs/TSIClient/archive/v_0.5.tar.gz
+Download-URL: https://github.com/RaaLabs/TSIClient/archive/v_0.6.tar.gz
 Description: # TSIClient - Get your data from TSI!
         
         With TSIClient, you are able to get your data from Azure Time Series Insight! Just use this simple SDK :)

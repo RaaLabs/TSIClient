@@ -24,7 +24,7 @@ As you can see, the API version is already set, but the rest has to be provided.
 Here is an example of how you provide the variables:
 
 ```python
-def getTSIkeysTags(vessel):
+def getTSIkeysTags(asset):
     client = TSIClient(enviroment = 'ENVIRONMENT_NAME',
                      client_id = "CLIENT_ID",
                      client_secret = "CLIENT_SECRET",
@@ -84,15 +84,15 @@ def addAssetNameToTags(tags, asset):
 In order to get data by description from TSI, you have to provide the following parameters to the method:
 
 1. name of asset
-2. timespan (from time, to time)
-3. interval
-4. aggregate type
-5. Time series Name
+2. time series name
+3. timespan (from time, to time)
+4. interval
+5. aggregate type
 
 Example: 
 
 ```python
-dataFrame = client.getDataByDescription(addAssetNameToTags(Tags,assetName),timespan=[timeFrom,timeTo],interval=intervalRequested,aggregate=aggType,TagsShort=TagsShort)
+dataFrame = client.getDataByDescription(addAssetNameToTags(Tags, assetName), TSName, timespan=[timeFrom,timeTo], interval=intervalRequested, aggregate=aggType)
 ```
 Now you should have all the data for the provided tags in a dataframe which is returned by the above function (getDataByDescription)
 
