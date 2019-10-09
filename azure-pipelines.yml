@@ -42,3 +42,11 @@ steps:
     ArtifactName: 'dist'
     publishLocation: 'Container'
 
+- script: 'pip install twine'
+
+- task: TwineAuthenticate@0
+  inputs:
+    artifactFeeds: 'OneOpDevOpFeed'
+
+- script: 'twine upload -r OneOpDevOpFeed --config-file $(PYPIRC_PATH) dist/*'
+
