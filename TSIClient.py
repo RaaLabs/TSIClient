@@ -211,12 +211,12 @@ class TSIClient():
                 timeSeriesNames.append(None)
         return timeSeriesNames    
     
-    def getIdByVessels(self,vessel):
+    def getIdByAssets(self,asset):
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
         for instance in result['instances']:
-            if 'name' in instance and vessel in instance['name']:
+            if 'name' in instance and asset in instance['name']:
                 nameMap[instance['name']] = instance
                 timeSeriesIds.append(instance['timeSeriesId'][0])
             else:
