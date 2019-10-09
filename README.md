@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
+
 # TSIClient - Get your data from TSI!
 
 With TSIClient, you are able to get your data from Azure Time Series Insight! Just use this simple SDK :)
