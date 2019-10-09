@@ -41,7 +41,7 @@ class TSIClient():
         tokenType = jsonResp['token_type']
         authorizationToken = tokenType +" " + jsonResp['access_token']
         return authorizationToken
-        
+
     def getEnviroment(self):
         
         authorizationToken = self._getToken()
@@ -309,7 +309,7 @@ class TSIClient():
         return df
 
 
-    def getDataByDescription(self, variables, columnNames, timespan, interval, aggregate):
+    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
@@ -362,9 +362,9 @@ class TSIClient():
             # Handle error if deserialization fails (because of no text or bad format)
             try:
                 assert i == 0
-                df=pd.DataFrame({'timestamp':response['timestamps'],columnNames[i]:response['properties'][0]['values']})
+                df=pd.DataFrame({'timestamp':response['timestamps'],TSName[i]:response['properties'][0]['values']})
             except:
-                df[columnNames[i]]=response['properties'][0]['values']                
+                df[TSName[i]]=response['properties'][0]['values']                
             finally:
-                print("Loaded data for tag: " + columnNames[i])               
+                print("Loaded data for tag: " + TSName[i])               
         return df
