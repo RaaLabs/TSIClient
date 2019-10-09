@@ -8,7 +8,7 @@ With TSIClient, you are able to get your data from Azure Time Series Insight! Ju
 
 ## Setting API version (optional)
 
-In the tsiAPI class, you can change the api version.
+In the TSIClient class, you can change the api version.
 Initially, the api version is set to: "2018-11-01-preview"
 
 ## Prerequisite for usage (Step 1)
