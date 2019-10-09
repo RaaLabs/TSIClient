@@ -29,7 +29,7 @@ steps:
   displayName: 'pytest'
 
 - script: |
-    python setup.py sdist bdist_wheel
+    python setup.py sdist
   displayName: 'Artifact creation'
 
 - task: PublishBuildArtifacts@1
