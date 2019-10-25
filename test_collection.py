@@ -22,8 +22,8 @@ Output: ok or test failed
 """
 import pytest
 from TSIClient import TSIClient as tsi
-import pandas as pd
-from mock import Mock, MagicMock
+
+
 
 class TestClass():
     name = 'FakeName'
