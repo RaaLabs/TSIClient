@@ -21,13 +21,10 @@ Output: ok or test failed
 @ Email: Emil.Ramsvik@wilhelmsen.com
 """
 import pytest
-from datetime import datetime
-from datetime import timedelta
 from TSIClient import TSIClient as tsi
-import sqlalchemy as db
 import pandas as pd
 from mock import Mock, MagicMock
-import requests 
+
 class TestClass():
     name = 'FakeName'
     def test_function_works(self):
