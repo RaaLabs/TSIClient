@@ -31,12 +31,6 @@ class TestClass():
         """Check that the client class can initate """
         client = createTSIClient()
         assert client  
-    def test_get_data_by_name(self):
-        """ Check that the TSIClient can extract a dataframe
-            from the TSI enviorment"""
-        dataframe = GetVesselDataFromName(TestClass.name)
-        assert (type(dataframe) != None)
-
 
         
 """        
@@ -58,10 +52,3 @@ def createTSIClient():
                          applicationName = "postmanServicePrincipal",
                          tenant_id="yeatanothertenantid")
     return tsiKeys
-
-
-
-
-
-    
-d

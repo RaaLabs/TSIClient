@@ -1,5 +1,3 @@
 [
-  "test_collection.py::TestClass::()::test_function_works",
-  "test_collection.py::TestClass::()::test_check_tag_paths",
-  "test_collection.py::TestClass::()::test_get_data_by_name"
+  "test_collection.py::TestClass::()::test_function_works"
 ]
