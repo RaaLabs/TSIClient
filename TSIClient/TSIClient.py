@@ -1,33 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-"""
-Created on Tue Mar 26 16:23:06 2019
-Version: 1.1
-
-RAA-LABS     The digital accelerator for the maritime industry
-                http://raalabs.com
-            Project: One operation (ONEOPS)
-
-Purpose: 
-    
-Description: 
-    
-Parameters: 
-
-    str1 (str): This is a string used as a template for the output.
-
-Returns: 
-    returnvalue (int) : This is the return values template.
-    
-TODO: 
-    
-    
-@author: Anders Gill and Sigbjorn Rudaa
-@ Email: Anders.Gill@raalabs.com
-"""
-
-import requests
 import json
 import pandas as pd
 
