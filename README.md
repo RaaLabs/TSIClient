@@ -98,6 +98,25 @@ dataFrame = client.getDataByDescription(addAssetNameToTags(Tags, assetName), TSN
 ```
 Now you should have all the data for the provided tags in a dataframe which is returned by the above function (getDataByDescription)
 
+# Example
+
+### Module
+
+```python 
+from TSIClient import TSIClient as tsi
+        (package)            (module)     (abbreviation)
+```
+ 
+### In code
+
+```python
+client_trial_variable = tsi.TSIClient(enviroment = 'environment',
+                                  (module.class)                    client_id = "ID",
+                                                                             client_secret = "the_password_is_secret",
+                                                                              applicationName = "app_name",
+                                                                              tenant_id="another_ID")
+```
+
 
 License
 ----
