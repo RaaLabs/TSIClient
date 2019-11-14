@@ -32,6 +32,11 @@ steps:
     python setup.py sdist
   displayName: 'Artifact creation'
 
+- script: |
+    pip install request request-azurepipelines
+    request
+  displayName: 'request'
+  
 - task: CopyFiles@2
   inputs:
     targetFolder: $(Build.ArtifactStagingDirectory)
