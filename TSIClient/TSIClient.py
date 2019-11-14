@@ -152,12 +152,11 @@ TODO:
 
         if response.text:
             jsonResponse = json.loads(response.text)
-            result = jsonResponse
         else:
             # need to raise an error here?
             pass
 
-        return result
+        return jsonResponse
 
 
     def getTypes(self):
@@ -184,12 +183,11 @@ TODO:
 
         if response.text:
             jsonResponse = json.loads(response.text)
-            result = jsonResponse
         else:
             # need to raise an error here?
             pass
 
-        return result
+        return jsonResponse
 
         
     def writeInstance(self,payload):
