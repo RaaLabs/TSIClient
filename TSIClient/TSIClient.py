@@ -159,6 +159,38 @@ TODO:
 
         return result
 
+
+    def getTypes(self):
+        environmentId = self.getEnviroment()
+        authorizationToken = self._getToken()
+
+        url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/types"
+        querystring = {"api-version":self._apiVersion}
+        payload = ""
+        headers = {
+            'x-ms-client-application-name': self._applicationName,
+            'Authorization': authorizationToken,
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        response = requests.request(
+            "GET",
+            url,
+            data=payload,
+            headers=headers,
+            params=querystring
+        )
+
+        if response.text:
+            jsonResponse = json.loads(response.text)
+            result = jsonResponse
+        else:
+            # need to raise an error here?
+            pass
+
+        return result
+
         
     def writeInstance(self,payload):
         environmentId = self.getEnviroment()
