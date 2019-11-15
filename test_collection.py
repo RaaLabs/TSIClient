@@ -80,12 +80,12 @@ class MockResponses():
 
 
 class TestTSIClient():
-    def test_create_TSICLient_sucess(self):
+    def test_create_TSICLient_success(self):
         client = create_TSIClient()
         assert client
 
     
-    def test_getHierarchies(self, requests_mock):
+    def test_getHierarchies_success(self, requests_mock):
         requests_mock.request(
             "GET",
             MockURLs.hierarchies_url,
