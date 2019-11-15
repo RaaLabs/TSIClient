@@ -42,7 +42,7 @@ class MockURLs():
     hierarchies_url = "https://{}.env.timeseries.azure.com/timeseries/hierarchies".format("00000000-0000-0000-0000-000000000000")
 
 
-class MockRespnses():
+class MockResponses():
     """This class holds mocked request responses which can be used across tests.
     """
 
@@ -89,17 +89,17 @@ class TestTSIClient():
         requests_mock.request(
             "GET",
             MockURLs.hierarchies_url,
-            json=MockRespnses.mock_hierarchies
+            json=MockResponses.mock_hierarchies
         )
         requests_mock.request(
             "POST",
             MockURLs.oauth_url,
-            json=MockRespnses.mock_oauth
+            json=MockResponses.mock_oauth
         )
         requests_mock.request(
             "GET", 
             MockURLs.env_url, 
-            json=MockRespnses.mock_environments
+            json=MockResponses.mock_environments
         )
 
         client = create_TSIClient()
