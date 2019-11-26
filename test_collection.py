@@ -26,14 +26,87 @@ TODO:
 @ Email: Emil.Ramsvik@wilhelmsen.com
 """
 import pytest
+import requests
+import requests_mock
 from TSIClient import TSIClient as tsi
 
-class TestClass():
 
-    def test_function_works(self):
-        """Check that the client class can initate """
+class MockURLs():
+    """This class holds mock urls that can be used to mock requests to the TSI environment.
+    Note that there are dependencies between the MockURLs, the MockResponses and the parameters used
+    in "create_TSICLient".
+    """
+
+    oauth_url = "https://login.microsoftonline.com/{}/oauth2/token".format("yet_another_tenant_id")
+    env_url = "https://api.timeseries.azure.com/environments"
+    hierarchies_url = "https://{}.env.timeseries.azure.com/timeseries/hierarchies".format("00000000-0000-0000-0000-000000000000")
+
+
+class MockResponses():
+    """This class holds mocked request responses which can be used across tests.
+    """
+
+    mock_hierarchies = {
+        "hierarchies": [
+            {
+                "id": "6e292e54-9a26-4be1-9034-607d71492707",
+                "name": "Location",
+                "source": {
+                    "instanceFieldNames": [
+                    "state",
+                    "city"
+                    ]
+                }
+            }
+        ],
+        "continuationToken": "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
+    }
+
+    mock_oauth = {
+        "token_type": "some_type",
+        "access_token": "token"
+    }
+
+    mock_environments = {
+        "environments": [
+            {
+                "displayName":"Test_Environment",
+                "environmentFqdn": "00000000-0000-0000-0000-000000000000.env.timeseries.azure.com",
+                "environmentId": "00000000-0000-0000-0000-000000000000",
+                "resourceId": "resourceId"
+            }
+        ]
+    }
+
+
+class TestTSIClient():
+    def test_create_TSICLient_success(self):
         client = create_TSIClient()
-        assert client  
+        assert client
+
+    
+    def test_getHierarchies_success(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.hierarchies_url,
+            json=MockResponses.mock_hierarchies
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        resp = client.getHierarchies()
+
+        assert len(resp["hierarchies"]) == 1
+        assert resp["hierarchies"][0]["id"] == "6e292e54-9a26-4be1-9034-607d71492707"
         
 
 def create_TSIClient():
@@ -47,9 +120,12 @@ def create_TSIClient():
     @author: Siri.Ovregard
     Amended by Emil Ramsvik for use in unit test for TSIClient
     """
-    tsi_keys = tsi.TSIClient(enviroment='Test Environment',
-                         client_id="MyClientID",
-                         client_secret="a_very_secret_password",
-                         applicationName="postmanServicePrincipal",
-                         tenant_id="yet_another_tenant_id")
+    tsi_keys = tsi.TSIClient(
+        enviroment='Test_Environment',
+        client_id="MyClientID",
+        client_secret="a_very_secret_password",
+        applicationName="postmanServicePrincipal",
+        tenant_id="yet_another_tenant_id"
+    )
+
     return tsi_keys

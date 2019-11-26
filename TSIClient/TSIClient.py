@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import json
+import pandas as pd
 import requests
 
 
@@ -37,7 +38,8 @@ TODO:
         self._client_id = client_id
         self._client_secret=client_secret
         self._tenant_id = tenant_id
-        
+
+
     def _getToken(self):
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(self._tenant_id)
         
@@ -63,8 +65,8 @@ TODO:
         authorizationToken = tokenType +" " + jsonResp['access_token']
         return authorizationToken
 
+
     def getEnviroment(self):
-        
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
@@ -89,6 +91,7 @@ TODO:
                 break
         return environmentId
     
+
     def getInstances(self):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
@@ -129,6 +132,10 @@ TODO:
     
 
     def getHierarchies(self):
+        """Retrieves all hierarchies present in the specified TSI environment.
+        Returns (dict): A dictionary with hierarchy ids, names and instance fields.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
@@ -160,6 +167,10 @@ TODO:
 
 
     def getTypes(self):
+        """Retrieves all types present in the specified TSI environment.
+        Returns (dict): A dictionary with type ids, name descriptions and variables.
+        """
+        
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 

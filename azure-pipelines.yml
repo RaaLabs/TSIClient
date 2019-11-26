@@ -21,6 +21,7 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
+    pip install pandas requests requests_mock
   displayName: 'Install dependencies'
 
 - script: |
@@ -31,11 +32,6 @@ steps:
 - script: |
     python setup.py sdist
   displayName: 'Artifact creation'
-
-- script: |
-    pip install request request-azurepipelines
-    request
-  displayName: 'request'
   
 - task: CopyFiles@2
   inputs:
