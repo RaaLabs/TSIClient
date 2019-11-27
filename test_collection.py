@@ -40,11 +40,31 @@ class MockURLs():
     oauth_url = "https://login.microsoftonline.com/{}/oauth2/token".format("yet_another_tenant_id")
     env_url = "https://api.timeseries.azure.com/environments"
     hierarchies_url = "https://{}.env.timeseries.azure.com/timeseries/hierarchies".format("00000000-0000-0000-0000-000000000000")
+    types_url = "https://{}.env.timeseries.azure.com/timeseries/types".format("00000000-0000-0000-0000-000000000000")
 
 
 class MockResponses():
     """This class holds mocked request responses which can be used across tests.
     """
+    mock_types = {
+        "types": [
+            {
+            "id": "1be09af9-f089-4d6b-9f0b-48018b5f7393",
+            "name": "DefaultType",
+            "description": "My Default type",
+            "variables": {
+                "EventCount": {
+                "kind": "aggregate",
+                "filter": None,
+                "aggregation": {
+                    "tsx": "count()"
+                }
+                }
+            }
+            }
+        ],
+        "continuationToken": "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
+    }
 
     mock_hierarchies = {
         "hierarchies": [
@@ -106,8 +126,36 @@ class TestTSIClient():
         resp = client.getHierarchies()
 
         assert len(resp["hierarchies"]) == 1
+        assert type(resp["hierarchies"]) is list
+        assert type(resp["hierarchies"][0]) is dict
         assert resp["hierarchies"][0]["id"] == "6e292e54-9a26-4be1-9034-607d71492707"
         
+
+    def test_getTypes_success(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        resp = client.getTypes()
+
+        assert len(resp["types"]) == 1
+        assert type(resp["types"]) is list
+        assert type(resp["types"][0]) is dict
+        assert resp["types"][0]["id"] == "1be09af9-f089-4d6b-9f0b-48018b5f7393"
+
 
 def create_TSIClient():
     """        
