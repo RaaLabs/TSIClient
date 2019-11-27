@@ -104,6 +104,24 @@ class TestTSIClient():
         client = create_TSIClient()
         assert client
 
+
+    def test_getEnvironment_success(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        env_id = client.getEnviroment()
+
+        assert env_id == "00000000-0000-0000-0000-000000000000"
+
     
     def test_getHierarchies_success(self, requests_mock):
         requests_mock.request(
