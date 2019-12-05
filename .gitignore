@@ -1,4 +1,6 @@
 __pycache__/
+.pytest_cache
+.vscode
 test.py
 test_raw.py
 *.DS_Store
