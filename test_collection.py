@@ -104,6 +104,42 @@ class TestTSIClient():
         client = create_TSIClient()
         assert client
 
+    def test__getToken_success(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        
+        client = create_TSIClient()
+        token = client._getToken()
+
+        assert token == "some_type token"
+
+
+    def test__getToken_raises_HTTPError(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            exc=requests.exceptions.HTTPError
+        )
+        
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.HTTPError):
+            token = client._getToken()
+
+
+    def test__getToken_raises_ConnectTimeout(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+        
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            token = client._getToken()
+
 
     def test_getEnvironment_success(self, requests_mock):
         requests_mock.request(
@@ -147,7 +183,7 @@ class TestTSIClient():
         assert type(resp["hierarchies"]) is list
         assert type(resp["hierarchies"][0]) is dict
         assert resp["hierarchies"][0]["id"] == "6e292e54-9a26-4be1-9034-607d71492707"
-        
+
 
     def test_getTypes_success(self, requests_mock):
         requests_mock.request(
