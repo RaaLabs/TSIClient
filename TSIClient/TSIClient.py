@@ -3,6 +3,7 @@
 import json
 import pandas as pd
 import requests
+import logging
 
 
 class TSIClient():
@@ -62,10 +63,10 @@ TODO:
             response = requests.request("POST", url, data=payload, headers=headers, timeout=10)
             response.raise_for_status()
         except requests.exceptions.ConnectTimeout:
-            print("TSIClient: The request to the TSI api timed out.")
+            logging.error("TSIClient: The request to the TSI api timed out.")
             raise
         except requests.exceptions.HTTPError:
-            print("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
             raise
 
         jsonResp = json.loads(response.text)
