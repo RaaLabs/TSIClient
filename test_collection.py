@@ -158,6 +158,44 @@ class TestTSIClient():
 
         assert env_id == "00000000-0000-0000-0000-000000000000"
 
+
+    def test_getEnvironment_raises_HTTPError(self, requests_mock, caplog):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            exc=requests.exceptions.HTTPError
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.HTTPError):
+            env_id = client.getEnviroment()
+
+        assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
+
+
+    def test_getEnvironment_raises_ConnectTimeout(self, requests_mock, caplog):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            exc=requests.exceptions.ConnectTimeout
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            env_id = client.getEnviroment()
+
+        assert "TSIClient: The request to the TSI api timed out." in caplog.text
+
     
     def test_getHierarchies_success(self, requests_mock):
         requests_mock.request(

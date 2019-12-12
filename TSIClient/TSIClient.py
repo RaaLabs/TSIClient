@@ -89,15 +89,23 @@ TODO:
             'cache-control': "no-cache"
         }
         
-        response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
-        if response.text:
-            jsonResponse = json.loads(response.text)
-        
+        try:
+            response = requests.request("GET", url, data=payload, headers=headers, params=querystring, timeout=10)
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
+
+        jsonResponse = json.loads(response.text)
         environments = jsonResponse['environments']
         for enviroment in environments:
             if enviroment['displayName']== self._enviromentName:
                 environmentId = enviroment['environmentId']
                 break
+
         return environmentId
     
 
