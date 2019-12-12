@@ -227,6 +227,54 @@ class TestTSIClient():
         assert resp["hierarchies"][0]["id"] == "6e292e54-9a26-4be1-9034-607d71492707"
 
 
+    def test_getHierarchies_raises_HTTPError(self, requests_mock, caplog):
+        requests_mock.request(
+            "GET",
+            MockURLs.hierarchies_url,
+            exc=requests.exceptions.HTTPError
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.HTTPError):
+            resp = client.getHierarchies()
+
+        assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
+
+
+    def test_getHierarchies_raises_ConnectTimeout(self, requests_mock, caplog):
+        requests_mock.request(
+            "GET",
+            MockURLs.hierarchies_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            resp = client.getHierarchies()
+
+        assert "TSIClient: The request to the TSI api timed out." in caplog.text
+
+
     def test_getTypes_success(self, requests_mock):
         requests_mock.request(
             "GET",

@@ -170,21 +170,24 @@ TODO:
             'cache-control': "no-cache"
         }
 
-        response = requests.request(
-            "GET",
-            url,
-            data=payload,
-            headers=headers,
-            params=querystring
-        )
+        try:
+            response = requests.request(
+                "GET",
+                url,
+                data=payload,
+                headers=headers,
+                params=querystring,
+                timeout=10
+            )
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
 
-        if response.text:
-            jsonResponse = json.loads(response.text)
-        else:
-            # need to raise an error here?
-            pass
-
-        return jsonResponse
+        return json.loads(response.text)
 
 
     def getTypes(self):
