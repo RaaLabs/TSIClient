@@ -65,8 +65,12 @@ TODO:
         except requests.exceptions.ConnectTimeout:
             logging.error("TSIClient: The request to the TSI api timed out.")
             raise
-        except requests.exceptions.HTTPError:
-            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code
+            if status_code == 401:
+                logging.error("TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret.")
+            else:
+                logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code. Check the stack trace")
             raise
 
         jsonResp = json.loads(response.text)

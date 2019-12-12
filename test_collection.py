@@ -28,6 +28,7 @@ TODO:
 import pytest
 import requests
 import requests_mock
+from collections import namedtuple
 from TSIClient import TSIClient as tsi
 
 
@@ -117,16 +118,19 @@ class TestTSIClient():
         assert token == "some_type token"
 
 
-    def test__getToken_raises_HTTPError(self, requests_mock):
+    def test__getToken_raises_401_HTTPError(self, requests_mock, caplog):
+        httperror_response = namedtuple("httperror_response", "status_code")
         requests_mock.request(
             "POST",
             MockURLs.oauth_url,
-            exc=requests.exceptions.HTTPError
+            exc=requests.exceptions.HTTPError(response=httperror_response(status_code=401))
         )
         
         client = create_TSIClient()
         with pytest.raises(requests.exceptions.HTTPError):
             token = client._getToken()
+
+        assert "TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret." in caplog.text
 
 
     def test__getToken_raises_ConnectTimeout(self, requests_mock):
