@@ -30,6 +30,7 @@ import requests
 import requests_mock
 from collections import namedtuple
 from TSIClient import TSIClient as tsi
+from TSIClient.exceptions import TSIEnvironmentError
 
 
 class MockURLs():
@@ -50,18 +51,18 @@ class MockResponses():
     mock_types = {
         "types": [
             {
-            "id": "1be09af9-f089-4d6b-9f0b-48018b5f7393",
-            "name": "DefaultType",
-            "description": "My Default type",
-            "variables": {
-                "EventCount": {
-                "kind": "aggregate",
-                "filter": None,
-                "aggregation": {
-                    "tsx": "count()"
+                "id": "1be09af9-f089-4d6b-9f0b-48018b5f7393",
+                "name": "DefaultType",
+                "description": "My Default type",
+                "variables": {
+                    "EventCount": {
+                    "kind": "aggregate",
+                    "filter": None,
+                    "aggregation": {
+                        "tsx": "count()"
+                    }
+                    }
                 }
-                }
-            }
             }
         ],
         "continuationToken": "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
@@ -199,6 +200,25 @@ class TestTSIClient():
             env_id = client.getEnviroment()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
+
+
+    def test_getEnvironments_raises_TSIEnvironmentError(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            exc=TSIEnvironmentError("Azure TSI environment not found. Check the spelling or create an environment in Azure TSI.")
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(TSIEnvironmentError) as exc_info:
+            client.getEnviroment()
+
+        assert "Azure TSI environment not found. Check the spelling or create an environment in Azure TSI." in str(exc_info.value)
 
     
     def test_getHierarchies_success(self, requests_mock):

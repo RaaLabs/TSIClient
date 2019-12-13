@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import requests
 import logging
+from TSIClient.exceptions import TSIEnvironmentError
 
 
 class TSIClient():
@@ -103,12 +104,14 @@ TODO:
             logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
             raise
 
-        jsonResponse = json.loads(response.text)
-        environments = jsonResponse['environments']
+        environments = json.loads(response.text)['environments']
+        environmentId = None
         for enviroment in environments:
-            if enviroment['displayName']== self._enviromentName:
+            if enviroment['displayName'] == self._enviromentName:
                 environmentId = enviroment['environmentId']
                 break
+        if environmentId == None:
+            raise TSIEnvironmentError("TSIClient: TSI environment not found. Check the spelling or create an environment in Azure TSI.")
 
         return environmentId
     
