@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import requests
 import logging
+from TSIClient.exceptions import TSIEnvironmentError
 
 
 class TSIClient():
@@ -65,8 +66,12 @@ TODO:
         except requests.exceptions.ConnectTimeout:
             logging.error("TSIClient: The request to the TSI api timed out.")
             raise
-        except requests.exceptions.HTTPError:
-            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code
+            if status_code == 401:
+                logging.error("TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret.")
+            else:
+                logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code. Check the stack trace")
             raise
 
         jsonResp = json.loads(response.text)
@@ -89,15 +94,25 @@ TODO:
             'cache-control': "no-cache"
         }
         
-        response = requests.request("GET", url, data=payload, headers=headers, params=querystring)
-        if response.text:
-            jsonResponse = json.loads(response.text)
-        
-        environments = jsonResponse['environments']
+        try:
+            response = requests.request("GET", url, data=payload, headers=headers, params=querystring, timeout=10)
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
+
+        environments = json.loads(response.text)['environments']
+        environmentId = None
         for enviroment in environments:
-            if enviroment['displayName']== self._enviromentName:
+            if enviroment['displayName'] == self._enviromentName:
                 environmentId = enviroment['environmentId']
                 break
+        if environmentId == None:
+            raise TSIEnvironmentError("TSIClient: TSI environment not found. Check the spelling or create an environment in Azure TSI.")
+
         return environmentId
     
 
@@ -158,21 +173,24 @@ TODO:
             'cache-control': "no-cache"
         }
 
-        response = requests.request(
-            "GET",
-            url,
-            data=payload,
-            headers=headers,
-            params=querystring
-        )
+        try:
+            response = requests.request(
+                "GET",
+                url,
+                data=payload,
+                headers=headers,
+                params=querystring,
+                timeout=10
+            )
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
 
-        if response.text:
-            jsonResponse = json.loads(response.text)
-        else:
-            # need to raise an error here?
-            pass
-
-        return jsonResponse
+        return json.loads(response.text)
 
 
     def getTypes(self):
@@ -193,21 +211,25 @@ TODO:
             'cache-control': "no-cache"
         }
 
-        response = requests.request(
-            "GET",
-            url,
-            data=payload,
-            headers=headers,
-            params=querystring
-        )
+        try:
+            response = requests.request(
+                "GET",
+                url,
+                data=payload,
+                headers=headers,
+                params=querystring,
+                timeout=10
+            )
+            response.raise_for_status()
 
-        if response.text:
-            jsonResponse = json.loads(response.text)
-        else:
-            # need to raise an error here?
-            pass
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
 
-        return jsonResponse
+        return json.loads(response.text)
 
         
     def writeInstance(self,payload):
