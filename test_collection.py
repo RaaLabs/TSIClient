@@ -321,6 +321,54 @@ class TestTSIClient():
         assert resp["types"][0]["id"] == "1be09af9-f089-4d6b-9f0b-48018b5f7393"
 
 
+    def test_getTypes_raises_HTTPError(self, requests_mock, caplog):
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            exc=requests.exceptions.HTTPError
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.HTTPError):
+            resp = client.getTypes()
+
+        assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
+
+
+    def test_getTypes_raises_ConnectTimeout(self, requests_mock, caplog):
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            resp = client.getTypes()
+
+        assert "TSIClient: The request to the TSI api timed out." in caplog.text
+
+
 def create_TSIClient():
     """        
     Version: 0.3
