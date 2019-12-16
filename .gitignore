@@ -8,3 +8,6 @@ test_raw.py
 env
 venv
 test-output.xml
+coverage.xml
+htmlcov
+.coverage
