@@ -5,3 +5,9 @@ test.py
 test_raw.py
 *.DS_Store
 *.json
+env
+venv
+test-output.xml
+coverage.xml
+htmlcov
+.coverage
