@@ -43,10 +43,12 @@ class MockURLs():
     env_url = "https://api.timeseries.azure.com/environments"
     hierarchies_url = "https://{}.env.timeseries.azure.com/timeseries/hierarchies".format("00000000-0000-0000-0000-000000000000")
     types_url = "https://{}.env.timeseries.azure.com/timeseries/types".format("00000000-0000-0000-0000-000000000000")
+    instances_url = "https://{}.env.timeseries.azure.com/timeseries/instances/".format("00000000-0000-0000-0000-000000000000")
 
 
 class MockResponses():
     """This class holds mocked request responses which can be used across tests.
+    The json responses are taken from the official Azure TSI api documentation.
     """
     mock_types = {
         "types": [
@@ -100,11 +102,36 @@ class MockResponses():
         ]
     }
 
+    mock_instances = {
+        "instances": [
+            {
+                "typeId": "9b84e946-7b36-4aa0-9d26-71bf48cb2aff",
+                "name": "F1W7.GS1",
+                "timeSeriesId": [
+                    "006dfc2d-0324-4937-998c-d16f3b4f1952",
+                    "T1"
+                ],
+                "description": "ContosoFarm1W7_GenSpeed1",
+                "hierarchyIds": [
+                    "33d72529-dd73-4c31-93d8-ae4e6cb5605d"
+                ],
+                "instanceFields": {
+                    "Name": "GeneratorSpeed",
+                    "Plant": "Contoso Plant 1",
+                    "Unit": "W7",
+                    "System": "Generator System"
+                }
+            }
+        ],
+        "continuationToken": "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
+    }
+
 
 class TestTSIClient():
     def test_create_TSICLient_success(self):
         client = create_TSIClient()
         assert client
+
 
     def test__getToken_success(self, requests_mock):
         requests_mock.request(
@@ -367,6 +394,33 @@ class TestTSIClient():
             resp = client.getTypes()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
+
+
+    def test_getInstances_success(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        resp = client.getInstances()
+
+        assert len(resp["instances"]) == 1
+        assert type(resp["instances"]) is list
+        assert type(resp["instances"][0]) is dict
+        assert resp["instances"][0]["timeSeriesId"][0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
+        assert resp["continuationToken"] == "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
 
 
 def create_TSIClient():
