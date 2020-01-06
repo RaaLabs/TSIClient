@@ -395,53 +395,61 @@ TODO:
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {"api-version":self._apiVersion}
+        querystring = {"api-version": self._apiVersion}
         timeseries = self.getIdByName(variables)
-        for i in range(0,len(timeseries)):
-            if(timeseries[i] == None):
+        for i in range(0, len(timeseries)):
+            if timeseries[i] == None:
                 print("No such tag: " + variables[i])
                 continue
             payload = {
-                    "aggregateSeries": {"timeSeriesId": [timeseries[i]],
-                                        "timeSeriesName" : None,
-                                        "searchSpan": {
-                                                "from": timespan[0],
-                                                "to": timespan[1]
-                                                },
-                                         "filter": None,
-                                         "interval": interval,
-                                         "inlineVariables": {
-                                                 "AverageTest": {
-                                                         "kind": "numeric",
-                                                         "value": {"tsx": "$event.value"},
-                                                         "filter": None,
-                                                         "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}
-                                                         },
-    
-                                                 },                            
-                                        "projectedVariables": ["AverageTest"]
-                                        }
-                                        }
-                                                 
-            headers = {
-                'x-ms-client-application-name': self._applicationName,
-                'Authorization': authorizationToken,
-                'Content-Type': "application/json",
-                'cache-control': "no-cache"
+                "aggregateSeries": {
+                    "timeSeriesId": [timeseries[i]],
+                    "timeSeriesName": None,
+                    "searchSpan": {"from": timespan[0], "to": timespan[1]},
+                    "filter": None,
+                    "interval": interval,
+                    "inlineVariables": {
+                        "AverageTest": {
+                            "kind": "numeric",
+                            "value": {"tsx": "$event.value"},
+                            "filter": None,
+                            "aggregation": {"tsx": "{0!s}($value)".format(aggregate)},
+                        },
+                    },
+                    "projectedVariables": ["AverageTest"],
+                }
             }
-            response = requests.request("POST", url, data=json.dumps(payload), headers=headers,params=querystring)
-            
+
+            headers = {
+                "x-ms-client-application-name": self._applicationName,
+                "Authorization": authorizationToken,
+                "Content-Type": "application/json",
+                "cache-control": "no-cache",
+            }
+            response = requests.request(
+                "POST",
+                url,
+                data=json.dumps(payload),
+                headers=headers,
+                params=querystring,
+            )
+
             # Test if response body contains sth.
             if response.text:
                 response = json.loads(response.text)
             # Handle error if deserialization fails (because of no text or bad format)
             try:
                 assert i == 0
-                df=pd.DataFrame({'timestamp':response['timestamps'],variables[i]:response['properties'][0]['values']})
+                df = pd.DataFrame(
+                    {
+                        "timestamp": response["timestamps"],
+                        variables[i]: response["properties"][0]["values"],
+                    }
+                )
             except:
-                df[variables[i]]=response['properties'][0]['values']                
+                df[variables[i]] = response["properties"][0]["values"]
             finally:
-                print("Loaded data for tag: " + variables[i])               
+                print("Loaded data for tag: " + variables[i])
         return df
 
 
