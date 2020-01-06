@@ -379,7 +379,18 @@ TODO:
 
 
     
-    def getDataByName(self,variables,timespan,interval,aggregate):
+    def getDataByName(self, variables, timespan, interval, aggregate):
+        """Returns a dataframe with timestamps and values for the time series names given in "variables".
+        Can be used to return data for single and multiple time series. Names must be an exact match.
+        Args:
+            variables (list(str)): The variable names. Corresponds to the "name/Time Series Name" field of the time series instances.
+            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+                Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
+            interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interval="PT1M", for 1 minute aggregation.
+            aggregate (str): Supports "min", "max", "avg". Cannot be None.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
