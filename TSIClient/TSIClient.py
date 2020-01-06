@@ -435,6 +435,18 @@ TODO:
 
 
     def getDataByDescription(self, variables, TSName, timespan, interval, aggregate):
+        """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
+        Can be used to return data for single and multiple time series. Description must be an exact match.
+        Args:
+            variables (list(str)): The variable descriptions. Corresponds to the "description" field of the time series instances.
+            TSName (list(str)): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
+            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+                Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
+            interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
+            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
