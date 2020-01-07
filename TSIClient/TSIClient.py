@@ -399,7 +399,7 @@ TODO:
         timeseries = self.getIdByName(variables)
         for i in range(0, len(timeseries)):
             if timeseries[i] == None:
-                print("No such tag: " + variables[i])
+                logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
             payload = {
                 "aggregateSeries": {
@@ -449,7 +449,7 @@ TODO:
             except:
                 df[variables[i]] = response["properties"][0]["values"]
             finally:
-                print("Loaded data for tag: " + variables[i])
+                logging.critical("Loaded data for tag: {tag}".format(tag=variables[i]))
         return df
 
 
@@ -480,7 +480,7 @@ TODO:
 
         for i in range(0, len(timeseries)):
             if timeseries[i] == None:
-                print("No such tag: " + variables[i])
+                logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
             payload = {
                 dict_key: {
@@ -530,5 +530,5 @@ TODO:
             except:
                 df[TSName[i]] = response["properties"][0]["values"]
             finally:
-                print("Loaded data for tag: " + TSName[i])
+                logging.critical("Loaded data for tag: {tag}".format(tag=TSName[i]))
         return df
