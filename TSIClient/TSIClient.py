@@ -5,6 +5,7 @@ import pandas as pd
 import requests
 import logging
 from TSIClient.exceptions import TSIEnvironmentError
+from TSIClient.exceptions import TSIStoreError
 
 
 class TSIClient():
@@ -379,7 +380,7 @@ TODO:
 
 
     
-    def getDataByName(self, variables, timespan, interval, aggregate):
+    def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
         Can be used to return data for single and multiple time series. Names must be an exact match.
         Args:
@@ -389,13 +390,17 @@ TODO:
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
             aggregate (str): Supports "min", "max", "avg". Cannot be None.
+            useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
         """
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {"api-version": self._apiVersion}
+        querystring = {
+            "api-version": self._apiVersion,
+            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
+        }
         timeseries = self.getIdByName(variables)
         for i in range(0, len(timeseries)):
             if timeseries[i] == None:
@@ -437,7 +442,12 @@ TODO:
             # Test if response body contains sth.
             if response.text:
                 response = json.loads(response.text)
-            # Handle error if deserialization fails (because of no text or bad format)
+                if "error" in response:
+                    raise TSIStoreError(
+                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                            .format(id=self._enviromentName),
+                    )
+
             try:
                 assert i == 0
                 df = pd.DataFrame(
@@ -453,7 +463,7 @@ TODO:
         return df
 
 
-    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate):
+    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
         Can be used to return data for single and multiple time series. Description must be an exact match.
         Args:
@@ -464,13 +474,17 @@ TODO:
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
             aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
+            useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
         """
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {"api-version": self._apiVersion}
+        querystring = {
+            "api-version": self._apiVersion,
+            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
+        }
         timeseries = self.getIdByDescription(variables)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
@@ -518,7 +532,12 @@ TODO:
             # Test if response body contains sth.
             if response.text:
                 response = json.loads(response.text)
-            # Handle error if deserialization fails (because of no text or bad format)
+                if "error" in response:
+                    raise TSIStoreError(
+                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                            .format(id=self._enviromentName),
+                    )
+
             try:
                 assert i == 0
                 df = pd.DataFrame(
