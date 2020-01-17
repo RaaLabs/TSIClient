@@ -6,6 +6,7 @@ import requests
 import logging
 from TSIClient.exceptions import TSIEnvironmentError
 from TSIClient.exceptions import TSIStoreError
+from TSIClient.exceptions import TSIQueryError
 
 
 class TSIClient():
@@ -443,10 +444,15 @@ TODO:
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
-                    raise TSIStoreError(
-                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                            .format(id=self._enviromentName),
-                    )
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
 
             try:
                 assert i == 0
@@ -533,10 +539,15 @@ TODO:
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
-                    raise TSIStoreError(
-                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                            .format(id=self._enviromentName),
-                    )
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
 
             try:
                 assert i == 0
@@ -620,10 +631,15 @@ TODO:
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
-                    raise TSIStoreError(
-                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                            .format(id=self._enviromentName),
-                    )
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
 
             try:
                 assert i == 0
