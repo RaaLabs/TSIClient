@@ -324,7 +324,14 @@ TODO:
         
         return jsonResponse
 
-    def getNameById(self,ids):
+
+    def getNameById(self, ids):
+        """Returns the timeseries names that correspond to the given ids.
+        Args:
+            ids (list(str)): The ids for which to get names.
+        Returns (list(str)): The timeseries names, None if timeseries id does not exist in the TSI environment.
+        """
+
         result=self.getInstances()
         timeSeriesNames=[]
         idMap={}
@@ -337,7 +344,8 @@ TODO:
             else:
                 timeSeriesNames.append(None)
         return timeSeriesNames    
-    
+
+
     def getIdByAssets(self,asset):
         result=self.getInstances()
         timeSeriesIds=[]
@@ -350,7 +358,14 @@ TODO:
                 continue#timeSeriesIds.append(None)
         return timeSeriesIds    
 
-    def getIdByName(self,names):
+
+    def getIdByName(self, names):
+        """Returns the timeseries ids that correspond to the given names.
+        Args:
+            names (list(str)): The names for which to get ids.
+        Returns (list(str)): The timeseries ids, None if timeseries name does not exist in the TSI environment.
+        """
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -364,7 +379,14 @@ TODO:
                 timeSeriesIds.append(None)
         return timeSeriesIds    
 
-    def getIdByDescription(self,names):
+
+    def getIdByDescription(self, names):
+        """Returns the timeseries ids that correspond to the given descriptions.
+        Args:
+            names (list(str)): The descriptions for which to get ids.
+        Returns (list(str)): The timeseries ids, None if timeseries description does not exist in the TSI environment.
+        """
+        
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -379,8 +401,6 @@ TODO:
         return timeSeriesIds        
     
 
-
-    
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
         Can be used to return data for single and multiple time series. Names must be an exact match.

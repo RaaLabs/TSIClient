@@ -423,6 +423,87 @@ class TestTSIClient():
         assert resp["continuationToken"] == "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
 
 
+    def test_getNameById_with_one_correct_id_returns_correct_name(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        timeSeriesNames = client.getNameById(
+            ids=["006dfc2d-0324-4937-998c-d16f3b4f1952", "made_up_id"]
+        )
+
+        assert len(timeSeriesNames) == 2
+        assert timeSeriesNames[0] == "F1W7.GS1"
+        assert timeSeriesNames[1] == None
+
+
+    def test_getIdByName_with_one_correct_name_returns_correct_id(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        timeSeriesIds = client.getIdByName(
+            names=["F1W7.GS1", "made_up_name"]
+        )
+
+        assert len(timeSeriesIds) == 2
+        assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
+        assert timeSeriesIds[1] == None
+
+
+    def test_getIdByDescription_with_one_correct_description_returns_correct_id(self, requests_mock):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+
+        client = create_TSIClient()
+        timeSeriesIds = client.getIdByDescription(
+            names=["ContosoFarm1W7_GenSpeed1", "made_up_description"]
+        )
+
+        assert len(timeSeriesIds) == 2
+        assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
+        assert timeSeriesIds[1] == None
+
+
 def create_TSIClient():
     """        
     Version: 0.3
