@@ -10,32 +10,21 @@ from TSIClient.exceptions import TSIQueryError
 
 
 class TSIClient():
+    """TSIClient. Holds methods to interact with an Azure TSI environment.
+
+    This class can be used to retrieve time series data from Azure TSI. Data
+    is retrieved in form of a pandas dataframe, which allows subsequent analysis
+    by data analysts, data scientists and developers.
+
+    Args:
+        enviroment (str): The name of the Azure TSI environment.
+        client_id (str): The client id of the service principal used to authenticate with Azure TSI.
+        client_secret (str): The client secret of the service principal used to authenticate with Azure TSI.
+        tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
+        applicationName (str): The name can be an arbitrary string. For informational purpose.
     """
-Created on Tue Mar 26 16:23:06 2019
-Version: 1.1
 
-RAA-LABS     The digital accelerator for the maritime industry
-                http://raalabs.com
-            Project: One operation (ONEOPS)
-
-Purpose: Class for creating a Time Series Insights 
-    
-Description: 
-    
-Parameters: 
-
-    str1 (str): This is a string used as a template for the output.
-
-Returns: 
-    returnvalue (int) : This is the return values template.
-    
-TODO: 
-    
-    
-@author: Anders Gill and Sigbjorn Rudaa
-@ Email: Anders.Gill@raalabs.com
-"""
-    def __init__(self,enviroment,client_id,client_secret,applicationName,tenant_id):
+    def __init__(self, enviroment, client_id, client_secret, applicationName, tenant_id):
         self._apiVersion = "2018-11-01-preview"
         self._applicationName = applicationName
         self._enviromentName = enviroment
@@ -45,6 +34,12 @@ TODO:
 
 
     def _getToken(self):
+        """Gets an authorization token from the Azure TSI api which is used to authenticate api calls.
+
+        Returns:
+            str: The authorization token.
+        """
+
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(self._tenant_id)
         
         payload = {
@@ -55,7 +50,6 @@ TODO:
                    }
         
         payload = "grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}&resource={resource}".format(**payload)
-
 
         headers = {
             'Content-Type': "application/x-www-form-urlencoded",
@@ -83,6 +77,12 @@ TODO:
 
 
     def getEnviroment(self):
+        """Gets the id of the environment specified in the TSIClient class constructor.
+
+        Returns:
+            str: The environment id.
+        """
+
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
@@ -119,6 +119,13 @@ TODO:
     
 
     def getInstances(self):
+        """Gets all instances (timeseries) from the specified TSI environment.
+
+        Returns:
+            dict: The instances in form of the response from the TSI api call.
+            Contains typeId, timeSeriesId, name, description, hierarchyIds and instanceFields per instance.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
@@ -158,8 +165,11 @@ TODO:
     
 
     def getHierarchies(self):
-        """Retrieves all hierarchies present in the specified TSI environment.
-        Returns (dict): A dictionary with hierarchy ids, names and instance fields.
+        """Gets all hierarchies from the specified TSI environment.
+
+        Returns:
+            dict: The hierarchies in form of the response from the TSI api call.
+            Contains hierarchy id, names and source fields per hierarchy.
         """
 
         environmentId = self.getEnviroment()
@@ -196,8 +206,11 @@ TODO:
 
 
     def getTypes(self):
-        """Retrieves all types present in the specified TSI environment.
-        Returns (dict): A dictionary with type ids, name descriptions and variables.
+        """Gets all types from the specified TSI environment.
+
+        Returns:
+            dict: The types in form of the response from the TSI api call.
+            Contains id, name, description and variables per type.
         """
         
         environmentId = self.getEnviroment()
@@ -234,7 +247,17 @@ TODO:
         return json.loads(response.text)
 
         
-    def writeInstance(self,payload):
+    def writeInstance(self, payload):
+        """Writes instances to the TSI environment.
+
+        Args:
+            payload (str): A json-serializable payload that is posted to the TSI environment.
+                The format of the payload is specified in the Azure TSI documentation.
+
+        Returns:
+            dict: The response of the TSI api call.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
@@ -242,23 +265,23 @@ TODO:
         
         print(url)
         querystring = {"api-version":self._apiVersion}
-        
+
         headers = {
             'x-ms-client-application-name': self._applicationName,
             'Authorization': authorizationToken,
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
-        
+
         response = requests.request("POST", url, data=json.dumps(payload), headers=headers, params=querystring)
-        
+
         if response.text:
             jsonResponse = json.loads(response.text)
-        
+
         return jsonResponse
-    
-    def deleteInstances(self,instances):
-        
+
+
+    def deleteInstances(self, instances):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         instancesList = list() 
