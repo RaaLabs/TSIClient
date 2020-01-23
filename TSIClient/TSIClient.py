@@ -312,7 +312,8 @@ class TSIClient():
         print(jsonResponse)
         
         return jsonResponse
-    
+
+
     def deleteAllInstances(self):
         instances = self.getInstances()['instances']
         instancesList = list() 
@@ -350,9 +351,12 @@ class TSIClient():
 
     def getNameById(self, ids):
         """Returns the timeseries names that correspond to the given ids.
+
         Args:
-            ids (list(str)): The ids for which to get names.
-        Returns (list(str)): The timeseries names, None if timeseries id does not exist in the TSI environment.
+            ids (list): The ids for which to get names.
+
+        Returns:
+            list: The timeseries names, None if timeseries id does not exist in the TSI environment.
         """
 
         result=self.getInstances()
@@ -369,7 +373,16 @@ class TSIClient():
         return timeSeriesNames    
 
 
-    def getIdByAssets(self,asset):
+    def getIdByAssets(self, asset):
+        """Returns the timeseries ids that belong to a given asset.
+
+        Args:
+            asset (str): The asset name.
+
+        Returns:
+            list: The timeseries ids. 
+        """
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -384,9 +397,12 @@ class TSIClient():
 
     def getIdByName(self, names):
         """Returns the timeseries ids that correspond to the given names.
+
         Args:
             names (list(str)): The names for which to get ids.
-        Returns (list(str)): The timeseries ids, None if timeseries name does not exist in the TSI environment.
+
+        Returns:
+            list: The timeseries ids, None if timeseries name does not exist in the TSI environment.
         """
 
         result=self.getInstances()
@@ -405,9 +421,12 @@ class TSIClient():
 
     def getIdByDescription(self, names):
         """Returns the timeseries ids that correspond to the given descriptions.
+
         Args:
-            names (list(str)): The descriptions for which to get ids.
-        Returns (list(str)): The timeseries ids, None if timeseries description does not exist in the TSI environment.
+            names (list): The descriptions for which to get ids.
+
+        Returns:
+            list: The timeseries ids, None if timeseries description does not exist in the TSI environment.
         """
         
         result=self.getInstances()
@@ -426,15 +445,20 @@ class TSIClient():
 
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
-        Can be used to return data for single and multiple time series. Names must be an exact match.
+
+        Can be used to return data for single and multiple timeseries. Names must be exact matches.
+
         Args:
-            variables (list(str)): The variable names. Corresponds to the "name/Time Series Name" field of the time series instances.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            variables (list): The variable names. Corresponds to the "name/Time Series Name" field of the time series instances.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
             aggregate (str): Supports "min", "max", "avg". Cannot be None.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
@@ -514,16 +538,21 @@ class TSIClient():
 
     def getDataByDescription(self, variables, TSName, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
-        Can be used to return data for single and multiple time series. Description must be an exact match.
+
+        Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
+
         Args:
-            variables (list(str)): The variable descriptions. Corresponds to the "description" field of the time series instances.
-            TSName (list(str)): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            variables (list): The variable descriptions. Corresponds to the "description" field of the time series instances.
+            TSName (list): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
             aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
@@ -608,16 +637,21 @@ class TSIClient():
 
 
     def getDataById(self, timeseries, timespan, interval, aggregate, useWarmStore=False):
-        """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
-        Can be used to return data for single and multiple time series. Description must be an exact match.
+        """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
+
+        Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
+
         Args:
-            timeseries (list(str)): The timeseries ids. Corresponds to the "timeSeriesId" field of the time series instances.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            timeseries (list): The timeseries ids. Corresponds to the "timeSeriesId" field of the time series instances.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
             aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
