@@ -1,146 +1,49 @@
+# TSIClient
 [![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
+[![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
 
-# TSIClient - Get your data from TSI!
+The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data. 
 
-With TSIClient, you are able to get your data from Azure Time Series Insight! Just use this simple SDK :)
+# Documentation
+- Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
+- TSIClient: <https://tsiclient.readthedocs.io/en/latest/index.html>
 
-# Usage
 
-## Setting API version (optional)
+# Installation
+The TSIClient is not yet on PyPi, but you can install it directly from GitHub:
 
-In the TSIClient class, you can change the api version.
-Initially, the api version is set to: "2018-11-01-preview"
+````bash
+pip install git+https://github.com/RaaLabs/TSIClient.git
+````
 
-## Prerequisite for usage (Step 1)
+# Quickstart
+Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment.
 
-There are in total six parameters you have to provide to the constructor of the TSI class in order to create an instance, these are:
-
-        self._apiVersion = "2018-11-01-preview"
-        self._applicationName = applicationName
-        self._enviromentName = enviroment
-        self._client_id = client_id
-        self._client_secret=client_secret
-        self._tenant_id = tenant_id
-
-As you can see, the API version is already set, but the rest has to be provided.
-Here is an example of how you provide the variables:
-
-```python
-def getTSIkeysTags(asset):
-    client = TSIClient(enviroment = 'ENVIRONMENT_NAME',
-                     client_id = "CLIENT_ID",
-                     client_secret = "CLIENT_SECRET",
-                     applicationName = "APPLICATION_NAME",
-                     tenant_id="TENANT_ID")
-
-    Tags = [
-            "/" + TAG_POWER.description
-           ]
-   
-    TagsShort = [
-            "/" + TAG_POWER.shortName
-           ]
-    
-    return Tags, TagsShort , tsiKeys
-```
-
-## Getting data from TSI after authorization completed
-
-### Creating Tag name for query
-
-In order to query TSI with appropriate tags, you need to create a simple Tag class which contains two attributes:
-
-1. Description from TSI tag
-2. Shortname (whatever you want to shorten the description to)
-
-Example:
-
-```python
-class Tag:
-    def __init__(self,description,shortName):
-        self.description = description
-        self.shortName = shortName
-
-# Tags to be feched
-TAG_POWER = Tag("PropulsionAndSteeringArrangements/PropulsionEngine/Shaft/ShaftPower+(kW)","ME_ShaftPower")
-```
-
-After that, you need to concatinate the asset name together with the long description that TSI expects.
-This can be done with the following method:
-
-```python
-def addAssetNameToTags(tags, asset):
-    concatVariables = []
-    for tag in tags:
-        concatVariables.append(asset+tag)
-    
-    if concatVariables:
-        print("Tag-array has items")
-    if not concatVariables:
-        print("list is empty, you sure getVaribales() was successful?")
-    return concatVariables
-```
-
-### Using getDataByDescription
-
-In order to get data by description from TSI, you have to provide the following parameters to the method:
-
-1. name of asset
-2. time series name
-3. timespan (from time, to time)
-4. interval
-5. aggregate type
-
-Example: 
-
-```python
-dataFrame = client.getDataByDescription(addAssetNameToTags(Tags, assetName), TSName, timespan=[timeFrom,timeTo], interval=intervalRequested, aggregate=aggType)
-```
-Now you should have all the data for the provided tags in a dataframe which is returned by the above function (getDataByDescription)
-
-# Example
-
-### Module
-
-```python 
+````python
 from TSIClient import TSIClient as tsi
-        (package)            (module)     (abbreviation)
-```
- 
-### In code
 
-```python
-client_trial_variable = tsi.TSIClient(enviroment = 'environment',
-                                  (module.class)                    client_id = "ID",
-                                                                             client_secret = "the_password_is_secret",
-                                                                              applicationName = "app_name",
-                                                                              tenant_id="another_ID")
-```
+client = tsi.TSIClient(
+    enviroment="<your-tsi-env-name>",
+    client_id="<your-client-id>",
+    client_secret="<your-client-secret>",
+    tenant_id="<your-tenant-id>",
+    applicationName="<your-app-name">
+)
+````
 
+You can query your timeseries data by timeseries id, timeseries name or timeseries description. The Microsoft TSI apis support aggregation, so you can specify a sampling freqency and an aggregation method. Refer to the documentation for detailed information.
 
-License
-----
+````python
+data = client.getDataById(
+    timeseries=["<timeseries_id1>", "timeseries_id2"],
+    timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
+    interval="<your-sampling-frequency>",
+    aggregate="avg",
+    use_warm_store=False
+)
+````
 
-MIT License
+This returns a pandas dataframe, which can be used for analysis.
 
-Copyright (c) 2019 Anders Gill
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
+# License
+TSIClient is licensed under the MIT license. See [LICENSE](LICENSE.txt) file for details.
