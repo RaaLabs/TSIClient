@@ -1,30 +1,3 @@
- # -*- coding: utf-8 -*-
-"""
-Version: 0.1
-
-RAA-LABS
-The digital accelerator for the maritime industry
-
-http://raalabs.com
-
-Project: One operation (ONEOPS)
-
-Purpose: test function for TSI Client package
-
-Description: Makes test for unit testing the functions for TSI Client package
-
-Tests: 
-    test_function_works (function) : Function that calls on the TSIClient and
-        implements a class instance and asserts that the instance is created.
-
-Output: ok or test failed
-
-TODO: 
-    -Create a mock class and test fucntions that asserts that the function 
-        calls on the API  and get a response. 
-@author: Emil.Ramsvik
-@ Email: Emil.Ramsvik@wilhelmsen.com
-"""
 import pytest
 import requests
 import requests_mock
