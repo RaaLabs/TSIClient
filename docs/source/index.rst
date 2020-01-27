@@ -14,8 +14,8 @@ https://docs.microsoft.com/en-us/rest/api/time-series-insights/
    :caption: Table of contents:
 
    installation.rst
+   _autogen/modules.rst
    developer.rst
-   _autogen/TSIClient.rst
 
 
 Indices and tables

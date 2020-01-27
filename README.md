@@ -27,7 +27,7 @@ client = tsi.TSIClient(
     client_id="<your-client-id>",
     client_secret="<your-client-secret>",
     tenant_id="<your-tenant-id>",
-    applicationName="<your-app-name">
+    applicationName="<your-app-name>">
 )
 ````
 
@@ -35,7 +35,7 @@ You can query your timeseries data by timeseries id, timeseries name or timeseri
 
 ````python
 data = client.getDataById(
-    timeseries=["<timeseries_id1>", "timeseries_id2"],
+    timeseries=["<timeseries_id1>", "<timeseries_id2>"],
     timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
     interval="<your-sampling-frequency>",
     aggregate="avg",
