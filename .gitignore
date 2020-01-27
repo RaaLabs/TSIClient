@@ -11,3 +11,6 @@ test-output.xml
 coverage.xml
 htmlcov
 .coverage
+TSIClient.egg-info
+build
+dist

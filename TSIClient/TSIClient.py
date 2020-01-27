@@ -6,6 +6,7 @@ import requests
 import logging
 from TSIClient.exceptions import TSIEnvironmentError
 from TSIClient.exceptions import TSIStoreError
+from TSIClient.exceptions import TSIQueryError
 
 
 class TSIClient():
@@ -323,7 +324,14 @@ TODO:
         
         return jsonResponse
 
-    def getNameById(self,ids):
+
+    def getNameById(self, ids):
+        """Returns the timeseries names that correspond to the given ids.
+        Args:
+            ids (list(str)): The ids for which to get names.
+        Returns (list(str)): The timeseries names, None if timeseries id does not exist in the TSI environment.
+        """
+
         result=self.getInstances()
         timeSeriesNames=[]
         idMap={}
@@ -336,7 +344,8 @@ TODO:
             else:
                 timeSeriesNames.append(None)
         return timeSeriesNames    
-    
+
+
     def getIdByAssets(self,asset):
         result=self.getInstances()
         timeSeriesIds=[]
@@ -349,7 +358,14 @@ TODO:
                 continue#timeSeriesIds.append(None)
         return timeSeriesIds    
 
-    def getIdByName(self,names):
+
+    def getIdByName(self, names):
+        """Returns the timeseries ids that correspond to the given names.
+        Args:
+            names (list(str)): The names for which to get ids.
+        Returns (list(str)): The timeseries ids, None if timeseries name does not exist in the TSI environment.
+        """
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -363,7 +379,14 @@ TODO:
                 timeSeriesIds.append(None)
         return timeSeriesIds    
 
-    def getIdByDescription(self,names):
+
+    def getIdByDescription(self, names):
+        """Returns the timeseries ids that correspond to the given descriptions.
+        Args:
+            names (list(str)): The descriptions for which to get ids.
+        Returns (list(str)): The timeseries ids, None if timeseries description does not exist in the TSI environment.
+        """
+        
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -378,8 +401,6 @@ TODO:
         return timeSeriesIds        
     
 
-
-    
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
         Can be used to return data for single and multiple time series. Names must be an exact match.
@@ -443,10 +464,15 @@ TODO:
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
-                    raise TSIStoreError(
-                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                            .format(id=self._enviromentName),
-                    )
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
 
             try:
                 assert i == 0
@@ -533,10 +559,15 @@ TODO:
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
-                    raise TSIStoreError(
-                        "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                            .format(id=self._enviromentName),
-                    )
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
 
             try:
                 assert i == 0
@@ -550,4 +581,96 @@ TODO:
                 df[TSName[i]] = response["properties"][0]["values"]
             finally:
                 logging.critical("Loaded data for tag: {tag}".format(tag=TSName[i]))
+        return df
+
+
+    def getDataById(self, timeseries, timespan, interval, aggregate, useWarmStore=False):
+        """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
+        Can be used to return data for single and multiple time series. Description must be an exact match.
+        Args:
+            timeseries (list(str)): The timeseries ids. Corresponds to the "timeSeriesId" field of the time series instances.
+            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+                Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
+            interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
+            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
+            useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+        """
+
+        environmentId = self.getEnviroment()
+        authorizationToken = self._getToken()
+        df = None
+        url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
+        querystring = {
+            "api-version": self._apiVersion,
+            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
+        }
+        if aggregate != None:
+            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
+            dict_key = "aggregateSeries"
+        else:
+            dict_key = "getSeries"
+
+        for i in range(0, len(timeseries)):
+            if timeseries[i] == None:
+                logging.error("No such tag: {tag}".format(tag=timeseries[i]))
+                continue
+            payload = {
+                dict_key: {
+                    "timeSeriesId": [timeseries[i]],
+                    "timeSeriesName": None,
+                    "searchSpan": {"from": timespan[0], "to": timespan[1]},
+                    "filter": None,
+                    "interval": interval,
+                    "inlineVariables": {
+                        "AverageTest": {
+                            "kind": "numeric",
+                            "value": {"tsx": "$event.value"},
+                            "filter": None,
+                            "aggregation": aggregate,
+                        },
+                    },
+                    "projectedVariables": ["AverageTest"],
+                }
+            }
+
+            headers = {
+                "x-ms-client-application-name": self._applicationName,
+                "Authorization": authorizationToken,
+                "Content-Type": "application/json",
+                "cache-control": "no-cache",
+            }
+            response = requests.request(
+                "POST",
+                url,
+                data=json.dumps(payload),
+                headers=headers,
+                params=querystring,
+            )
+
+            if response.text:
+                response = json.loads(response.text)
+                if "error" in response:
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self._enviromentName),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
+
+            try:
+                assert i == 0
+                df = pd.DataFrame(
+                    {
+                        "timestamp": response["timestamps"],
+                        timeseries[i]: response["properties"][0]["values"],
+                    }
+                )
+            except:
+                df[timeseries[i]] = response["properties"][0]["values"]
+            finally:
+                logging.critical("Loaded data for tag: {tag}".format(tag=timeseries[i]))
         return df
