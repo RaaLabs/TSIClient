@@ -22,6 +22,18 @@ class TSIClient():
         client_secret (str): The client secret of the service principal used to authenticate with Azure TSI.
         tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
         applicationName (str): The name can be an arbitrary string. For informational purpose.
+
+    Example:
+        The TSIClient is the entry point to the SDK. You can instantiate it like this:
+
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient(
+            ...     enviroment="<your-tsi-env-name>",
+            ...     client_id="<your-client-id>",
+            ...     client_secret="<your-client-secret>",
+            ...     tenant_id="<your-tenant-id>",
+            ...     applicationName="<your-app-name>">
+            ... )
     """
 
     def __init__(self, enviroment, client_id, client_secret, applicationName, tenant_id):
