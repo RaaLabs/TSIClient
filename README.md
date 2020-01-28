@@ -1,12 +1,13 @@
 # TSIClient
 [![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
-[![Documentation Status](https://readthedocs.org/projects/raalabstsiclient/badge/?version=latest)](https://raalabstsiclient.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
+
 
 The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data. 
 
 ## Documentation
 - Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
-- TSIClient: <https://raalabstsiclient.readthedocs.io/en/latest/>
+- TSIClient: <https://tsiclient.readthedocs.io/en/latest/>
 
 
 ## Installation
