@@ -14,6 +14,7 @@ https://docs.microsoft.com/en-us/rest/api/time-series-insights/
    :caption: Table of contents:
 
    installation.rst
+   userguide.rst
    _autogen/modules.rst
    developer.rst
 
