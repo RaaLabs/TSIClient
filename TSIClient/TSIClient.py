@@ -10,32 +10,33 @@ from TSIClient.exceptions import TSIQueryError
 
 
 class TSIClient():
+    """TSIClient. Holds methods to interact with an Azure TSI environment.
+
+    This class can be used to retrieve time series data from Azure TSI. Data
+    is retrieved in form of a pandas dataframe, which allows subsequent analysis
+    by data analysts, data scientists and developers.
+
+    Args:
+        enviroment (str): The name of the Azure TSI environment.
+        client_id (str): The client id of the service principal used to authenticate with Azure TSI.
+        client_secret (str): The client secret of the service principal used to authenticate with Azure TSI.
+        tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
+        applicationName (str): The name can be an arbitrary string. For informational purpose.
+
+    Example:
+        The TSIClient is the entry point to the SDK. You can instantiate it like this:
+
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient(
+            ...     enviroment="<your-tsi-env-name>",
+            ...     client_id="<your-client-id>",
+            ...     client_secret="<your-client-secret>",
+            ...     tenant_id="<your-tenant-id>",
+            ...     applicationName="<your-app-name>">
+            ... )
     """
-Created on Tue Mar 26 16:23:06 2019
-Version: 1.1
 
-RAA-LABS     The digital accelerator for the maritime industry
-                http://raalabs.com
-            Project: One operation (ONEOPS)
-
-Purpose: Class for creating a Time Series Insights 
-    
-Description: 
-    
-Parameters: 
-
-    str1 (str): This is a string used as a template for the output.
-
-Returns: 
-    returnvalue (int) : This is the return values template.
-    
-TODO: 
-    
-    
-@author: Anders Gill and Sigbjorn Rudaa
-@ Email: Anders.Gill@raalabs.com
-"""
-    def __init__(self,enviroment,client_id,client_secret,applicationName,tenant_id):
+    def __init__(self, enviroment, client_id, client_secret, applicationName, tenant_id):
         self._apiVersion = "2018-11-01-preview"
         self._applicationName = applicationName
         self._enviromentName = enviroment
@@ -45,6 +46,12 @@ TODO:
 
 
     def _getToken(self):
+        """Gets an authorization token from the Azure TSI api which is used to authenticate api calls.
+
+        Returns:
+            str: The authorization token.
+        """
+
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(self._tenant_id)
         
         payload = {
@@ -55,7 +62,6 @@ TODO:
                    }
         
         payload = "grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}&resource={resource}".format(**payload)
-
 
         headers = {
             'Content-Type': "application/x-www-form-urlencoded",
@@ -83,6 +89,12 @@ TODO:
 
 
     def getEnviroment(self):
+        """Gets the id of the environment specified in the TSIClient class constructor.
+
+        Returns:
+            str: The environment id.
+        """
+
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
@@ -119,6 +131,13 @@ TODO:
     
 
     def getInstances(self):
+        """Gets all instances (timeseries) from the specified TSI environment.
+
+        Returns:
+            dict: The instances in form of the response from the TSI api call.
+            Contains typeId, timeSeriesId, name, description, hierarchyIds and instanceFields per instance.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
@@ -158,8 +177,11 @@ TODO:
     
 
     def getHierarchies(self):
-        """Retrieves all hierarchies present in the specified TSI environment.
-        Returns (dict): A dictionary with hierarchy ids, names and instance fields.
+        """Gets all hierarchies from the specified TSI environment.
+
+        Returns:
+            dict: The hierarchies in form of the response from the TSI api call.
+            Contains hierarchy id, names and source fields per hierarchy.
         """
 
         environmentId = self.getEnviroment()
@@ -196,8 +218,11 @@ TODO:
 
 
     def getTypes(self):
-        """Retrieves all types present in the specified TSI environment.
-        Returns (dict): A dictionary with type ids, name descriptions and variables.
+        """Gets all types from the specified TSI environment.
+
+        Returns:
+            dict: The types in form of the response from the TSI api call.
+            Contains id, name, description and variables per type.
         """
         
         environmentId = self.getEnviroment()
@@ -234,7 +259,17 @@ TODO:
         return json.loads(response.text)
 
         
-    def writeInstance(self,payload):
+    def writeInstance(self, payload):
+        """Writes instances to the TSI environment.
+
+        Args:
+            payload (str): A json-serializable payload that is posted to the TSI environment.
+                The format of the payload is specified in the Azure TSI documentation.
+
+        Returns:
+            dict: The response of the TSI api call.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
@@ -242,23 +277,23 @@ TODO:
         
         print(url)
         querystring = {"api-version":self._apiVersion}
-        
+
         headers = {
             'x-ms-client-application-name': self._applicationName,
             'Authorization': authorizationToken,
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
-        
+
         response = requests.request("POST", url, data=json.dumps(payload), headers=headers, params=querystring)
-        
+
         if response.text:
             jsonResponse = json.loads(response.text)
-        
+
         return jsonResponse
-    
-    def deleteInstances(self,instances):
-        
+
+
+    def deleteInstances(self, instances):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         instancesList = list() 
@@ -289,7 +324,8 @@ TODO:
         print(jsonResponse)
         
         return jsonResponse
-    
+
+
     def deleteAllInstances(self):
         instances = self.getInstances()['instances']
         instancesList = list() 
@@ -327,9 +363,12 @@ TODO:
 
     def getNameById(self, ids):
         """Returns the timeseries names that correspond to the given ids.
+
         Args:
-            ids (list(str)): The ids for which to get names.
-        Returns (list(str)): The timeseries names, None if timeseries id does not exist in the TSI environment.
+            ids (list): The ids for which to get names.
+
+        Returns:
+            list: The timeseries names, None if timeseries id does not exist in the TSI environment.
         """
 
         result=self.getInstances()
@@ -346,7 +385,16 @@ TODO:
         return timeSeriesNames    
 
 
-    def getIdByAssets(self,asset):
+    def getIdByAssets(self, asset):
+        """Returns the timeseries ids that belong to a given asset.
+
+        Args:
+            asset (str): The asset name.
+
+        Returns:
+            list: The timeseries ids. 
+        """
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -361,9 +409,12 @@ TODO:
 
     def getIdByName(self, names):
         """Returns the timeseries ids that correspond to the given names.
+
         Args:
             names (list(str)): The names for which to get ids.
-        Returns (list(str)): The timeseries ids, None if timeseries name does not exist in the TSI environment.
+
+        Returns:
+            list: The timeseries ids, None if timeseries name does not exist in the TSI environment.
         """
 
         result=self.getInstances()
@@ -382,9 +433,12 @@ TODO:
 
     def getIdByDescription(self, names):
         """Returns the timeseries ids that correspond to the given descriptions.
+
         Args:
-            names (list(str)): The descriptions for which to get ids.
-        Returns (list(str)): The timeseries ids, None if timeseries description does not exist in the TSI environment.
+            names (list): The descriptions for which to get ids.
+
+        Returns:
+            list: The timeseries ids, None if timeseries description does not exist in the TSI environment.
         """
         
         result=self.getInstances()
@@ -403,15 +457,20 @@ TODO:
 
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
-        Can be used to return data for single and multiple time series. Names must be an exact match.
+
+        Can be used to return data for single and multiple timeseries. Names must be exact matches.
+
         Args:
-            variables (list(str)): The variable names. Corresponds to the "name/Time Series Name" field of the time series instances.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            variables (list): The variable names. Corresponds to the "name/Time Series Name" field of the time series instances.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
             aggregate (str): Supports "min", "max", "avg". Cannot be None.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
@@ -491,16 +550,21 @@ TODO:
 
     def getDataByDescription(self, variables, TSName, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
-        Can be used to return data for single and multiple time series. Description must be an exact match.
+
+        Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
+
         Args:
-            variables (list(str)): The variable descriptions. Corresponds to the "description" field of the time series instances.
-            TSName (list(str)): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            variables (list): The variable descriptions. Corresponds to the "description" field of the time series instances.
+            TSName (list): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
             aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
@@ -585,16 +649,21 @@ TODO:
 
 
     def getDataById(self, timeseries, timespan, interval, aggregate, useWarmStore=False):
-        """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
-        Can be used to return data for single and multiple time series. Description must be an exact match.
+        """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
+
+        Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
+
         Args:
-            timeseries (list(str)): The timeseries ids. Corresponds to the "timeSeriesId" field of the time series instances.
-            timespan list(str): A list of two timestamps. First list element ist the start time, second element is the end time.
+            timeseries (list): The timeseries ids. Corresponds to the "timeSeriesId" field of the time series instances.
+            timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
             aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
+
+        Returns:
+            A pandas dataframe with timeseries data.
         """
 
         environmentId = self.getEnviroment()
