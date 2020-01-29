@@ -3,7 +3,8 @@
 [![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
 
 
-The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data. 
+The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data and is designed
+for analysts, data scientists and developers working with time series data in Azure TSI.
 
 ## Documentation
 - Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
@@ -36,9 +37,9 @@ You can query your timeseries data by timeseries id, timeseries name or timeseri
 
 ````python
 data = client.getDataById(
-    timeseries=["<timeseries_id1>", "<timeseries_id2>"],
+    timeseries=["timeseries_id1", "timeseries_id2"],
     timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
-    interval="<your-sampling-frequency>",
+    interval="PT5M",
     aggregate="avg",
     use_warm_store=False
 )
