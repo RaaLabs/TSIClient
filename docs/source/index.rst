@@ -1,7 +1,9 @@
 Welcome to TSIClient's documentation!
 =====================================
 The TSIClient is a Python SDK for Microsoft Azure time series insights.
-It provides methods to conveniently retrieve your data.
+It provides methods to conveniently retrieve your data. It is designed
+for analysts, data scientists and developers working with time series
+data in Azure TSI.
 
 Azure time series insights is a cloud-based IoT offering from Microsoft.
 it is a fully managed analytics, storage and visualization service and
@@ -14,6 +16,7 @@ https://docs.microsoft.com/en-us/rest/api/time-series-insights/
    :caption: Table of contents:
 
    installation.rst
+   userguide.rst
    _autogen/modules.rst
    developer.rst
 
