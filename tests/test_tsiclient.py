@@ -242,8 +242,8 @@ class TestTSIClient():
         resp = client.getHierarchies()
 
         assert len(resp["hierarchies"]) == 1
-        assert type(resp["hierarchies"]) is list
-        assert type(resp["hierarchies"][0]) is dict
+        assert isinstance(resp["hierarchies"], list)
+        assert isinstance(resp["hierarchies"][0], dict)
         assert resp["hierarchies"][0]["id"] == "6e292e54-9a26-4be1-9034-607d71492707"
 
 
@@ -316,8 +316,8 @@ class TestTSIClient():
         resp = client.getTypes()
 
         assert len(resp["types"]) == 1
-        assert type(resp["types"]) is list
-        assert type(resp["types"][0]) is dict
+        assert isinstance(resp["types"], list)
+        assert isinstance(resp["types"][0], dict)
         assert resp["types"][0]["id"] == "1be09af9-f089-4d6b-9f0b-48018b5f7393"
 
 
@@ -390,8 +390,8 @@ class TestTSIClient():
         resp = client.getInstances()
 
         assert len(resp["instances"]) == 1
-        assert type(resp["instances"]) is list
-        assert type(resp["instances"][0]) is dict
+        assert isinstance(resp["instances"], list)
+        assert isinstance(resp["instances"][0], dict)
         assert resp["instances"][0]["timeSeriesId"][0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
         assert resp["continuationToken"] == "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
 
