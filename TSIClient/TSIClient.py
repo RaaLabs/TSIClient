@@ -131,7 +131,41 @@ class TSIClient():
             raise TSIEnvironmentError("TSIClient: TSI environment not found. Check the spelling or create an environment in Azure TSI.")
 
         return environmentId
-    
+
+
+    def getEnvironmentAvailability(self):
+        environmentId = self.getEnviroment()
+        authorizationToken = self._getToken()
+        url = "https://{environmentId}.env.timeseries.azure.com/availability".format(
+            environmentId=environmentId,
+        )
+        querystring = {"api-version": self._apiVersion}
+        payload = ""
+        headers = {
+            'x-ms-client-application-name': self._applicationName,
+            'Authorization': authorizationToken,
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+        try:
+            response = requests.request(
+                "GET",
+                url,
+                data=payload,
+                headers=headers,
+                params=querystring,
+                timeout=10
+            )
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
+
+        return json.loads(response.text)
+
 
     def getInstances(self):
         """Gets all instances (timeseries) from the specified TSI environment.
