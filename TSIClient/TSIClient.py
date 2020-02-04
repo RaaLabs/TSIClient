@@ -93,6 +93,9 @@ class TSIClient():
 
         Returns:
             str: The environment id.
+
+        Raises:
+            TSIEnvironmentError: Raised if the TSI environment does not exist.
         """
 
         authorizationToken = self._getToken()
@@ -471,6 +474,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
@@ -565,6 +572,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
@@ -664,6 +675,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
