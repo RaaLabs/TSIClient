@@ -17,6 +17,7 @@ class MockURLs():
     hierarchies_url = "https://{}.env.timeseries.azure.com/timeseries/hierarchies".format("00000000-0000-0000-0000-000000000000")
     types_url = "https://{}.env.timeseries.azure.com/timeseries/types".format("00000000-0000-0000-0000-000000000000")
     instances_url = "https://{}.env.timeseries.azure.com/timeseries/instances/".format("00000000-0000-0000-0000-000000000000")
+    environment_availability_url = "https://{}.env.timeseries.azure.com/availability".format("00000000-0000-0000-0000-000000000000")
 
 
 class MockResponses():
@@ -97,6 +98,26 @@ class MockResponses():
             }
         ],
         "continuationToken": "aXsic2tpcCI6MTAwMCwidGFrZSI6MTAwMH0="
+    }
+
+    mock_environment_availability = {
+        "availability": {
+            "intervalSize": "PT1H",
+            "distribution": {
+                "2019-03-27T04:00:00Z": 432447,
+                "2019-03-27T05:00:00Z": 432340,
+                "2019-03-27T06:00:00Z": 432451,
+                "2019-03-27T07:00:00Z": 432436,
+                "2019-03-26T13:00:00Z": 386247,
+                "2019-03-27T00:00:00Z": 436968,
+                "2019-03-27T01:00:00Z": 432509,
+                "2019-03-27T02:00:00Z": 432487
+            },
+            "range": {
+                "from": "2019-03-14T06:38:27.153Z",
+                "to": "2019-03-27T03:57:11.697Z"
+            }
+        }
     }
 
 
@@ -219,6 +240,32 @@ class TestTSIClient():
             client.getEnviroment()
 
         assert "Azure TSI environment not found. Check the spelling or create an environment in Azure TSI." in str(exc_info.value)
+
+
+    def test_getEnvironmentAvailability(self, requests_mock):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.environment_availability_url,
+            json=MockResponses.mock_environment_availability
+        )
+
+        client = create_TSIClient()
+        resp = client.getEnvironmentAvailability()
+
+        assert isinstance(resp["availability"], dict)
+        assert "intervalSize" in resp["availability"]
+        assert "distribution" in resp["availability"]
+        assert "range" in resp["availability"]
 
     
     def test_getHierarchies_success(self, requests_mock):
