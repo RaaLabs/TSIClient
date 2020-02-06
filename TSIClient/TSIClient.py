@@ -134,6 +134,13 @@ class TSIClient():
 
 
     def getEnvironmentAvailability(self):
+        """Returns the time range and distribution of event count over the event timestamp.
+        Can be used to provide landing experience of navigating to the environment.
+
+        Returns:
+            dict: The environment availability. Contains interval size, distribution and range.
+        """
+
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         url = "https://{environmentId}.env.timeseries.azure.com/availability".format(

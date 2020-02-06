@@ -242,7 +242,7 @@ class TestTSIClient():
         assert "Azure TSI environment not found. Check the spelling or create an environment in Azure TSI." in str(exc_info.value)
 
 
-    def test_getEnvironmentAvailability(self, requests_mock):
+    def test_getEnvironmentAvailability_success(self, requests_mock):
         requests_mock.request(
             "POST",
             MockURLs.oauth_url,
@@ -266,6 +266,54 @@ class TestTSIClient():
         assert "intervalSize" in resp["availability"]
         assert "distribution" in resp["availability"]
         assert "range" in resp["availability"]
+
+
+    def test_getEnvironmentAvailability_raises_HTTPError(self, requests_mock, caplog):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.environment_availability_url,
+            exc=requests.exceptions.HTTPError
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.HTTPError):
+            resp = client.getEnvironmentAvailability()
+
+        assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
+
+    
+    def test_getEnvironmentAvailability_raises_ConnectTimeout(self, requests_mock, caplog):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET", 
+            MockURLs.env_url, 
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.environment_availability_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+
+        client = create_TSIClient()
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            resp = client.getEnvironmentAvailability()
+
+        assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
     
     def test_getHierarchies_success(self, requests_mock):
