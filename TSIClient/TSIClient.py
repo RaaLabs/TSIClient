@@ -121,6 +121,11 @@ class TSIClient():
 
         Raises:
             TSIEnvironmentError: Raised if the TSI environment does not exist.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> env = client.getEnviroment()
         """
 
         authorizationToken = self._getToken()
@@ -164,6 +169,11 @@ class TSIClient():
 
         Returns:
             dict: The environment availability. Contains interval size, distribution and range.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> env_availability = client.getEnvironmentAvailability()
         """
 
         environmentId = self.getEnviroment()
@@ -205,6 +215,11 @@ class TSIClient():
         Returns:
             dict: The instances in form of the response from the TSI api call.
             Contains typeId, timeSeriesId, name, description, hierarchyIds and instanceFields per instance.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> instances = client.getInstances()
         """
 
         environmentId = self.getEnviroment()
@@ -251,6 +266,11 @@ class TSIClient():
         Returns:
             dict: The hierarchies in form of the response from the TSI api call.
             Contains hierarchy id, names and source fields per hierarchy.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> hierarchies = client.getHierarchies()
         """
 
         environmentId = self.getEnviroment()
@@ -292,6 +312,11 @@ class TSIClient():
         Returns:
             dict: The types in form of the response from the TSI api call.
             Contains id, name, description and variables per type.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> types = client.getTypes()
         """
         
         environmentId = self.getEnviroment()
