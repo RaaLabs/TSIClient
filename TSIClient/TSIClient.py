@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 import json
 import pandas as pd
 import requests
@@ -16,6 +17,9 @@ class TSIClient():
     is retrieved in form of a pandas dataframe, which allows subsequent analysis
     by data analysts, data scientists and developers.
 
+    It can be instantiated either by arguments or by environment variables (if env
+    variables are set, they take precedence even when function arguments are specified).
+
     Args:
         enviroment (str): The name of the Azure TSI environment.
         client_id (str): The client id of the service principal used to authenticate with Azure TSI.
@@ -23,7 +27,7 @@ class TSIClient():
         tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
         applicationName (str): The name can be an arbitrary string. For informational purpose.
 
-    Example:
+    Examples:
         The TSIClient is the entry point to the SDK. You can instantiate it like this:
 
             >>> from TSIClient import TSIClient as tsi
@@ -34,15 +38,36 @@ class TSIClient():
             ...     tenant_id="<your-tenant-id>",
             ...     applicationName="<your-app-name>">
             ... )
+
+        You might find it useful to specify environment variables to instantiate the TSIClient.
+        To do so, you need to set the following environment variables:
+
+        * ``TSICLIENT_APPLICATION_NAME``
+        * ``TSICLIENT_ENVIRONMENT_NAME``
+        * ``TSICLIENT_CLIENT_ID``
+        * ``TSICLIENT_CLIENT_SECRET``
+        * ``TSICLIENT_TENANT_ID``
+        
+        Now you can instantiate the TSIClient without passing any arguments:
+
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
     """
 
-    def __init__(self, enviroment, client_id, client_secret, applicationName, tenant_id):
+    def __init__(
+            self,
+            enviroment=None,
+            client_id=None,
+            client_secret=None,
+            applicationName=None,
+            tenant_id=None
+        ):
         self._apiVersion = "2018-11-01-preview"
-        self._applicationName = applicationName
-        self._enviromentName = enviroment
-        self._client_id = client_id
-        self._client_secret=client_secret
-        self._tenant_id = tenant_id
+        self._applicationName = os.getenv("TSICLIENT_APPLICATION_NAME", applicationName)
+        self._enviromentName = os.getenv("TSICLIENT_ENVIRONMENT_NAME", enviroment)
+        self._client_id = os.getenv("TSICLIENT_CLIENT_ID", client_id)
+        self._client_secret = os.getenv("TSICLIENT_CLIENT_SECRET", client_secret)
+        self._tenant_id = os.getenv("TSICLIENT_TENANT_ID", tenant_id)
 
 
     def _getToken(self):

@@ -123,7 +123,19 @@ class MockResponses():
 
 class TestTSIClient():
     def test_create_TSICLient_success(self, client):
-        assert client
+        assert client._applicationName == "postmanServicePrincipal"
+        assert client._enviromentName == "Test_Environment"
+        assert client._client_id == "MyClientID"
+        assert client._client_secret == "a_very_secret_password"
+        assert client._tenant_id == "yet_another_tenant_id"
+
+
+    def test_instantiate_TSIClient_from_env(self, client_from_env):
+        assert client_from_env._applicationName == "my_app"
+        assert client_from_env._enviromentName == "my_environment"
+        assert client_from_env._client_id == "my_client_id"
+        assert client_from_env._client_secret == "my_client_secret"
+        assert client_from_env._tenant_id == "my_tenant_id"
 
 
     def test__getToken_success(self, requests_mock, client):
