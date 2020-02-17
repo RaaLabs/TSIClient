@@ -26,6 +26,24 @@ multiple TSI environments, you need to create multiple instances of the TSIClien
     ...     applicationName="<your-app-name>">
     ... )
 
+Alternatively, you can use environment variables to instantiate the TSIClient.
+Set the following variables (commands for Mac/Linux):
+
+.. code-block:: console
+
+    $ export TSICLIENT_APPLICATION_NAME=<your-app-name>
+    $ export TSICLIENT_ENVIRONMENT_NAME=<your-tsi-env-name>
+    $ export TSICLIENT_CLIENT_ID=<your-client-id>
+    $ export TSICLIENT_CLIENT_SECRET=<your-client-secret>
+    $ export TSICLIENT_TENANT_ID=<your-tenant-id>
+
+Now you can instantiate the TSIClient without passing any arguments. Be aware
+that the environment variables take precedence over the arguments.
+
+.. code-block:: python
+
+    >>> from TSIClient import TSIClient as tsi
+    >>> client = tsi.TSIClient()
 
 You can verify that the TSIClient is pointing at the right TSI environment by running the
 following command. It returns the environment id, which you can compare with your data

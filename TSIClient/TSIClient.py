@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 import json
 import pandas as pd
 import requests
@@ -16,6 +17,9 @@ class TSIClient():
     is retrieved in form of a pandas dataframe, which allows subsequent analysis
     by data analysts, data scientists and developers.
 
+    It can be instantiated either by arguments or by environment variables (if env
+    variables are set, they take precedence even when function arguments are specified).
+
     Args:
         enviroment (str): The name of the Azure TSI environment.
         client_id (str): The client id of the service principal used to authenticate with Azure TSI.
@@ -23,7 +27,7 @@ class TSIClient():
         tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
         applicationName (str): The name can be an arbitrary string. For informational purpose.
 
-    Example:
+    Examples:
         The TSIClient is the entry point to the SDK. You can instantiate it like this:
 
             >>> from TSIClient import TSIClient as tsi
@@ -34,15 +38,36 @@ class TSIClient():
             ...     tenant_id="<your-tenant-id>",
             ...     applicationName="<your-app-name>">
             ... )
+
+        You might find it useful to specify environment variables to instantiate the TSIClient.
+        To do so, you need to set the following environment variables:
+
+        * ``TSICLIENT_APPLICATION_NAME``
+        * ``TSICLIENT_ENVIRONMENT_NAME``
+        * ``TSICLIENT_CLIENT_ID``
+        * ``TSICLIENT_CLIENT_SECRET``
+        * ``TSICLIENT_TENANT_ID``
+        
+        Now you can instantiate the TSIClient without passing any arguments:
+
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
     """
 
-    def __init__(self, enviroment, client_id, client_secret, applicationName, tenant_id):
+    def __init__(
+            self,
+            enviroment=None,
+            client_id=None,
+            client_secret=None,
+            applicationName=None,
+            tenant_id=None
+        ):
         self._apiVersion = "2018-11-01-preview"
-        self._applicationName = applicationName
-        self._enviromentName = enviroment
-        self._client_id = client_id
-        self._client_secret=client_secret
-        self._tenant_id = tenant_id
+        self._applicationName = os.getenv("TSICLIENT_APPLICATION_NAME", applicationName)
+        self._enviromentName = os.getenv("TSICLIENT_ENVIRONMENT_NAME", enviroment)
+        self._client_id = os.getenv("TSICLIENT_CLIENT_ID", client_id)
+        self._client_secret = os.getenv("TSICLIENT_CLIENT_SECRET", client_secret)
+        self._tenant_id = os.getenv("TSICLIENT_TENANT_ID", tenant_id)
 
 
     def _getToken(self):
@@ -93,6 +118,14 @@ class TSIClient():
 
         Returns:
             str: The environment id.
+
+        Raises:
+            TSIEnvironmentError: Raised if the TSI environment does not exist.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> env = client.getEnviroment()
         """
 
         authorizationToken = self._getToken()
@@ -128,7 +161,53 @@ class TSIClient():
             raise TSIEnvironmentError("TSIClient: TSI environment not found. Check the spelling or create an environment in Azure TSI.")
 
         return environmentId
-    
+
+
+    def getEnvironmentAvailability(self):
+        """Returns the time range and distribution of event count over the event timestamp.
+        Can be used to provide landing experience of navigating to the environment.
+
+        Returns:
+            dict: The environment availability. Contains interval size, distribution and range.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> env_availability = client.getEnvironmentAvailability()
+        """
+
+        environmentId = self.getEnviroment()
+        authorizationToken = self._getToken()
+        url = "https://{environmentId}.env.timeseries.azure.com/availability".format(
+            environmentId=environmentId,
+        )
+        querystring = {"api-version": self._apiVersion}
+        payload = ""
+        headers = {
+            'x-ms-client-application-name': self._applicationName,
+            'Authorization': authorizationToken,
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+        try:
+            response = requests.request(
+                "GET",
+                url,
+                data=payload,
+                headers=headers,
+                params=querystring,
+                timeout=10
+            )
+            response.raise_for_status()
+        except requests.exceptions.ConnectTimeout:
+            logging.error("TSIClient: The request to the TSI api timed out.")
+            raise
+        except requests.exceptions.HTTPError:
+            logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+            raise
+
+        return json.loads(response.text)
+
 
     def getInstances(self):
         """Gets all instances (timeseries) from the specified TSI environment.
@@ -136,6 +215,11 @@ class TSIClient():
         Returns:
             dict: The instances in form of the response from the TSI api call.
             Contains typeId, timeSeriesId, name, description, hierarchyIds and instanceFields per instance.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> instances = client.getInstances()
         """
 
         environmentId = self.getEnviroment()
@@ -182,6 +266,11 @@ class TSIClient():
         Returns:
             dict: The hierarchies in form of the response from the TSI api call.
             Contains hierarchy id, names and source fields per hierarchy.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> hierarchies = client.getHierarchies()
         """
 
         environmentId = self.getEnviroment()
@@ -223,6 +312,11 @@ class TSIClient():
         Returns:
             dict: The types in form of the response from the TSI api call.
             Contains id, name, description and variables per type.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> types = client.getTypes()
         """
         
         environmentId = self.getEnviroment()
@@ -471,6 +565,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
@@ -565,6 +663,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
@@ -664,6 +766,10 @@ class TSIClient():
 
         Returns:
             A pandas dataframe with timeseries data.
+
+        Raises:
+            TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
+            TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
         """
 
         environmentId = self.getEnviroment()
