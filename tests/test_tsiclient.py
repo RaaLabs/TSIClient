@@ -1,9 +1,7 @@
 import pytest
 import requests
-import requests_mock
 from collections import namedtuple
 from TSIClient.exceptions import TSIEnvironmentError
-from conftest import client
 
 
 class MockURLs():
@@ -316,7 +314,7 @@ class TestTSIClient():
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
-    
+
     def test_getHierarchies_success(self, requests_mock, client):
         requests_mock.request(
             "GET",
@@ -425,8 +423,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -549,8 +547,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 

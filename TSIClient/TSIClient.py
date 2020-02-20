@@ -476,7 +476,7 @@ class TSIClient():
                 timeSeriesNames.append(idMap[ID]['name'])
             else:
                 timeSeriesNames.append(None)
-        return timeSeriesNames    
+        return timeSeriesNames
 
 
     def getIdByAssets(self, asset):
@@ -486,7 +486,7 @@ class TSIClient():
             asset (str): The asset name.
 
         Returns:
-            list: The timeseries ids. 
+            list: The timeseries ids.
         """
 
         result=self.getInstances()
@@ -547,7 +547,7 @@ class TSIClient():
             else:
                 timeSeriesIds.append(None)
         return timeSeriesIds        
-    
+
 
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
