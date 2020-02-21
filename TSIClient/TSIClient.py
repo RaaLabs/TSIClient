@@ -422,7 +422,7 @@ class TSIClient():
 
     def deleteAllInstances(self):
         instances = self.getInstances()['instances']
-        instancesList = list() 
+        instancesList = list()
         for i in range(0,len(instances)):
             instance = instances[i]['timeSeriesId'][0]
             if instance == None or len(instance)<36:
@@ -534,7 +534,7 @@ class TSIClient():
         Returns:
             list: The timeseries ids, None if timeseries description does not exist in the TSI environment.
         """
-        
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -546,7 +546,7 @@ class TSIClient():
                 timeSeriesIds.append(nameMap[name]['timeSeriesId'][0])
             else:
                 timeSeriesIds.append(None)
-        return timeSeriesIds        
+        return timeSeriesIds
 
 
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):

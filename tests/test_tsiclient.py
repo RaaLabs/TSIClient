@@ -157,7 +157,7 @@ class TestTSIClient():
         )
         
         with pytest.raises(requests.exceptions.HTTPError):
-            token = client._getToken()
+            client._getToken()
 
         assert "TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret." in caplog.text
 
@@ -170,7 +170,7 @@ class TestTSIClient():
         )
         
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            token = client._getToken()
+            client._getToken()
 
 
     def test_getEnvironment_success(self, requests_mock, client):
@@ -203,7 +203,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            env_id = client.getEnviroment()
+            client.getEnviroment()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -221,7 +221,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            env_id = client.getEnviroment()
+            client.getEnviroment()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -287,11 +287,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getEnvironmentAvailability()
+            client.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
-    
+
     def test_getEnvironmentAvailability_raises_ConnectTimeout(self, requests_mock, caplog, client):
         requests_mock.request(
             "POST",
@@ -310,7 +310,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getEnvironmentAvailability()
+            client.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -358,7 +358,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getHierarchies()
+            client.getHierarchies()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -381,7 +381,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getHierarchies()
+            client.getHierarchies()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -429,7 +429,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getTypes()
+            client.getTypes()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -452,7 +452,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getTypes()
+            client.getTypes()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -521,8 +521,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
