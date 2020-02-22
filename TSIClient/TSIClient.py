@@ -390,7 +390,7 @@ class TSIClient():
     def deleteInstances(self, instances):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        instancesList = list() 
+        instancesList = list()
         for i in range(0,len(instances)):
             instance = instances[i]
             if instance == None or len(instance)<36:
@@ -443,15 +443,13 @@ class TSIClient():
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
-        
+
         response = requests.request("POST", url, data=json.dumps(payload), headers=headers, params=querystring)
-        
+
         # Test if response body contains sth.
         if response.text:
             jsonResponse = json.loads(response.text)
-        
-        print(jsonResponse)
-        
+
         return jsonResponse
 
 
@@ -522,7 +520,7 @@ class TSIClient():
                 timeSeriesIds.append(nameMap[name]['timeSeriesId'][0])
             else:
                 timeSeriesIds.append(None)
-        return timeSeriesIds    
+        return timeSeriesIds
 
 
     def getIdByDescription(self, names):

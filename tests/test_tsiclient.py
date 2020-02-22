@@ -142,7 +142,7 @@ class TestTSIClient():
             MockURLs.oauth_url,
             json=MockResponses.mock_oauth
         )
-        
+
         token = client._getToken()
 
         assert token == "some_type token"
@@ -155,7 +155,7 @@ class TestTSIClient():
             MockURLs.oauth_url,
             exc=requests.exceptions.HTTPError(response=httperror_response(status_code=401))
         )
-        
+
         with pytest.raises(requests.exceptions.HTTPError):
             client._getToken()
 
@@ -168,7 +168,7 @@ class TestTSIClient():
             MockURLs.oauth_url,
             exc=requests.exceptions.ConnectTimeout
         )
-        
+
         with pytest.raises(requests.exceptions.ConnectTimeout):
             client._getToken()
 
@@ -180,8 +180,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -197,8 +197,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=requests.exceptions.HTTPError
         )
 
@@ -215,8 +215,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=requests.exceptions.ConnectTimeout
         )
 
@@ -233,8 +233,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=TSIEnvironmentError("Azure TSI environment not found. Check the spelling or create an environment in Azure TSI.")
         )
 
@@ -251,8 +251,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -276,8 +276,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -299,8 +299,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -327,8 +327,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -352,8 +352,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -375,8 +375,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -398,8 +398,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -446,8 +446,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -469,8 +469,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -495,8 +495,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
