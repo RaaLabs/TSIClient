@@ -1,9 +1,7 @@
 import pytest
 import requests
-import requests_mock
 from collections import namedtuple
 from TSIClient.exceptions import TSIEnvironmentError
-from conftest import client
 
 
 class MockURLs():
@@ -144,7 +142,7 @@ class TestTSIClient():
             MockURLs.oauth_url,
             json=MockResponses.mock_oauth
         )
-        
+
         token = client._getToken()
 
         assert token == "some_type token"
@@ -157,9 +155,9 @@ class TestTSIClient():
             MockURLs.oauth_url,
             exc=requests.exceptions.HTTPError(response=httperror_response(status_code=401))
         )
-        
+
         with pytest.raises(requests.exceptions.HTTPError):
-            token = client._getToken()
+            client._getToken()
 
         assert "TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret." in caplog.text
 
@@ -170,9 +168,9 @@ class TestTSIClient():
             MockURLs.oauth_url,
             exc=requests.exceptions.ConnectTimeout
         )
-        
+
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            token = client._getToken()
+            client._getToken()
 
 
     def test_getEnvironment_success(self, requests_mock, client):
@@ -182,8 +180,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -199,13 +197,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=requests.exceptions.HTTPError
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            env_id = client.getEnviroment()
+            client.getEnviroment()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -217,13 +215,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=requests.exceptions.ConnectTimeout
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            env_id = client.getEnviroment()
+            client.getEnviroment()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -235,8 +233,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             exc=TSIEnvironmentError("Azure TSI environment not found. Check the spelling or create an environment in Azure TSI.")
         )
 
@@ -253,8 +251,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -278,8 +276,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -289,11 +287,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getEnvironmentAvailability()
+            client.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
-    
+
     def test_getEnvironmentAvailability_raises_ConnectTimeout(self, requests_mock, caplog, client):
         requests_mock.request(
             "POST",
@@ -301,8 +299,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
         requests_mock.request(
@@ -312,11 +310,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getEnvironmentAvailability()
+            client.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
-    
+
     def test_getHierarchies_success(self, requests_mock, client):
         requests_mock.request(
             "GET",
@@ -329,8 +327,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -354,13 +352,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getHierarchies()
+            client.getHierarchies()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -377,13 +375,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getHierarchies()
+            client.getHierarchies()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -400,8 +398,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -425,13 +423,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            resp = client.getTypes()
+            client.getTypes()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -448,13 +446,13 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            resp = client.getTypes()
+            client.getTypes()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -471,8 +469,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -497,8 +495,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -523,8 +521,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 
@@ -549,8 +547,8 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
         requests_mock.request(
-            "GET", 
-            MockURLs.env_url, 
+            "GET",
+            MockURLs.env_url,
             json=MockResponses.mock_environments
         )
 

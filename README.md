@@ -3,7 +3,6 @@
 [![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d73dafb558f64d8580a4a87517c32340)](https://www.codacy.com/manual/rafaelschlatter/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rafaelschlatter/TSIClient&amp;utm_campaign=Badge_Grade)
 
-
 The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data and is designed
 for analysts, data scientists and developers working with time series data in Azure TSI.
 
@@ -11,14 +10,12 @@ for analysts, data scientists and developers working with time series data in Az
 - Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
 - TSIClient: <https://tsiclient.readthedocs.io/en/latest/>
 
-
 ## Installation
 The TSIClient is not yet on PyPi, but you can install it directly from GitHub:
 
 ````bash
 pip install git+https://github.com/RaaLabs/TSIClient.git
 ````
-
 ## Quickstart
 Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment.
 

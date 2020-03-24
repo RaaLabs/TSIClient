@@ -390,7 +390,7 @@ class TSIClient():
     def deleteInstances(self, instances):
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        instancesList = list() 
+        instancesList = list()
         for i in range(0,len(instances)):
             instance = instances[i]
             if instance == None or len(instance)<36:
@@ -422,7 +422,7 @@ class TSIClient():
 
     def deleteAllInstances(self):
         instances = self.getInstances()['instances']
-        instancesList = list() 
+        instancesList = list()
         for i in range(0,len(instances)):
             instance = instances[i]['timeSeriesId'][0]
             if instance == None or len(instance)<36:
@@ -443,15 +443,13 @@ class TSIClient():
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
-        
+
         response = requests.request("POST", url, data=json.dumps(payload), headers=headers, params=querystring)
-        
+
         # Test if response body contains sth.
         if response.text:
             jsonResponse = json.loads(response.text)
-        
-        print(jsonResponse)
-        
+
         return jsonResponse
 
 
@@ -476,7 +474,7 @@ class TSIClient():
                 timeSeriesNames.append(idMap[ID]['name'])
             else:
                 timeSeriesNames.append(None)
-        return timeSeriesNames    
+        return timeSeriesNames
 
 
     def getIdByAssets(self, asset):
@@ -486,7 +484,7 @@ class TSIClient():
             asset (str): The asset name.
 
         Returns:
-            list: The timeseries ids. 
+            list: The timeseries ids.
         """
 
         result=self.getInstances()
@@ -522,7 +520,7 @@ class TSIClient():
                 timeSeriesIds.append(nameMap[name]['timeSeriesId'][0])
             else:
                 timeSeriesIds.append(None)
-        return timeSeriesIds    
+        return timeSeriesIds
 
 
     def getIdByDescription(self, names):
@@ -534,7 +532,7 @@ class TSIClient():
         Returns:
             list: The timeseries ids, None if timeseries description does not exist in the TSI environment.
         """
-        
+
         result=self.getInstances()
         timeSeriesIds=[]
         nameMap={}
@@ -546,8 +544,8 @@ class TSIClient():
                 timeSeriesIds.append(nameMap[name]['timeSeriesId'][0])
             else:
                 timeSeriesIds.append(None)
-        return timeSeriesIds        
-    
+        return timeSeriesIds
+
 
     def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
