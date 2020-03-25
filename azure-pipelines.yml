@@ -30,6 +30,10 @@ steps:
   displayName: 'pytest'
 
 - script: |
+    bash <(curl -s https://codecov.io/bash)
+  displayName: 'Upload to codecov.io'
+
+- script: |
     python setup.py sdist
   displayName: 'Artifact creation'
   
