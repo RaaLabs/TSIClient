@@ -149,3 +149,21 @@ class MockResponses():
         "progress": 50,
         "continuationToken": "aXsic2tpcCI6MTAxYZwidGFrZSI6MTAwMH0="
     }
+
+    mock_query_getseries_tsistoreerror = {
+        "error" : {
+            "code" : "...",
+            "message" : "...",
+            "innerError" : {  
+                "code" : "TimeSeriesQueryNotSupported",
+                "message" : "...",
+            }
+        }
+    }
+
+    mock_query_getseries_tsiqueryerror = {
+        "error" : {
+            "code" : "...",
+            "message" : "...",
+        }
+    }

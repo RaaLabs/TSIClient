@@ -2,7 +2,7 @@ import pytest
 import requests
 import pandas as pd
 from collections import namedtuple
-from TSIClient.exceptions import TSIEnvironmentError
+from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
 from tests.mock_responses import MockURLs, MockResponses
 
 
@@ -482,6 +482,60 @@ class TestTSIClient():
         assert data_by_id.at[5, "006dfc2d-0324-4937-998c-d16f3b4f1952"] == 66.375
 
 
+    def test_getDataById_raises_TSIStoreError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsistoreerror
+        )
+
+        with pytest.raises(TSIStoreError):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=True
+            )
+
+
+    def test_getDataById_raises_TSIQueryError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsiqueryerror
+        )
+
+        with pytest.raises(TSIQueryError):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
     def test_getDataByDescription_returns_data_as_dataframe(self, requests_mock, client):
         requests_mock.request(
             "POST",
@@ -523,6 +577,72 @@ class TestTSIClient():
         assert data_by_description.at[5, "MyTimeSeriesName"] == 66.375
 
 
+    def test_getDataByDescription_raises_TSIStoreError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsistoreerror
+        )
+
+        with pytest.raises(TSIStoreError):
+            data_by_description = client.getDataByDescription(
+                variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
+                TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=True
+            )
+
+
+    def test_getDataByDescription_raises_TSIQueryError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsiqueryerror
+        )
+
+        with pytest.raises(TSIQueryError):
+            data_by_description = client.getDataByDescription(
+                variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
+                TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
     def test_getDataByName_returns_data_as_dataframe(self, requests_mock, client):
         requests_mock.request(
             "POST",
@@ -561,3 +681,67 @@ class TestTSIClient():
         assert 2 == data_by_name.shape[1]
         assert data_by_name.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
         assert data_by_name.at[5, "F1W7.GS1"] == 66.375
+
+
+    def test_getDataByName_raises_TSIStoreError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsistoreerror
+        )
+
+        with pytest.raises(TSIStoreError):
+            data_by_name = client.getDataByName(
+                variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=True
+            )
+
+
+    def test_getDataByName_raises_TSIQueryError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_tsiqueryerror
+        )
+
+        with pytest.raises(TSIQueryError):
+            data_by_name = client.getDataByName(
+                variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
