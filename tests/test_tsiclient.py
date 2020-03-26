@@ -632,3 +632,44 @@ class TestTSIClient():
         assert 2 == data_by_id.shape[1]
         assert data_by_id.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
         assert data_by_id.at[5, "006dfc2d-0324-4937-998c-d16f3b4f1952"] == 66.375
+
+
+    def test_getDataByDescription_returns_data_as_dataframe(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries
+        )
+
+        data_by_description = client.getDataByDescription(
+            variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
+            TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
+            timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+            interval="PT1S",
+            aggregate="avg",
+            useWarmStore=False
+        )
+
+        assert isinstance(data_by_description, pd.DataFrame)
+        assert "timestamp" in data_by_description.columns
+        assert "MyTimeSeriesName" in data_by_description.columns
+        assert "NameOfNonExistantTimeSeries" not in data_by_description.columns
+        assert 11 == data_by_description.shape[0]
+        assert 2 == data_by_description.shape[1]
+        assert data_by_description.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
+        assert data_by_description.at[5, "MyTimeSeriesName"] == 66.375
