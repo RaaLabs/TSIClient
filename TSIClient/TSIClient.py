@@ -113,6 +113,29 @@ class TSIClient():
         return authorizationToken
 
 
+    def _create_querystring(self, useWarmStore=None):
+        """Creates the querystring for an api request.
+        
+        Can be used in all api requests in TSIClient.
+
+        Args:
+            useWarmStore (bool): A boolean to indicate the storeType. Defaults to None,
+                in which case no storeType param is included in the querystring.
+
+        Returns:
+            dict: The querystring with the api-version and optionally the storeType.
+        """
+
+        if useWarmStore == None:
+            return {"api-version": self._apiVersion}
+
+        else:
+            return {
+                "api-version": self._apiVersion,
+                "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
+            }
+
+
     def getEnviroment(self):
         """Gets the id of the environment specified in the TSIClient class constructor.
 
@@ -131,7 +154,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         
         payload = ""
         headers = {
@@ -181,7 +204,7 @@ class TSIClient():
         url = "https://{environmentId}.env.timeseries.azure.com/availability".format(
             environmentId=environmentId,
         )
-        querystring = {"api-version": self._apiVersion}
+        querystring = self._create_querystring()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -227,7 +250,7 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/"
         
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         payload = ""
         
         headers = {
@@ -277,7 +300,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/hierarchies"
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -323,7 +346,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/types"
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -370,7 +393,7 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
         print(url)
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
 
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -400,7 +423,7 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
         print(url)
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -435,7 +458,7 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
         print(url)
-        querystring = {"api-version":self._apiVersion}
+        querystring = self._create_querystring()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -573,10 +596,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {
-            "api-version": self._apiVersion,
-            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
-        }
+        querystring = self._create_querystring(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
         for i in range(0, len(timeseries)):
             if timeseries[i] == None:
@@ -671,10 +691,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {
-            "api-version": self._apiVersion,
-            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
-        }
+        querystring = self._create_querystring(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
@@ -774,10 +791,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = {
-            "api-version": self._apiVersion,
-            "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
-        }
+        querystring = self._create_querystring(useWarmStore=useWarmStore)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
             dict_key = "aggregateSeries"
@@ -847,3 +861,4 @@ class TSIClient():
             finally:
                 logging.critical("Loaded data for tag: {tag}".format(tag=timeseries[i]))
         return df
+ 
