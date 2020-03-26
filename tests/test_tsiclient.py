@@ -462,7 +462,7 @@ class TestTSIClient():
         requests_mock.request(
             "POST",
             MockURLs.query_getseries_url,
-            json=MockResponses.mock_query_getseries
+            json=MockResponses.mock_query_getseries_success
         )
 
         data_by_id = client.getDataById(
@@ -501,7 +501,7 @@ class TestTSIClient():
         requests_mock.request(
             "POST",
             MockURLs.query_getseries_url,
-            json=MockResponses.mock_query_getseries
+            json=MockResponses.mock_query_getseries_success
         )
 
         data_by_description = client.getDataByDescription(
@@ -521,3 +521,43 @@ class TestTSIClient():
         assert 2 == data_by_description.shape[1]
         assert data_by_description.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
         assert data_by_description.at[5, "MyTimeSeriesName"] == 66.375
+
+
+    def test_getDataByName_returns_data_as_dataframe(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries_success
+        )
+
+        data_by_name = client.getDataByName(
+            variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
+            timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+            interval="PT1S",
+            aggregate="avg",
+            useWarmStore=False
+        )
+
+        assert isinstance(data_by_name, pd.DataFrame)
+        assert "timestamp" in data_by_name.columns
+        assert "F1W7.GS1" in data_by_name.columns
+        assert "NameOfNonExistantTimeSeries" not in data_by_name.columns
+        assert 11 == data_by_name.shape[0]
+        assert 2 == data_by_name.shape[1]
+        assert data_by_name.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
+        assert data_by_name.at[5, "F1W7.GS1"] == 66.375

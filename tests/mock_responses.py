@@ -113,7 +113,7 @@ class MockResponses():
         }
     }
 
-    mock_query_getseries = {
+    mock_query_getseries_success = {
         "timestamps": [
             "2016-08-01T00:00:10Z",
             "2016-08-01T00:00:11Z",
