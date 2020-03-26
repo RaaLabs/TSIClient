@@ -18,7 +18,7 @@ The TSIClient is not yet on PyPi, but you can install it directly from GitHub:
 pip install git+https://github.com/RaaLabs/TSIClient.git
 ````
 ## Quickstart
-Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment.
+Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment (you can also use environment variables to instantiate the TSIClient, check the documentation).
 
 ````python
 from TSIClient import TSIClient as tsi
