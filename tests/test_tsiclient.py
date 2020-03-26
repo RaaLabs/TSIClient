@@ -1,5 +1,6 @@
 import pytest
 import requests
+import pandas as pd
 from collections import namedtuple
 from TSIClient.exceptions import TSIEnvironmentError
 
@@ -16,6 +17,7 @@ class MockURLs():
     types_url = "https://{}.env.timeseries.azure.com/timeseries/types".format("00000000-0000-0000-0000-000000000000")
     instances_url = "https://{}.env.timeseries.azure.com/timeseries/instances/".format("00000000-0000-0000-0000-000000000000")
     environment_availability_url = "https://{}.env.timeseries.azure.com/availability".format("00000000-0000-0000-0000-000000000000")
+    query_getseries_url = "https://{}.env.timeseries.azure.com/timeseries/query?".format("00000000-0000-0000-0000-000000000000")
 
 
 class MockResponses():
@@ -116,6 +118,43 @@ class MockResponses():
                 "to": "2019-03-27T03:57:11.697Z"
             }
         }
+    }
+
+    mock_query_getseries = {
+        "timestamps": [
+            "2016-08-01T00:00:10Z",
+            "2016-08-01T00:00:11Z",
+            "2016-08-01T00:00:12Z",
+            "2016-08-01T00:00:13Z",
+            "2016-08-01T00:00:14Z",
+            "2016-08-01T00:00:15Z",
+            "2016-08-01T00:00:16Z",
+            "2016-08-01T00:00:17Z",
+            "2016-08-01T00:00:18Z",
+            "2016-08-01T00:00:19Z",
+            "2016-08-01T00:00:20Z"
+        ],
+        "properties": [
+            {
+                "name": "AverageTest",
+                "type": "Double",
+                "values": [
+                    65.125,
+                    65.375,
+                    65.625,
+                    65.875,
+                    66.125,
+                    66.375,
+                    66.625,
+                    66.875,
+                    67.125,
+                    67.375,
+                    67.625
+                ]
+            }
+        ],
+        "progress": 50,
+        "continuationToken": "aXsic2tpcCI6MTAxYZwidGFrZSI6MTAwMH0="
     }
 
 
@@ -559,3 +598,37 @@ class TestTSIClient():
         assert len(timeSeriesIds) == 2
         assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
         assert timeSeriesIds[1] == None
+
+
+    def test_getDataById_returns_data_as_dataframe(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            json=MockResponses.mock_query_getseries
+        )
+
+        data_by_id = client.getDataById(
+            timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+            timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+            interval="PT1S",
+            aggregate="avg",
+            useWarmStore=False
+        )
+
+        assert isinstance(data_by_id, pd.DataFrame)
+        assert "timestamp" in data_by_id.columns
+        assert "006dfc2d-0324-4937-998c-d16f3b4f1952" in data_by_id.columns
+        assert 11 == data_by_id.shape[0]
+        assert 2 == data_by_id.shape[1]
+        assert data_by_id.at[5, "timestamp"] == "2016-08-01T00:00:15Z"
+        assert data_by_id.at[5, "006dfc2d-0324-4937-998c-d16f3b4f1952"] == 66.375
