@@ -593,7 +593,7 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._create_querystring(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
-        for i in range(0, len(timeseries)):
+        for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
@@ -694,7 +694,7 @@ class TSIClient():
         else:
             dict_key = "getSeries"
 
-        for i in range(0, len(timeseries)):
+        for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
@@ -793,7 +793,7 @@ class TSIClient():
         else:
             dict_key = "getSeries"
 
-        for i in range(0, len(timeseries)):
+        for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=timeseries[i]))
                 continue
