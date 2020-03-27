@@ -17,8 +17,8 @@ class TSIClient():
     is retrieved in form of a pandas dataframe, which allows subsequent analysis
     by data analysts, data scientists and developers.
 
-    It can be instantiated either by arguments or by environment variables (if env
-    variables are set, they take precedence even when function arguments are specified).
+    It can be instantiated either by arguments or by environment variables (if arguments
+    are specified, they take precedence even when environment variables are set).
 
     Args:
         enviroment (str): The name of the Azure TSI environment.
@@ -63,11 +63,11 @@ class TSIClient():
             tenant_id=None
         ):
         self._apiVersion = "2018-11-01-preview"
-        self._applicationName = os.getenv("TSICLIENT_APPLICATION_NAME", applicationName)
-        self._enviromentName = os.getenv("TSICLIENT_ENVIRONMENT_NAME", enviroment)
-        self._client_id = os.getenv("TSICLIENT_CLIENT_ID", client_id)
-        self._client_secret = os.getenv("TSICLIENT_CLIENT_SECRET", client_secret)
-        self._tenant_id = os.getenv("TSICLIENT_TENANT_ID", tenant_id)
+        self._applicationName = applicationName if applicationName is not None else os.environ["TSICLIENT_APPLICATION_NAME"]
+        self._enviromentName = enviroment if enviroment is not None else os.environ["TSICLIENT_ENVIRONMENT_NAME"]
+        self._client_id = client_id if client_id is not None else os.environ["TSICLIENT_CLIENT_ID"]
+        self._client_secret = client_secret if client_secret is not None else os.environ["TSICLIENT_CLIENT_SECRET"]
+        self._tenant_id = tenant_id if tenant_id is not None else os.environ["TSICLIENT_TENANT_ID"]
 
 
     def _getToken(self):
