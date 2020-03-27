@@ -392,7 +392,6 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        print(url)
         querystring = self._create_querystring()
 
         headers = {
@@ -422,7 +421,6 @@ class TSIClient():
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        print(url)
         querystring = self._create_querystring()
         
         headers = {
@@ -437,8 +435,6 @@ class TSIClient():
         # Test if response body contains sth.
         if response.text:
             jsonResponse = json.loads(response.text)
-        
-        print(jsonResponse)
         
         return jsonResponse
 
@@ -456,8 +452,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
-        
-        print(url)
+
         querystring = self._create_querystring()
         
         headers = {
