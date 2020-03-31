@@ -1,5 +1,6 @@
 # TSIClient
 [![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
+[![codecov](https://codecov.io/gh/rafaelschlatter/TSIClient/branch/master/graph/badge.svg)](https://codecov.io/gh/rafaelschlatter/TSIClient)
 [![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d73dafb558f64d8580a4a87517c32340)](https://www.codacy.com/manual/rafaelschlatter/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rafaelschlatter/TSIClient&amp;utm_campaign=Badge_Grade)
 
@@ -17,7 +18,7 @@ The TSIClient is not yet on PyPi, but you can install it directly from GitHub:
 pip install git+https://github.com/RaaLabs/TSIClient.git
 ````
 ## Quickstart
-Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment.
+Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment (you can also use environment variables to instantiate the TSIClient, check the documentation).
 
 ````python
 from TSIClient import TSIClient as tsi
