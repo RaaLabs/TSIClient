@@ -435,7 +435,7 @@ class TSIClient():
         # Test if response body contains sth.
         if response.text:
             jsonResponse = json.loads(response.text)
-        
+
         return jsonResponse
 
 
@@ -514,7 +514,7 @@ class TSIClient():
                 timeSeriesIds.append(instance['timeSeriesId'][0])
             else:
                 continue#timeSeriesIds.append(None)
-        return timeSeriesIds    
+        return timeSeriesIds
 
 
     def getIdByName(self, names):
@@ -593,12 +593,17 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._create_querystring(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
+        if aggregate != None:
+            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
+            dict_key = "aggregateSeries"
+        else:
+            dict_key = "getSeries"
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
             payload = {
-                "aggregateSeries": {
+                dict_key: {
                     "timeSeriesId": [timeseries[i]],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
@@ -609,7 +614,7 @@ class TSIClient():
                             "kind": "numeric",
                             "value": {"tsx": "$event.value"},
                             "filter": None,
-                            "aggregation": {"tsx": "{0!s}($value)".format(aggregate)},
+                            "aggregation": aggregate,
                         },
                     },
                     "projectedVariables": ["AverageTest"],
@@ -630,7 +635,6 @@ class TSIClient():
                 params=querystring,
             )
 
-            # Test if response body contains sth.
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
@@ -731,7 +735,6 @@ class TSIClient():
                 params=querystring,
             )
 
-            # Test if response body contains sth.
             if response.text:
                 response = json.loads(response.text)
                 if "error" in response:
