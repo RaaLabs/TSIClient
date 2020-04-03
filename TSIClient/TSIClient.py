@@ -113,7 +113,7 @@ class TSIClient():
         return authorizationToken
 
 
-    def _create_querystring(self, useWarmStore=None):
+    def _getQueryString(self, useWarmStore=None):
         """Creates the querystring for an api request.
         
         Can be used in all api requests in TSIClient.
@@ -154,7 +154,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         payload = ""
         headers = {
@@ -204,7 +204,7 @@ class TSIClient():
         url = "https://{environmentId}.env.timeseries.azure.com/availability".format(
             environmentId=environmentId,
         )
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -250,7 +250,7 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         
         headers = {
@@ -300,7 +300,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/hierarchies"
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -346,7 +346,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/types"
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -392,7 +392,7 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
 
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -421,7 +421,7 @@ class TSIClient():
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -453,7 +453,7 @@ class TSIClient():
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
 
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -591,7 +591,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
@@ -690,7 +690,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
@@ -789,7 +789,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
         if aggregate != None:
             aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
             dict_key = "aggregateSeries"
