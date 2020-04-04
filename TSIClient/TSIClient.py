@@ -80,11 +80,11 @@ class TSIClient():
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(self._tenant_id)
         
         payload = {
-                "grant_type":"client_credentials",
-                 "client_id":self._client_id,
-                 "client_secret": self._client_secret,
-                 "resource":"https%3A%2F%2Fapi.timeseries.azure.com%2F&undefined="
-                   }
+            "grant_type":"client_credentials",
+            "client_id":self._client_id,
+            "client_secret": self._client_secret,
+            "resource":"https%3A%2F%2Fapi.timeseries.azure.com%2F&undefined="
+        }
         
         payload = "grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}&resource={resource}".format(**payload)
 
@@ -134,6 +134,33 @@ class TSIClient():
                 "api-version": self._apiVersion,
                 "storeType": "WarmStore" if useWarmStore == True else "ColdStore"
             }
+
+
+    def _getVariableAggregate(self, aggregate=None):
+        """Creates the variable aggregation type and the request type based thereon.
+
+        The request type is either "aggregateSeries" (if an aggregation is provided),
+        or "getSeries" if the aggregate is None.
+
+        Args:
+            aggregate (str): The aggregation method ("avg", "min", "max").
+
+        Returns:
+            tuple: A tuple with the aggregate (dict) and the requestType (str).
+        """
+
+        if aggregate not in ["avg", "min", "max", None]:
+            raise TSIQueryError(
+                "TSIClient: Aggregation method not supported, must be \"avg\", \"min\" or \"max\"."
+            )
+
+        if aggregate != None:
+            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
+            requestType = "aggregateSeries"
+        else:
+            requestType = "getSeries"
+
+        return (aggregate, requestType)
 
 
     def getEnviroment(self):
@@ -593,17 +620,14 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
-        if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            dict_key = "aggregateSeries"
-        else:
-            dict_key = "getSeries"
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
+
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
             payload = {
-                dict_key: {
+                requestType: {
                     "timeSeriesId": [timeseries[i]],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
@@ -692,18 +716,14 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
-        if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            dict_key = "aggregateSeries"
-        else:
-            dict_key = "getSeries"
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=variables[i]))
                 continue
             payload = {
-                dict_key: {
+                requestType: {
                     "timeSeriesId": [timeseries[i]],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
@@ -790,18 +810,14 @@ class TSIClient():
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
-        if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            dict_key = "aggregateSeries"
-        else:
-            dict_key = "getSeries"
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=timeseries[i]))
                 continue
             payload = {
-                dict_key: {
+                requestType: {
                     "timeSeriesId": [timeseries[i]],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},

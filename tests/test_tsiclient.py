@@ -60,6 +60,26 @@ class TestTSIClient():
             client._getToken()
 
 
+    def test__getVariableAggregate(self, requests_mock, client):
+        aggregate, requestType = client._getVariableAggregate(aggregate=None)
+        
+        assert aggregate == None
+        assert requestType == "getSeries"
+
+
+    def test__getVariableAggregate(self, requests_mock, client, caplog):
+        with pytest.raises(TSIQueryError):
+            client._getVariableAggregate(aggregate="unsupported_aggregate")
+
+
+    def test__getVariableAggregate(self, requests_mock, client):
+        aggregate, requestType = client._getVariableAggregate(aggregate="avg")
+        
+        assert aggregate == {'tsx': 'avg($value)'}
+        assert isinstance(aggregate, dict)
+        assert requestType == "aggregateSeries"
+
+
     def test_getEnvironment_success(self, requests_mock, client):
         requests_mock.request(
             "POST",
