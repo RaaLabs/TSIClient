@@ -601,6 +601,60 @@ class TestTSIClient():
             )
 
 
+    def test_getDataById_raises_HTTPError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            exc=requests.exceptions.HTTPError
+        )
+
+        with pytest.raises(requests.exceptions.HTTPError):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
+    def test_getDataById_raises_ConnectTimeout(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+
+        with pytest.raises(requests.exceptions.ConnectTimeout):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
     def test_getDataByDescription_returns_data_as_dataframe(self, requests_mock, client):
         requests_mock.request(
             "POST",
