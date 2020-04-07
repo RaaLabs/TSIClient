@@ -80,11 +80,11 @@ class TSIClient():
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(self._tenant_id)
         
         payload = {
-                "grant_type":"client_credentials",
-                 "client_id":self._client_id,
-                 "client_secret": self._client_secret,
-                 "resource":"https%3A%2F%2Fapi.timeseries.azure.com%2F&undefined="
-                   }
+            "grant_type":"client_credentials",
+            "client_id":self._client_id,
+            "client_secret": self._client_secret,
+            "resource":"https%3A%2F%2Fapi.timeseries.azure.com%2F&undefined="
+        }
         
         payload = "grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}&resource={resource}".format(**payload)
 
@@ -113,7 +113,7 @@ class TSIClient():
         return authorizationToken
 
 
-    def _create_querystring(self, useWarmStore=None):
+    def _getQueryString(self, useWarmStore=None):
         """Creates the querystring for an api request.
         
         Can be used in all api requests in TSIClient.
@@ -136,6 +136,33 @@ class TSIClient():
             }
 
 
+    def _getVariableAggregate(self, aggregate=None):
+        """Creates the variable aggregation type and the request type based thereon.
+
+        The request type is either "aggregateSeries" (if an aggregation is provided),
+        or "getSeries" if the aggregate is None.
+
+        Args:
+            aggregate (str): The aggregation method ("avg", "min", "max").
+
+        Returns:
+            tuple: A tuple with the aggregate (dict) and the requestType (str).
+        """
+
+        if aggregate not in ["avg", "min", "max", None]:
+            raise TSIQueryError(
+                "TSIClient: Aggregation method not supported, must be \"avg\", \"min\" or \"max\"."
+            )
+
+        if aggregate != None:
+            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
+            requestType = "aggregateSeries"
+        else:
+            requestType = "getSeries"
+
+        return (aggregate, requestType)
+
+
     def getEnviroment(self):
         """Gets the id of the environment specified in the TSIClient class constructor.
 
@@ -154,7 +181,7 @@ class TSIClient():
         authorizationToken = self._getToken()
         url = "https://api.timeseries.azure.com/environments"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         payload = ""
         headers = {
@@ -204,7 +231,7 @@ class TSIClient():
         url = "https://{environmentId}.env.timeseries.azure.com/availability".format(
             environmentId=environmentId,
         )
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -250,7 +277,7 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         
         headers = {
@@ -300,7 +327,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/hierarchies"
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -346,7 +373,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/types"
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         payload = ""
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -392,7 +419,7 @@ class TSIClient():
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
 
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -421,7 +448,7 @@ class TSIClient():
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -435,7 +462,7 @@ class TSIClient():
         # Test if response body contains sth.
         if response.text:
             jsonResponse = json.loads(response.text)
-        
+
         return jsonResponse
 
 
@@ -453,7 +480,7 @@ class TSIClient():
         payload = {"delete":{"timeSeriesIds":instancesList}}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
 
-        querystring = self._create_querystring()
+        querystring = self._getQueryString()
         
         headers = {
             'x-ms-client-application-name': self._applicationName,
@@ -514,7 +541,7 @@ class TSIClient():
                 timeSeriesIds.append(instance['timeSeriesId'][0])
             else:
                 continue#timeSeriesIds.append(None)
-        return timeSeriesIds    
+        return timeSeriesIds
 
 
     def getIdByName(self, names):
@@ -565,7 +592,7 @@ class TSIClient():
         return timeSeriesIds
 
 
-    def getDataByName(self, variables, timespan, interval, aggregate, useWarmStore=False):
+    def getDataByName(self, variables, timespan, interval, aggregate=None, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
 
         Can be used to return data for single and multiple timeseries. Names must be exact matches.
@@ -576,90 +603,50 @@ class TSIClient():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
-            aggregate (str): Supports "min", "max", "avg". Cannot be None.
+            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the variable names.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataByName(
+            ...     variables=["timeseries_name_1", "timeseries_name_2"],
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
-        for i, _ in enumerate(timeseries):
-            if timeseries[i] == None:
-                logging.error("No such tag: {tag}".format(tag=variables[i]))
-                continue
-            payload = {
-                "aggregateSeries": {
-                    "timeSeriesId": [timeseries[i]],
-                    "timeSeriesName": None,
-                    "searchSpan": {"from": timespan[0], "to": timespan[1]},
-                    "filter": None,
-                    "interval": interval,
-                    "inlineVariables": {
-                        "AverageTest": {
-                            "kind": "numeric",
-                            "value": {"tsx": "$event.value"},
-                            "filter": None,
-                            "aggregation": {"tsx": "{0!s}($value)".format(aggregate)},
-                        },
-                    },
-                    "projectedVariables": ["AverageTest"],
-                }
-            }
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
-            headers = {
-                "x-ms-client-application-name": self._applicationName,
-                "Authorization": authorizationToken,
-                "Content-Type": "application/json",
-                "cache-control": "no-cache",
-            }
-            response = requests.request(
-                "POST",
-                url,
-                data=json.dumps(payload),
-                headers=headers,
-                params=querystring,
-            )
-
-            # Test if response body contains sth.
-            if response.text:
-                response = json.loads(response.text)
-                if "error" in response:
-                    if "innerError" in response["error"]:
-                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
-                            raise TSIStoreError(
-                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                    .format(id=self._enviromentName),
-                            )
-                    else:
-                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
-                        raise TSIQueryError(response["error"])
-
-            try:
-                assert i == 0
-                df = pd.DataFrame(
-                    {
-                        "timestamp": response["timestamps"],
-                        variables[i]: response["properties"][0]["values"],
-                    }
-                )
-            except:
-                df[variables[i]] = response["properties"][0]["values"]
-            finally:
-                logging.critical("Loaded data for tag: {tag}".format(tag=variables[i]))
-        return df
+        return self._getData(
+            timeseries=timeseries,
+            url=url,
+            querystring=querystring,
+            requestType=requestType,
+            timespan=timespan,
+            interval=interval,
+            aggregate=aggregate,
+            authorizationToken=authorizationToken,
+            otherColNamesThanTimeseriesIds=variables,
+        )
 
 
-    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate, useWarmStore=False):
+    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate=None, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
 
         Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
@@ -667,100 +654,55 @@ class TSIClient():
         Args:
             variables (list): The variable descriptions. Corresponds to the "description" field of the time series instances.
             TSName (list): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
+                These names can be arbitrary and do not need to coincide with the timeseries names in TSI. 
             timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
+            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the variable descriptions.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataByDescription(
+            ...     variables=["timeseries_description_1", "timeseries_description_2"],
+            ...     TSName=["my_timeseries_name_1", "my_timeseries_name_2"]
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
-        if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            dict_key = "aggregateSeries"
-        else:
-            dict_key = "getSeries"
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
-        for i, _ in enumerate(timeseries):
-            if timeseries[i] == None:
-                logging.error("No such tag: {tag}".format(tag=variables[i]))
-                continue
-            payload = {
-                dict_key: {
-                    "timeSeriesId": [timeseries[i]],
-                    "timeSeriesName": None,
-                    "searchSpan": {"from": timespan[0], "to": timespan[1]},
-                    "filter": None,
-                    "interval": interval,
-                    "inlineVariables": {
-                        "AverageTest": {
-                            "kind": "numeric",
-                            "value": {"tsx": "$event.value"},
-                            "filter": None,
-                            "aggregation": aggregate,
-                        },
-                    },
-                    "projectedVariables": ["AverageTest"],
-                }
-            }
-
-            headers = {
-                "x-ms-client-application-name": self._applicationName,
-                "Authorization": authorizationToken,
-                "Content-Type": "application/json",
-                "cache-control": "no-cache",
-            }
-            response = requests.request(
-                "POST",
-                url,
-                data=json.dumps(payload),
-                headers=headers,
-                params=querystring,
-            )
-
-            # Test if response body contains sth.
-            if response.text:
-                response = json.loads(response.text)
-                if "error" in response:
-                    if "innerError" in response["error"]:
-                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
-                            raise TSIStoreError(
-                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                    .format(id=self._enviromentName),
-                            )
-                    else:
-                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
-                        raise TSIQueryError(response["error"])
-
-            try:
-                assert i == 0
-                df = pd.DataFrame(
-                    {
-                        "timestamp": response["timestamps"],
-                        TSName[i]: response["properties"][0]["values"],
-                    }
-                )
-            except:
-                df[TSName[i]] = response["properties"][0]["values"]
-            finally:
-                logging.critical("Loaded data for tag: {tag}".format(tag=TSName[i]))
-        return df
+        return self._getData(
+            timeseries=timeseries,
+            url=url,
+            querystring=querystring,
+            requestType=requestType,
+            timespan=timespan,
+            interval=interval,
+            aggregate=aggregate,
+            authorizationToken=authorizationToken,
+            otherColNamesThanTimeseriesIds=TSName
+        )
 
 
-    def getDataById(self, timeseries, timespan, interval, aggregate, useWarmStore=False):
+    def getDataById(self, timeseries, timespan, interval, aggregate=None, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
 
         Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
@@ -771,34 +713,70 @@ class TSIClient():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned.
+            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the timeseries ids.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataById(
+            ...     timeseries=["timeseries_id_1", "timeseries_id_2"],
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
-        querystring = self._create_querystring(useWarmStore=useWarmStore)
-        if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            dict_key = "aggregateSeries"
+        querystring = self._getQueryString(useWarmStore=useWarmStore)
+        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
+
+        return self._getData(
+            timeseries=timeseries,
+            url=url,
+            querystring=querystring,
+            requestType=requestType,
+            timespan=timespan,
+            interval=interval,
+            aggregate=aggregate,
+            authorizationToken=authorizationToken,
+        )
+
+
+    def _getData(
+        self,
+        timeseries,
+        url,
+        querystring,
+        requestType,
+        timespan,
+        interval,
+        aggregate,
+        authorizationToken,
+        otherColNamesThanTimeseriesIds=None,
+    ):
+        df = None
+        if otherColNamesThanTimeseriesIds != None:
+            colNames = otherColNamesThanTimeseriesIds
         else:
-            dict_key = "getSeries"
+            colNames = timeseries
 
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
-                logging.error("No such tag: {tag}".format(tag=timeseries[i]))
+                logging.error("No such tag: {tag}".format(tag=colNames[i]))
                 continue
             payload = {
-                dict_key: {
+                requestType: {
                     "timeSeriesId": [timeseries[i]],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
@@ -822,13 +800,21 @@ class TSIClient():
                 "Content-Type": "application/json",
                 "cache-control": "no-cache",
             }
-            response = requests.request(
-                "POST",
-                url,
-                data=json.dumps(payload),
-                headers=headers,
-                params=querystring,
-            )
+            try:
+                response = requests.request(
+                    "POST",
+                    url,
+                    data=json.dumps(payload),
+                    headers=headers,
+                    params=querystring,
+                )
+                response.raise_for_status()
+            except requests.exceptions.ConnectTimeout:
+                logging.error("TSIClient: The request to the TSI api timed out.")
+                raise
+            except requests.exceptions.HTTPError:
+                logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+                raise
 
             if response.text:
                 response = json.loads(response.text)
@@ -848,12 +834,11 @@ class TSIClient():
                 df = pd.DataFrame(
                     {
                         "timestamp": response["timestamps"],
-                        timeseries[i]: response["properties"][0]["values"],
+                        colNames[i]: response["properties"][0]["values"],
                     }
                 )
             except:
-                df[timeseries[i]] = response["properties"][0]["values"]
+                df[colNames[i]] = response["properties"][0]["values"]
             finally:
-                logging.critical("Loaded data for tag: {tag}".format(tag=timeseries[i]))
+                logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
         return df
- 

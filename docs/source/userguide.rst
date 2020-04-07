@@ -91,10 +91,10 @@ is convenient for further statistical analysis.
     ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
     ...     interval="PT5M",
     ...     aggregate="avg",
-    ...     use_warm_store=False
+    ...     useWarmStore=False
     ... )
     >>> data
-    timestamp                   timeseries_id1  timeseries_id2  
+    timestamp                   timeseries_id1  timeseries_id2
     0    2020-01-25T10:00:00Z       360.272727      242.692308
     1    2020-01-25T10:05:00Z       362.588235      244.523810
     2    2020-01-25T10:10:00Z       369.280000      245.000000
