@@ -607,11 +607,22 @@ class TSIClient():
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the variable names.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataByName(
+            ...     variables=["timeseries_name_1", "timeseries_name_2"],
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
@@ -643,6 +654,7 @@ class TSIClient():
         Args:
             variables (list): The variable descriptions. Corresponds to the "description" field of the time series instances.
             TSName (list): The column names for the refurned dataframe. Must be in the same order as the variable descriptions.
+                These names can be arbitrary and do not need to coincide with the timeseries names in TSI. 
             timespan (list): A list of two timestamps. First list element ist the start time, second element is the end time.
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
@@ -651,11 +663,23 @@ class TSIClient():
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the variable descriptions.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataByDescription(
+            ...     variables=["timeseries_description_1", "timeseries_description_2"],
+            ...     TSName=["my_timeseries_name_1", "my_timeseries_name_2"]
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
@@ -693,11 +717,22 @@ class TSIClient():
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
-            A pandas dataframe with timeseries data.
+            A pandas dataframe with timeseries data. Columns are ordered the same way as the timeseries ids.
 
         Raises:
             TSIStoreError: Raised if the was tried to execute on the warm store, but the warm store is not enabled.
             TSIQueryError: Raised if there was an error in the query arguments (e.g. wrong formatting).
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> data = client.getDataById(
+            ...     timeseries=["timeseries_id_1", "timeseries_id_2"],
+            ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
+            ...     interval="PT5M",
+            ...     aggregate="avg",
+            ...     useWarmStore=False
+            ... )
         """
 
         environmentId = self.getEnviroment()
