@@ -400,7 +400,17 @@ class TSIClient():
             logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
             raise
 
-        return json.loads(response.text)
+        ###SIRI PLEASE CHECK
+        jsonResponse = json.loads(response.text)
+        for typeElement in jsonResponse['types']:
+            try:
+                typeElement['variables']['Value']['value']['tsx']
+                types[typeElement['id']] = typeElement['variables']['Value']['value']['tsx']
+            except:
+                KeyError('This type element does not have a single "value"')
+                pass
+
+        return types
 
         
     def writeInstance(self, payload):
@@ -766,6 +776,8 @@ class TSIClient():
         otherColNamesThanTimeseriesIds=None,
     ):
         df = None
+        typeList = self.getTypes()
+
         if otherColNamesThanTimeseriesIds != None:
             colNames = otherColNamesThanTimeseriesIds
         else:
@@ -775,6 +787,7 @@ class TSIClient():
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=colNames[i]))
                 continue
+            
             payload = {
                 requestType: {
                     "timeSeriesId": [timeseries[i]],
@@ -785,7 +798,7 @@ class TSIClient():
                     "inlineVariables": {
                         "AverageTest": {
                             "kind": "numeric",
-                            "value": {"tsx": "$event.value"},
+                            "value": {"tsx": typeList[types[i]]},
                             "filter": None,
                             "aggregation": aggregate,
                         },
