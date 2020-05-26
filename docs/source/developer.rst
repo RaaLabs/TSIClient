@@ -32,13 +32,14 @@ to activate the virtual environment.
 Testing
 #######
 We use ``pytest`` for testing and ``requests-mock`` for mocking api calls
-to the TSI APIs within unittests.
+to the TSI APIs within unittests. You can can get code coverage per file
+by using the ``--cov`` argument (this requires ``pytest-cov``).
 
 You can run tests with:
 
 .. code-block:: console
 
-    $ python -m pytest -v
+    $ python -m pytest -v --cov=./TSIClient
 
 
 Docstrings & Documentation

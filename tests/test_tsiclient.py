@@ -60,6 +60,26 @@ class TestTSIClient():
             client._getToken()
 
 
+    def test__getVariableAggregate_with_no_aggregate_returns_None_and_getSeries(self, requests_mock, client):
+        aggregate, requestType = client._getVariableAggregate(aggregate=None)
+        
+        assert aggregate == None
+        assert requestType == "getSeries"
+
+
+    def test__getVariableAggregate_with_unsupported_aggregate_raises_TSIQueryError(self, requests_mock, client, caplog):
+        with pytest.raises(TSIQueryError):
+            client._getVariableAggregate(aggregate="unsupported_aggregate")
+
+
+    def test__getVariableAggregate_with_avg_aggregate_returns_aggregate_and_aggregateSeries(self, requests_mock, client):
+        aggregate, requestType = client._getVariableAggregate(aggregate="avg")
+        
+        assert aggregate == {'tsx': 'avg($value)'}
+        assert isinstance(aggregate, dict)
+        assert requestType == "aggregateSeries"
+
+
     def test_getEnvironment_success(self, requests_mock, client):
         requests_mock.request(
             "POST",
@@ -396,6 +416,51 @@ class TestTSIClient():
         assert timeSeriesNames[1] == None
 
 
+    def test_getIdByAssets_with_one_existing_asset_returns_correct_id(self, requests_mock, client):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+
+        timeSeriesIds = client.getIdByAssets(asset="F1W7")
+
+        assert len(timeSeriesIds) == 1
+        assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
+
+
+    def test_getIdByAssets_with_non_existant_assets_returns_empty_list(self, requests_mock, client):
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+
+        timeSeriesIds = client.getIdByAssets(asset="made_up_asset_name")
+
+        assert len(timeSeriesIds) == 0
+
+
     def test_getIdByName_with_one_correct_name_returns_correct_id(self, requests_mock, client):
         requests_mock.request(
             "GET",
@@ -527,6 +592,60 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIQueryError):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
+    def test_getDataById_raises_HTTPError(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            exc=requests.exceptions.HTTPError
+        )
+
+        with pytest.raises(requests.exceptions.HTTPError):
+            data_by_id = client.getDataById(
+                timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
+                timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
+                interval="PT1S",
+                aggregate="avg",
+                useWarmStore=False
+            )
+
+
+    def test_getDataById_raises_ConnectTimeout(self, requests_mock, client):
+        requests_mock.request(
+            "POST",
+            MockURLs.oauth_url,
+            json=MockResponses.mock_oauth
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.env_url,
+            json=MockResponses.mock_environments
+        )
+        requests_mock.request(
+            "POST",
+            MockURLs.query_getseries_url,
+            exc=requests.exceptions.ConnectTimeout
+        )
+
+        with pytest.raises(requests.exceptions.ConnectTimeout):
             data_by_id = client.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
