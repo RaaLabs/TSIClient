@@ -924,6 +924,9 @@ class TSIClient():
                     else:
                         logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
                         raise TSIQueryError(response["error"])
+                if response["timestamps"] == []:
+                    logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
+                    continue
 
             try:
                 assert i == 0
