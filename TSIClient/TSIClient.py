@@ -358,14 +358,9 @@ class TSIClient():
 
     def getTypes(self):
         """Gets all types from the specified TSI environment.
-
         Returns:
             dict: The types in form of the response from the TSI api call.
-            Contains id and variable value (tsx) per type.
-            Note that only type instances with the JSON build up 
-            type > variables > Value > value > tsx 
-            are returned.
-
+            Contains id, name, description and variables per type.
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
@@ -375,7 +370,6 @@ class TSIClient():
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
-        types={}
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/types"
         querystring = self._getQueryString()
         payload = ""
@@ -397,17 +391,6 @@ class TSIClient():
             )
             response.raise_for_status()
 
-            jsonResponse = json.loads(response.text)
-            
-            for typeElement in jsonResponse['types']:
-                try:
-                    typeElement['variables']['Value']['value']['tsx']
-                    types[typeElement['id']] = typeElement['variables']['Value']['value']['tsx']
-                except:
-                    logging.error('"Value" for type id {type} cannot be extracted'.format(type = typeElement['id']))
-                    pass
-                
-
         except requests.exceptions.ConnectTimeout:
             logging.error("TSIClient: The request to the TSI api timed out.")
             raise
@@ -415,8 +398,38 @@ class TSIClient():
             logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
             raise
 
-        return types
+        return json.loads(response.text)
 
+
+    def getTypeTsx(self):
+        """Extracts type id and Value (tsx) from types from the specified TSI environment.
+
+        Returns:
+            dict: The types collected from the response from the TSI api call.
+            Contains id and variable value (tsx) per type.
+            Only type instances with the JSON build up 
+            type > variables > Value > value > tsx 
+            are returned.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> types = client.getTypeTsx()
+        """
+
+        types={}
+        jsonResponse = self.getTypes()
+        
+        for typeElement in jsonResponse['types']:
+            try:
+                typeElement['variables']['Value']['value']['tsx']
+                types[typeElement['id']] = typeElement['variables']['Value']['value']['tsx']
+            except:
+                logging.error('"Value" for type id {type} cannot be extracted'.format(type = typeElement['id']))
+                pass
+
+        return types
+    
         
     def writeInstance(self, payload):
         """Writes instances to the TSI environment.
@@ -859,7 +872,7 @@ class TSIClient():
         otherColNamesThanTimeseriesIds=None,
     ):
         df = None
-        typeList = self.getTypes()
+        typeList = self.getTypeTsx()
 
         if otherColNamesThanTimeseriesIds != None:
             colNames = otherColNamesThanTimeseriesIds
