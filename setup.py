@@ -1,8 +1,5 @@
 from setuptools import setup
-import git
-repo = git.Repo(search_parent_directories=True)
-tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
-latest_tag = tags[-1]
+
 
 with open('README.md') as f:
     long_description = f.read()
@@ -10,7 +7,7 @@ with open('README.md') as f:
 setup(
   name = 'TSIClient',
   packages = ['TSIClient'],
-  version = latest_tag,
+  version = '1.1.0',
   license='MIT',
   long_description=long_description,
   long_description_content_type='text/markdown',
