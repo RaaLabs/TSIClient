@@ -358,11 +358,9 @@ class TSIClient():
 
     def getTypes(self):
         """Gets all types from the specified TSI environment.
-
         Returns:
             dict: The types in form of the response from the TSI api call.
             Contains id, name, description and variables per type.
-
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
@@ -402,6 +400,36 @@ class TSIClient():
 
         return json.loads(response.text)
 
+
+    def getTypeTsx(self):
+        """Extracts type id and Value (tsx) from types from the specified TSI environment.
+
+        Returns:
+            dict: The types collected from the response from the TSI api call.
+            Contains id and variable value (tsx) per type.
+            Only type instances with the JSON build up 
+            type > variables > Value > value > tsx 
+            are returned.
+
+        Example:
+            >>> from TSIClient import TSIClient as tsi
+            >>> client = tsi.TSIClient()
+            >>> types = client.getTypeTsx()
+        """
+
+        types={}
+        jsonResponse = self.getTypes()
+        
+        for typeElement in jsonResponse['types']:
+            try:
+                typeElement['variables']['Value']['value']['tsx']
+                types[typeElement['id']] = typeElement['variables']['Value']['value']['tsx']
+            except:
+                logging.error('"Value" for type id {type} cannot be extracted'.format(type = typeElement['id']))
+                pass
+
+        return types
+    
         
     def writeInstance(self, payload):
         """Writes instances to the TSI environment.
@@ -592,6 +620,77 @@ class TSIClient():
         return timeSeriesIds
 
 
+    def getTypeByDescription(self, names):
+        """Returns the type ids that correspond to the given descriptions.
+
+        Args:
+            names (list): The descriptions for which to get type ids.
+
+        Returns:
+            list: The type ids, None if timeseries description does not exist in the TSI environment.
+        """
+
+        result=self.getInstances()
+        typeIds=[]
+        nameMap={}
+        for instance in result['instances']:
+            if 'description' in instance:
+                nameMap[instance['description']] = instance
+        for name in names:
+            if name in nameMap:
+                typeIds.append(nameMap[name]['typeId'])
+            else:
+                typeIds.append(None)
+        return typeIds
+
+    def getTypeById(self, ids):
+        """Returns the type ids that correspond to the given timeseries ids.
+
+        Args:
+            ids (list): The timeseries ids for which to get type ids.
+
+        Returns:
+            list: The type ids, None if timeseries ids does not exist in the TSI environment.
+        """
+
+        result=self.getInstances()
+        typeIds=[]
+        idMap={}
+        for instance in result['instances']:
+            if 'timeSeriesId' in instance:
+                idMap[instance['timeSeriesId'][0]] = instance
+        for ID in ids:
+            if ID in idMap:
+                typeIds.append(idMap[ID]['typeId'])
+            else:
+                typeIds.append(None)
+        return typeIds
+
+
+    def getTypeByName(self, names):
+        """Returns the type ids that correspond to the given names.
+
+        Args:
+            names (list(str)): The names for which to get ids.
+
+        Returns:
+            list: The type ids, None if timeseries name does not exist in the TSI environment.
+        """
+
+        result=self.getInstances()
+        typeIds=[]
+        nameMap={}
+        for instance in result['instances']:
+            if 'name' in instance:
+                nameMap[instance['name']] = instance
+        for name in names:
+            if name in nameMap:
+                typeIds.append(nameMap[name]['typeId'])
+            else:
+                typeIds.append(None)
+        return typeIds
+
+
     def getDataByName(self, variables, timespan, interval, aggregate=None, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
 
@@ -627,14 +726,15 @@ class TSIClient():
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
+        types = self.getTypeByName(variables)
         aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
         return self._getData(
             timeseries=timeseries,
+            types = types,
             url=url,
             querystring=querystring,
             requestType=requestType,
@@ -687,10 +787,12 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
+        types = self.getTypeByDescription(variables)
         aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
 
         return self._getData(
             timeseries=timeseries,
+            types=types,
             url=url,
             querystring=querystring,
             requestType=requestType,
@@ -740,9 +842,11 @@ class TSIClient():
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
+        types = self.getTypeById(timeseries)
 
         return self._getData(
             timeseries=timeseries,
+            types=types,
             url=url,
             querystring=querystring,
             requestType=requestType,
@@ -756,6 +860,7 @@ class TSIClient():
     def _getData(
         self,
         timeseries,
+        types,
         url,
         querystring,
         requestType,
@@ -766,6 +871,8 @@ class TSIClient():
         otherColNamesThanTimeseriesIds=None,
     ):
         df = None
+        typeList = self.getTypeTsx()
+
         if otherColNamesThanTimeseriesIds != None:
             colNames = otherColNamesThanTimeseriesIds
         else:
@@ -775,6 +882,7 @@ class TSIClient():
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=colNames[i]))
                 continue
+            logging.info(f'Timeseries {colNames[i]} has type {typeList[types[i]]}')
             payload = {
                 requestType: {
                     "timeSeriesId": [timeseries[i]],
@@ -785,7 +893,7 @@ class TSIClient():
                     "inlineVariables": {
                         "AverageTest": {
                             "kind": "numeric",
-                            "value": {"tsx": "$event.value"},
+                            "value": {"tsx": typeList[types[i]]},
                             "filter": None,
                             "aggregation": aggregate,
                         },
@@ -828,6 +936,9 @@ class TSIClient():
                     else:
                         logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
                         raise TSIQueryError(response["error"])
+                if response["timestamps"] == []:
+                    logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
+                    continue
 
             try:
                 assert i == 0
