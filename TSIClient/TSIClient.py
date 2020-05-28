@@ -726,7 +726,6 @@ class TSIClient():
 
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
-        df = None
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)

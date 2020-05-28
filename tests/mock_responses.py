@@ -15,7 +15,7 @@ class MockURLs():
 
 class MockResponses():
     """This class holds mocked request responses which can be used across tests.
-    The json responses are taken from the official Azure TSI api documentation.
+    The first json responses are taken from the official Azure TSI api documentation.
     """
     mock_types = {
         "types": [
@@ -29,7 +29,23 @@ class MockResponses():
                     "filter": None,
                     "aggregation": {
                         "tsx": "count()"
-                    }
+                        }
+                    }       
+                }
+            },
+            {
+                "id": "1be09af9-f089-4d6b-9f0b-48018b5f7393",
+                "name": "Double",
+                "description": "My Default type",
+                "variables": {
+                    "Value": {
+                        "kind": "numeric",
+                        "value": {
+                            "tsx":"$event.[value].Double"
+                        },
+                        "aggregation": {
+                            "tsx": "avg($value)"
+                        }
                     }
                 }
             }
@@ -72,7 +88,7 @@ class MockResponses():
     mock_instances = {
         "instances": [
             {
-                "typeId": "9b84e946-7b36-4aa0-9d26-71bf48cb2aff",
+                "typeId": "1be09af9-f089-4d6b-9f0b-48018b5f7393",
                 "name": "F1W7.GS1",
                 "timeSeriesId": [
                     "006dfc2d-0324-4937-998c-d16f3b4f1952",

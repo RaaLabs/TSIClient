@@ -312,7 +312,7 @@ class TestTSIClient():
 
         resp = client.getTypes()
 
-        assert len(resp["types"]) == 1
+        assert len(resp["types"]) == 2
         assert isinstance(resp["types"], list)
         assert isinstance(resp["types"][0], dict)
         assert resp["types"][0]["id"] == "1be09af9-f089-4d6b-9f0b-48018b5f7393"
@@ -529,6 +529,16 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_success
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
 
         data_by_id = client.getDataById(
             timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
@@ -563,6 +573,16 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsistoreerror
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
 
         with pytest.raises(TSIStoreError):
             data_by_id = client.getDataById(
@@ -589,6 +609,16 @@ class TestTSIClient():
             "POST",
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsiqueryerror
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
         )
 
         with pytest.raises(TSIQueryError):
@@ -617,6 +647,16 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             exc=requests.exceptions.HTTPError
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
 
         with pytest.raises(requests.exceptions.HTTPError):
             data_by_id = client.getDataById(
@@ -643,6 +683,16 @@ class TestTSIClient():
             "POST",
             MockURLs.query_getseries_url,
             exc=requests.exceptions.ConnectTimeout
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.instances_url,
+            json=MockResponses.mock_instances
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
@@ -675,6 +725,11 @@ class TestTSIClient():
             "POST",
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_success
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
         )
 
         data_by_description = client.getDataByDescription(
@@ -717,6 +772,11 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsistoreerror
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
 
         with pytest.raises(TSIStoreError):
             data_by_description = client.getDataByDescription(
@@ -750,6 +810,11 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsiqueryerror
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
 
         with pytest.raises(TSIQueryError):
             data_by_description = client.getDataByDescription(
@@ -782,6 +847,11 @@ class TestTSIClient():
             "POST",
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_success
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
         )
 
         data_by_name = client.getDataByName(
@@ -823,6 +893,11 @@ class TestTSIClient():
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsistoreerror
         )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
+        )
 
         with pytest.raises(TSIStoreError):
             data_by_name = client.getDataByName(
@@ -854,6 +929,11 @@ class TestTSIClient():
             "POST",
             MockURLs.query_getseries_url,
             json=MockResponses.mock_query_getseries_tsiqueryerror
+        )
+        requests_mock.request(
+            "GET",
+            MockURLs.types_url,
+            json=MockResponses.mock_types
         )
 
         with pytest.raises(TSIQueryError):
