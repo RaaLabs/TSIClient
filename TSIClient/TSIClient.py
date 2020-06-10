@@ -431,7 +431,7 @@ class TSIClient():
         return types
     
         
-    def writeInstance(self, payload):
+    def _updateTimeSeries(self, payload, timeseries):
         """Writes instances to the TSI environment.
 
         Args:
@@ -446,6 +446,7 @@ class TSIClient():
         authorizationToken = self._getToken()
 
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
+        url = "https://{environmentId}.env.timeseries.azure.com/timeseries/{timeseries}/$batch".format(environmentId=environmentId,timeseries=timeseries)
         
         querystring = self._getQueryString()
 
@@ -461,6 +462,18 @@ class TSIClient():
         if response.text:
             jsonResponse = json.loads(response.text)
 
+        return jsonResponse
+    
+    def writeInstance(self, payload):
+        jsonResponse = self._updateTimeSeries(payload, 'instances')
+        return jsonResponse
+
+    def writeTypes(self, payload):
+        jsonResponse = self._updateTimeSeries(payload, 'types')
+        return jsonResponse
+
+    def writeHierarchies(self, payload):
+        jsonResponse = self._updateTimeSeries(payload, 'hierarchies')
         return jsonResponse
 
 
@@ -492,6 +505,8 @@ class TSIClient():
             jsonResponse = json.loads(response.text)
 
         return jsonResponse
+
+
 
 
     def deleteAllInstances(self):
