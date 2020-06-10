@@ -7,7 +7,7 @@ with open('README.md') as f:
 setup(
   name = 'TSIClient',
   packages = ['TSIClient'],
-  version = '1.1.0',
+  version = '1.2.0',
   license='MIT',
   long_description=long_description,
   long_description_content_type='text/markdown',
