@@ -445,7 +445,6 @@ class TSIClient():
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
 
-        url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/instances/$batch"
         url = "https://{environmentId}.env.timeseries.azure.com/timeseries/{timeseries}/$batch".format(environmentId=environmentId,timeseries=timeseries)
         
         querystring = self._getQueryString()
