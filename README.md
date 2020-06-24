@@ -1,18 +1,24 @@
 # TSIClient
 [![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
 [![codecov](https://codecov.io/gh/rafaelschlatter/TSIClient/branch/master/graph/badge.svg)](https://codecov.io/gh/rafaelschlatter/TSIClient)
-[![Documentation Status](https://readthedocs.org/projects/tsiclient/badge/?version=latest)](https://tsiclient.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/raalabs-tsiclient/badge/?version=latest)](https://raalabs-tsiclient.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d73dafb558f64d8580a4a87517c32340)](https://www.codacy.com/manual/rafaelschlatter/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rafaelschlatter/TSIClient&amp;utm_campaign=Badge_Grade)
+![PyPI](https://img.shields.io/pypi/v/TSIClient)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/TSIClient)
 
 The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data and is designed
 for analysts, data scientists and developers working with time series data in Azure TSI.
 
 ## Documentation
 - Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
-- TSIClient: <https://tsiclient.readthedocs.io/en/latest/>
+- TSIClient: <https://raalabs-tsiclient.readthedocs.io/en/latest/>
 
 ## Installation
-The TSIClient is not yet on PyPi, but you can install it directly from GitHub:
+We recommended to use a Python version >= 3.6. You can install the TSIClient from PyPi:
+````bash
+pip install TSIClient
+````
+Or if you want to get the latest code, directly fom GitHub:
 
 ````bash
 pip install git+https://github.com/RaaLabs/TSIClient.git

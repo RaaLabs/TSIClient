@@ -358,9 +358,11 @@ class TSIClient():
 
     def getTypes(self):
         """Gets all types from the specified TSI environment.
+
         Returns:
             dict: The types in form of the response from the TSI api call.
             Contains id, name, description and variables per type.
+            
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
