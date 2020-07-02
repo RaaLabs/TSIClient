@@ -259,8 +259,14 @@ class TSIClient():
         return json.loads(response.text)
 
 
-    def getInstances(self):
-        """Gets all instances (timeseries) from the specified TSI environment.
+    def getInstances(self, filters=None):
+        """Gets all or filtered instances (timeseries) from the specified TSI environment.
+
+        If filters is given, only instances that exactly match the filtering strings are returned.
+
+        Args:
+            filters (dict(str:list[str])): A dictionary with instance attributes as keys, and
+                list of strings as values. Every filter is evaluated individually. Can be None.
 
         Returns:
             dict: The instances in form of the response from the TSI api call.
@@ -269,7 +275,9 @@ class TSIClient():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> instances = client.getInstances()
+            >>> instances = client.getInstances(
+            >>>     filters={"hierarchyIds": ["2d1f3876-b6e9-4f98-9db5-e66b5754e755"]}
+            >>> )
         """
 
         environmentId = self.getEnviroment()
@@ -306,7 +314,24 @@ class TSIClient():
                 jsonResponse = json.loads(response.text)
             
             result['instances'].extend(jsonResponse['instances'])
-            
+        
+        if filters is not None:
+            filtered_instances = []
+            for key in filters:
+                for instance in result['instances']:
+                    if key not in instance:
+                        logging.warning(f"{key} is not an instance attribute of timeseries instance {instance['timeSeriesId']}, this instance is not returned.")
+                        continue
+
+                    for i, _ in enumerate(filters[key]):
+                        if filters[key][i] in instance[key]:
+                            if instance in filtered_instances:
+                                continue
+
+                            filtered_instances.append(instance)
+
+            result["instances"] = filtered_instances
+
         return result
     
 
