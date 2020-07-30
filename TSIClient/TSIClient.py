@@ -62,7 +62,7 @@ class TSIClient():
             applicationName=None,
             tenant_id=None
         ):
-        self._apiVersion = "2018-11-01-preview"
+        self._apiVersion = "2020-07-31"
         self._applicationName = applicationName if applicationName is not None else os.environ["TSICLIENT_APPLICATION_NAME"]
         self._enviromentName = enviroment if enviroment is not None else os.environ["TSICLIENT_ENVIRONMENT_NAME"]
         self._client_id = client_id if client_id is not None else os.environ["TSICLIENT_CLIENT_ID"]
