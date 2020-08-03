@@ -23,7 +23,8 @@ multiple TSI environments, you need to create multiple instances of the TSIClien
     ...     client_id="<your-client-id>",
     ...     client_secret="<your-client-secret>",
     ...     tenant_id="<your-tenant-id>",
-    ...     applicationName="<your-app-name>">
+    ...     applicationName="<your-app-name>">,
+    ...     api_version="2020-07-31"
     ... )
 
 Alternatively, you can use environment variables to instantiate the TSIClient.
@@ -36,9 +37,11 @@ Set the following variables (commands for Mac/Linux):
     $ export TSICLIENT_CLIENT_ID=<your-client-id>
     $ export TSICLIENT_CLIENT_SECRET=<your-client-secret>
     $ export TSICLIENT_TENANT_ID=<your-tenant-id>
+    $ export TSI_API_VERSION="2020-07-31"
 
 Now you can instantiate the TSIClient without passing any arguments. Be aware
-that the environment variables take precedence over the arguments.
+that the constructor arguments take precedence over the environment variables. Specifying the
+TSI api version is optional (defaults to '2020-07-31'). Allowed values are '2018-11-01-preview' and '2020-07-31'.
 
 .. code-block:: python
 

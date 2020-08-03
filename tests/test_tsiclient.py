@@ -1,7 +1,9 @@
+import os
 import pytest
 import requests
 import pandas as pd
 from collections import namedtuple
+from TSIClient import TSIClient as tsi
 from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
 from tests.mock_responses import MockURLs, MockResponses
 
@@ -13,14 +15,51 @@ class TestTSIClient():
         assert client._client_id == "MyClientID"
         assert client._client_secret == "a_very_secret_password"
         assert client._tenant_id == "yet_another_tenant_id"
+        assert client._apiVersion == "2020-07-31"
 
 
-    def test_instantiate_TSIClient_from_env(self, client_from_env):
+    def test_create_TSICLient_with_api_version_success(self, client):
+        client = tsi.TSIClient(
+            enviroment='Test_Environment',
+            client_id="MyClientID",
+            client_secret="a_very_secret_password",
+            applicationName="postmanServicePrincipal",
+            tenant_id="yet_another_tenant_id",
+            api_version="2018-11-01-preview"
+        )
+
+        assert client._applicationName == "postmanServicePrincipal"
+        assert client._enviromentName == "Test_Environment"
+        assert client._client_id == "MyClientID"
+        assert client._client_secret == "a_very_secret_password"
+        assert client._tenant_id == "yet_another_tenant_id"
+        assert client._apiVersion == "2018-11-01-preview"
+
+
+    def test_create_TSIClient_from_env(self, client_from_env):
         assert client_from_env._applicationName == "my_app"
         assert client_from_env._enviromentName == "my_environment"
         assert client_from_env._client_id == "my_client_id"
         assert client_from_env._client_secret == "my_client_secret"
         assert client_from_env._tenant_id == "my_tenant_id"
+        assert client_from_env._apiVersion == "2020-07-31"
+
+    
+    def test_create_TSIClient_from_env_with_api_version(self):
+        os.environ["TSICLIENT_APPLICATION_NAME"] = "my_app"
+        os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "my_environment"
+        os.environ["TSICLIENT_CLIENT_ID"] = "my_client_id"
+        os.environ["TSICLIENT_CLIENT_SECRET"] = "my_client_secret"
+        os.environ["TSICLIENT_TENANT_ID"] = "my_tenant_id"
+        os.environ["TSI_API_VERSION"] = "2018-11-01-preview"
+        client_from_env = tsi.TSIClient()
+
+        assert client_from_env._applicationName == "my_app"
+        assert client_from_env._enviromentName == "my_environment"
+        assert client_from_env._client_id == "my_client_id"
+        assert client_from_env._client_secret == "my_client_secret"
+        assert client_from_env._tenant_id == "my_tenant_id"
+        assert client_from_env._apiVersion == "2018-11-01-preview"
 
 
     def test__getToken_success(self, requests_mock, client):
