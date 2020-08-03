@@ -26,6 +26,8 @@ class TSIClient():
         client_secret (str): The client secret of the service principal used to authenticate with Azure TSI.
         tenant_id (str): The tenant id of the service principal used to authenticate with Azure TSI.
         applicationName (str): The name can be an arbitrary string. For informational purpose.
+        api_version (str): The TSI api version (optional, allowed values: '2018-11-01-preview' and '2020-07-31').
+            Defaults to '2020-07-31'.
 
     Examples:
         The TSIClient is the entry point to the SDK. You can instantiate it like this:
@@ -36,7 +38,8 @@ class TSIClient():
             ...     client_id="<your-client-id>",
             ...     client_secret="<your-client-secret>",
             ...     tenant_id="<your-tenant-id>",
-            ...     applicationName="<your-app-name>">
+            ...     applicationName="<your-app-name>">,
+            ...     api_version="2020-07-31"
             ... )
 
         You might find it useful to specify environment variables to instantiate the TSIClient.
@@ -47,6 +50,7 @@ class TSIClient():
         * ``TSICLIENT_CLIENT_ID``
         * ``TSICLIENT_CLIENT_SECRET``
         * ``TSICLIENT_TENANT_ID``
+        * ``TSI_API_VERSION``
         
         Now you can instantiate the TSIClient without passing any arguments:
 
@@ -60,14 +64,23 @@ class TSIClient():
             client_id=None,
             client_secret=None,
             applicationName=None,
-            tenant_id=None
+            tenant_id=None,
+            api_version=None
         ):
-        self._apiVersion = "2020-07-31"
         self._applicationName = applicationName if applicationName is not None else os.environ["TSICLIENT_APPLICATION_NAME"]
         self._enviromentName = enviroment if enviroment is not None else os.environ["TSICLIENT_ENVIRONMENT_NAME"]
         self._client_id = client_id if client_id is not None else os.environ["TSICLIENT_CLIENT_ID"]
         self._client_secret = client_secret if client_secret is not None else os.environ["TSICLIENT_CLIENT_SECRET"]
         self._tenant_id = tenant_id if tenant_id is not None else os.environ["TSICLIENT_TENANT_ID"]
+
+        allowed_api_versions = ["2020-07-31", "2018-11-01-preview"]
+        if api_version in allowed_api_versions:
+            self._apiVersion = api_version
+        elif "TSI_API_VERSION" in os.environ:
+            if os.environ["TSI_API_VERSION"] in allowed_api_versions:
+                self._apiVersion = os.environ["TSI_API_VERSION"]
+        else:
+            self._apiVersion = "2020-07-31"
 
 
     def _getToken(self):

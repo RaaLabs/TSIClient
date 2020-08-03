@@ -24,7 +24,7 @@ Or if you want to get the latest code, directly fom GitHub:
 pip install git+https://github.com/RaaLabs/TSIClient.git
 ````
 ## Quickstart
-Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment (you can also use environment variables to instantiate the TSIClient, check the documentation).
+Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment (you can also use environment variables to instantiate the TSIClient or provide a specific TSI api version, check the documentation).
 
 ````python
 from TSIClient import TSIClient as tsi
