@@ -911,6 +911,9 @@ class TSIClient():
             if timeseries[i] == None:
                 logging.error("No such tag: {tag}".format(tag=colNames[i]))
                 continue
+             if types[i] == None:
+                logging.error("Type not defined for {timeseries}".format(timeseries=timeseries[i]))
+                continue
             logging.info(f'Timeseries {colNames[i]} has type {typeList[types[i]]}')
             payload = {
                 requestType: {
