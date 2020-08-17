@@ -149,31 +149,61 @@ class TSIClient():
             }
 
 
-    def _getVariableAggregate(self, aggregate=None):
-        """Creates the variable aggregation type and the request type based thereon.
-
-        The request type is either "aggregateSeries" (if an aggregation is provided),
-        or "getSeries" if the aggregate is None.
+    def _getVariableAggregate(self, aggregate=None, interpolationKind=None, interpolationSpan=None):
+        """Creates the fields of the payload corresponding to the inlineVariable 
+            and to the projectedVariables name
 
         Args:
-            aggregate (str): The aggregation method ("avg", "min", "max").
+            aggregate (str): The aggregation method to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+            The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationKind (str): Type of interpolation technique: ("Linear", "Step")
+            interpolationSpan (str): The time range to the left and right of 
+            the search span to be used for Interpolation.
 
         Returns:
-            tuple: A tuple with the aggregate (dict) and the requestType (str).
+            tuple: A tuple with the inlineVar (dict) and the variableName (str).
         """
 
-        if aggregate not in ["avg", "min", "max", None]:
+        if aggregate not in ["min", "max", "sum", "avg", "first", "last", "median","stdev",\
+             "twsum", "twavg", "left", "right", None]:
             raise TSIQueryError(
-                "TSIClient: Aggregation method not supported, must be \"avg\", \"min\" or \"max\"."
+                "TSIClient: Aggregation method not supported, must be \"min\", \"max\"," \
+                    "\"sum\", \"avg\", \"first\", \"last\", \"median\", \"stdev\", "\
+                    "\"twsum\", \"twavg\", \"left\" or \"right\"."
             )
+        inlineVar = None
 
         if aggregate != None:
-            aggregate = {"tsx": "{0!s}($value)".format(aggregate)}
-            requestType = "aggregateSeries"
-        else:
-            requestType = "getSeries"
+            if aggregate in ["twsum", "twavg", "left", "right"]:
+                if interpolationKind==None:
+                    raise TSIQueryError(
+                    "TSIClient: Aggregation method not supported without interpolation."\
+                        "Interpolation type must be either \"Linear\" or \"Step\"."
+                    )
+                if interpolationSpan==None:
+                    raise TSIQueryError(
+                    "TSIClient: Aggregation method not supported without interpolation."\
+                        "Need interpolation boundary."
+                    )
+                variableName = interpolationKind.capitalize() + aggregate.capitalize() + 'Interpolation'
 
-        return (aggregate, requestType)
+                inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
+                    "interpolation":{"kind": "{0!s}".format(interpolationKind),\
+                    "boundary":{"span": "{0!s}".format(interpolationSpan)}},\
+                    "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                    
+                
+            else: 
+                variableName = aggregate.capitalize() + 'VarAggregate'
+
+                inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
+                             "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                    
+                
+
+        return (inlineVar, variableName)
 
 
     def getEnviroment(self):
@@ -553,8 +583,77 @@ class TSIClient():
             jsonResponse = json.loads(response.text)
 
         return jsonResponse
+    
+    def getRequestType(self, aggregate=None, requestBodyType=None):
+        if aggregate == None and (requestBodyType == None or requestBodyType=="getSeries"):
+            requestType = "getSeries"
+        elif aggregate != None and (requestBodyType == None or requestBodyType=="aggregateSeries"):
+            requestType = "aggregateSeries"
+        elif requestBodyType == "getEvents":
+            requestType = "getEvents"
+        else:
+            raise TSIQueryError(
+                "TSIClient: request body types are either getSeries, aggregateSeries or getEvents"
+            )
+        return requestType
+    
+    def getInlineVariablesAggregate(self, aggregateList=None, interpolationList=None, interpolationSpanList=None):
+        """Returns a tuple of lists to apply in the payload consisiting of the InlineVariables and the 
+            projectedVariables. 
+
+        Args:
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+            The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either Linear or Step.
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation..
+
+        Returns:
+            A tuple of lists to apply in the payload consisiting of the InlineVariables and the 
+            projectedVariables. 
+
+        Raises:
+            TSIQueryError: Raised if there was an error in the aggregation lists, 
+            the list have either different length or interpolation aggregation 
+            is given but there is not given specifications for the interpolation 
+            kind and the interpolation boundary.
+            If aggregates given do not require interpolation, the interpolation lists are not needed.
 
 
+        """
+        if isinstance(aggregateList, list) and isinstance(interpolationList, list) and isinstance(interpolationSpanList, list):
+            if not len(aggregateList)==len(interpolationList)==len(interpolationSpanList):
+                raise TSIQueryError(
+                    "TSIClient: All Aggregate lists must be of the same length"
+                )
+            projectedVarNames = []
+            inlineVarPayload = []
+            for i in range(0,len(aggregateList)):
+                (inlineVar, variableName) = self._getVariableAggregate(aggregate=aggregateList[i],\
+                    interpolationKind=interpolationList[i], interpolationSpan=interpolationSpanList[i])
+                projectedVarNames.append(variableName)
+                inlineVarPayload.append(inlineVar)
+                
+        elif isinstance(aggregateList, str) and (isinstance(interpolationList, str) or interpolationList == None)\
+            and (isinstance(interpolationSpanList, str) or interpolationSpanList == None):
+                
+            projectedVarNames = []
+            inlineVarPayload = []
+            (inlineVar, variableName) = self._getVariableAggregate(aggregate=aggregateList,\
+                interpolationKind=interpolationList, interpolationSpan=interpolationSpanList)
+            projectedVarNames.append(variableName)
+            inlineVarPayload.append(inlineVar)
+            
+        else:
+            raise TSIQueryError(
+                "TSIClient: If aggregate list contains aggregations requiring interpolation, "\
+                    "both the aggregate and interpolation specifications must be lists"
+            )
+            
+        return (inlineVarPayload, projectedVarNames)
+    
     def getNameById(self, ids):
         """Returns the timeseries names that correspond to the given ids.
 
@@ -720,7 +819,7 @@ class TSIClient():
         return typeIds
 
 
-    def getDataByName(self, variables, timespan, interval, aggregate=None, useWarmStore=False):
+    def getDataByName(self, variables, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
 
         Can be used to return data for single and multiple timeseries. Names must be exact matches.
@@ -759,7 +858,20 @@ class TSIClient():
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByName(variables)
         types = self.getTypeByName(variables)
-        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
+        
+        if isinstance(aggregateList, list):
+            aggregate = aggregateList[0]
+            if not (isinstance(interpolationList, list) and isinstance(interpolationSpanList, list)):
+                aggArray = ["min", "max", "sum", "avg", "first", "last", "median","stdev"]
+                """ Check if all aggragates are methods to be used without interpolation """
+                nonInterpolation = all(elem in aggArray for elem in aggregateList)
+                if nonInterpolation:
+                    interpolationList = [None]*len(aggregateList)
+                    interpolationSpanList = [None]*len(aggregateList)
+                         
+        else:
+            aggregate = aggregateList
+        requestType = self.getRequestType(aggregate=aggregate,requestBodyType=requestBodyType)
 
         return self._getData(
             timeseries=timeseries,
@@ -769,13 +881,15 @@ class TSIClient():
             requestType=requestType,
             timespan=timespan,
             interval=interval,
-            aggregate=aggregate,
+            aggregateList=aggregateList,
+            interpolationList=interpolationList,
+            interpolationSpanList=interpolationSpanList,
             authorizationToken=authorizationToken,
             otherColNamesThanTimeseriesIds=variables,
         )
 
 
-    def getDataByDescription(self, variables, TSName, timespan, interval, aggregate=None, useWarmStore=False):
+    def getDataByDescription(self, variables, TSName, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None,useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
 
         Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
@@ -810,15 +924,27 @@ class TSIClient():
             ...     useWarmStore=False
             ... )
         """
-
         environmentId = self.getEnviroment()
         authorizationToken = self._getToken()
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
         timeseries = self.getIdByDescription(variables)
         types = self.getTypeByDescription(variables)
-        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
-
+        
+        if isinstance(aggregateList, list):
+            aggregate = aggregateList[0]
+            if not (isinstance(interpolationList, list) and isinstance(interpolationSpanList, list)):
+                aggArray = ["min", "max", "sum", "avg", "first", "last", "median","stdev"]
+                """ Check if all aggragates are methods to be used without interpolation """
+                nonInterpolation = all(elem in aggArray for elem in aggregateList)
+                if nonInterpolation:
+                    interpolationList = [None]*len(aggregateList)
+                    interpolationSpanList = [None]*len(aggregateList)
+                         
+        else:
+            aggregate = aggregateList
+        requestType = self.getRequestType(aggregate=aggregate,requestBodyType=requestBodyType)
+        
         return self._getData(
             timeseries=timeseries,
             types=types,
@@ -827,13 +953,15 @@ class TSIClient():
             requestType=requestType,
             timespan=timespan,
             interval=interval,
-            aggregate=aggregate,
+            aggregateList=aggregateList,
+            interpolationList=interpolationList,
+            interpolationSpanList=interpolationSpanList,
             authorizationToken=authorizationToken,
             otherColNamesThanTimeseriesIds=TSName
         )
 
 
-    def getDataById(self, timeseries, timespan, interval, aggregate=None, useWarmStore=False):
+    def getDataById(self, timeseries, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
 
         Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
@@ -870,9 +998,22 @@ class TSIClient():
         authorizationToken = self._getToken()
         url = "https://" + environmentId + ".env.timeseries.azure.com/timeseries/query?"
         querystring = self._getQueryString(useWarmStore=useWarmStore)
-        aggregate, requestType = self._getVariableAggregate(aggregate=aggregate)
         types = self.getTypeById(timeseries)
-
+        
+        if isinstance(aggregateList, list):
+            aggregate = aggregateList[0]
+            if not (isinstance(interpolationList, list) and isinstance(interpolationSpanList, list)):
+                aggArray = ["min", "max", "sum", "avg", "first", "last", "median","stdev"]
+                """ Check if all aggragates are methods to be used without interpolation """
+                nonInterpolation = all(elem in aggArray for elem in aggregateList)
+                if nonInterpolation:
+                    interpolationList = [None]*len(aggregateList)
+                    interpolationSpanList = [None]*len(aggregateList)
+                         
+        else:
+            aggregate = aggregateList
+        requestType = self.getRequestType(aggregate=aggregate,requestBodyType=requestBodyType)
+        
         return self._getData(
             timeseries=timeseries,
             types=types,
@@ -881,7 +1022,9 @@ class TSIClient():
             requestType=requestType,
             timespan=timespan,
             interval=interval,
-            aggregate=aggregate,
+            aggregateList=aggregateList,
+            interpolationList=interpolationList,
+            interpolationSpanList=interpolationSpanList,
             authorizationToken=authorizationToken,
         )
 
@@ -895,17 +1038,33 @@ class TSIClient():
         requestType,
         timespan,
         interval,
-        aggregate,
+        aggregateList,
+        interpolationList,
+        interpolationSpanList,
         authorizationToken,
         otherColNamesThanTimeseriesIds=None,
     ):
         df = None
         typeList = self.getTypeTsx()
-
+                
         if otherColNamesThanTimeseriesIds != None:
             colNames = otherColNamesThanTimeseriesIds
         else:
             colNames = timeseries
+        
+        if requestType == 'aggregateSeries':
+            (inlineVarPayload, projectedVarNames) = self.getInlineVariablesAggregate(aggregateList=aggregateList,\
+                interpolationList=interpolationList,interpolationSpanList=interpolationSpanList)
+        elif requestType == 'getSeries':
+            inlineVarPayload = [{"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None}]
+            projectedVarNames = ['tagData']
+        elif requestType == 'getEvents':
+            projectedVarNames = None
+            
+        else:
+            raise TSIQueryError(
+                "TSIClient: Not a valid request type "
+            )
 
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
@@ -922,18 +1081,26 @@ class TSIClient():
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
                     "filter": None,
                     "interval": interval,
-                    "inlineVariables": {
-                        "AverageTest": {
-                            "kind": "numeric",
-                            "value": {"tsx": typeList[types[i]]},
-                            "filter": None,
-                            "aggregation": aggregate,
-                        },
-                    },
-                    "projectedVariables": ["AverageTest"],
+                    "inlineVariables": {},
+                    "take": 250000,
+                    "projectedVariables": projectedVarNames,
                 }
             }
-
+            if requestType == 'aggregateSeries':
+                if isinstance(aggregateList, list):
+                    for j in range(0,len(aggregateList)):
+                        payload[requestType]["inlineVariables"][projectedVarNames[j]] = inlineVarPayload[j]
+                else:
+                    payload[requestType]["inlineVariables"][projectedVarNames[0]] = inlineVarPayload[0]
+                    
+            elif requestType == 'getSeries':
+                payload[requestType]["inlineVariables"][projectedVarNames[0]] = inlineVarPayload[0]
+                
+            elif requestType == 'getEvents':
+                payload[requestType]["filter"] = {"tsx": "($event.value.Double != null) OR ($event.Status.String = 'Good')"}
+                """ If this line is ignored all properties will be returned """
+                payload[requestType]["projectedProperties"] = [{"name":"value", "type":"Double"}]
+                
             headers = {
                 "x-ms-client-application-name": self._applicationName,
                 "Authorization": authorizationToken,
@@ -941,14 +1108,14 @@ class TSIClient():
                 "cache-control": "no-cache",
             }
             try:
-                response = requests.request(
+                jsonResponse = requests.request(
                     "POST",
                     url,
                     data=json.dumps(payload),
                     headers=headers,
                     params=querystring,
                 )
-                response.raise_for_status()
+                jsonResponse.raise_for_status()
             except requests.exceptions.ConnectTimeout:
                 logging.error("TSIClient: The request to the TSI api timed out.")
                 raise
@@ -956,8 +1123,8 @@ class TSIClient():
                 logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
                 raise
 
-            if response.text:
-                response = json.loads(response.text)
+            if jsonResponse.text:
+                response = json.loads(jsonResponse.text)
                 if "error" in response:
                     if "innerError" in response["error"]:
                         if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
@@ -971,17 +1138,137 @@ class TSIClient():
                 if response["timestamps"] == []:
                     logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
                     continue
-
-            try:
-                assert i == 0
-                df = pd.DataFrame(
-                    {
-                        "timestamp": response["timestamps"],
-                        colNames[i]: response["properties"][0]["values"],
+                
+            if requestType == 'aggregateSeries':
+                try:
+                    assert i == 0
+                    if isinstance(aggregateList, list):
+                        for idx, agg in enumerate(aggregateList):
+                            currColName = colNames[i] + "/" + agg
+                            if idx == 0:
+                                df = pd.DataFrame(
+                                    {
+                                        "timestamp": response["timestamps"],
+                                        currColName : response["properties"][idx]["values"],
+                                    }
+                                )
+                            else:
+                                df[currColName] = response["properties"][idx]["values"]
+                    else:
+                        df = pd.DataFrame(
+                                    {
+                                        "timestamp": response["timestamps"],
+                                        colNames[i] : response["properties"][0]["values"],
+                                    }
+                                )
+                except:
+                    if isinstance(aggregateList, list):
+                        for idx, agg in enumerate(aggregateList):
+                            currColName  = colNames[i] + "/" + agg
+                            df[currColName] = response["properties"][idx]["values"]
+                    else:
+                        df[colNames[i]] = response["properties"][0]["values"]
+                        
+                finally:
+                    logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
+                    
+            elif requestType == 'getSeries':
+                result = response
+                while 'continuationToken' in list(response.keys()):
+                    print("continuation token found, appending")
+                    headers = {
+                        "x-ms-client-application-name": self._applicationName,
+                        "Authorization": authorizationToken,
+                        "Content-Type": "application/json",
+                        "cache-control": "no-cache",
+                        'x-ms-continuation': response['continuationToken'], 
                     }
-                )
-            except:
-                df[colNames[i]] = response["properties"][0]["values"]
-            finally:
-                logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
+                    jsonResponse = requests.request(
+                        "POST",
+                        url,
+                        data=json.dumps(payload),
+                        headers=headers,
+                        params=querystring,
+                    )
+                    jsonResponse.raise_for_status()
+                    
+                    if jsonResponse.text:
+                        response = json.loads(jsonResponse.text)
+                    result["timestamps"].extend(response["timestamps"])
+                    
+                    result["properties"][0]["values"].extend(response["properties"][0]["values"])
+                    
+                try:
+                    assert i == 0
+                    df = pd.DataFrame(
+                            {
+                                "timestamp": result["timestamps"],
+                                colNames[i] : result["properties"][0]["values"],
+                            }
+                        )
+                    df['timestamp'] = pd.to_datetime(df['timestamp'])
+                    df.sort_values(by=['timestamp'], inplace=True)
+
+                except:
+                    df_temp = pd.DataFrame(
+                        {
+                            "timestamp": result["timestamps"],
+                            colNames[i] : result["properties"][0]["values"],
+                        }
+                    )
+                    df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
+                    df_temp.sort_values(by=['timestamp'], inplace=True)
+                    """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
+                    df = pd.merge_asof(df,df_temp,direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                finally:
+                    logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
+                    
+            elif requestType == 'getEvents':
+                result = response
+                while 'continuationToken' in list(response.keys()):
+                    print("continuation token found, appending")
+                    headers = {
+                        "x-ms-client-application-name": self._applicationName,
+                        "Authorization": authorizationToken,
+                        "Content-Type": "application/json",
+                        "cache-control": "no-cache",
+                        'x-ms-continuation': response['continuationToken'], 
+                    }
+                    jsonResponse = requests.request(
+                        "POST",
+                        url,
+                        data=json.dumps(payload),
+                        headers=headers,
+                        params=querystring,
+                    )
+                    jsonResponse.raise_for_status()
+                    if jsonResponse.text:
+                        response = json.loads(jsonResponse.text)
+                    result["timestamps"].extend(response["timestamps"])
+                    result["properties"][0]["values"].extend(response["properties"][0]["values"])
+                    
+                try:
+                    assert i == 0
+                    df = pd.DataFrame(
+                            {
+                                "timestamp": result["timestamps"],
+                                colNames[i] : result["properties"][0]["values"],
+                            }
+                        )
+                    df['timestamp'] = pd.to_datetime(df['timestamp'])
+                    df.sort_values(by=['timestamp'], inplace=True)
+
+                except:
+                    df_temp = pd.DataFrame(
+                        {
+                            "timestamp": result["timestamps"],
+                            colNames[i] : result["properties"][0]["values"],
+                        }
+                    )
+                    df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
+                    df_temp.sort_values(by=['timestamp'], inplace=True)
+                    """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
+                    df = pd.merge_asof(df,df_temp,direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                finally:
+                    logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
         return df
