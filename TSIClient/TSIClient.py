@@ -1219,7 +1219,7 @@ class TSIClient():
                     df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
                     df_temp.sort_values(by=['timestamp'], inplace=True)
                     """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                    df = pd.merge_asof(df,df_temp,direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                    df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
                     
@@ -1268,7 +1268,7 @@ class TSIClient():
                     df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
                     df_temp.sort_values(by=['timestamp'], inplace=True)
                     """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                    df = pd.merge_asof(df,df_temp,direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                    df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
         return df
