@@ -5,9 +5,10 @@ import json
 import pandas as pd
 import requests
 import logging
-from TSIClient.exceptions import TSIEnvironmentError
-from TSIClient.exceptions import TSIStoreError
-from TSIClient.exceptions import TSIQueryError
+from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
+from TSIClient.authorization.authorization_api import AuthorizationApi
+from TSIClient.environment.environment_api import EnvironmentApi
+from TSIClient.common.common_funcs import CommonFuncs
 
 
 class TSIClient():
@@ -81,6 +82,24 @@ class TSIClient():
                 self._apiVersion = os.environ["TSI_API_VERSION"]
         else:
             self._apiVersion = "2020-07-31"
+
+        self.authorization = AuthorizationApi(
+            client_id=self._client_id,
+            client_secret=self._client_secret,
+            tenant_id=self._tenant_id,
+            api_version=self._apiVersion
+        )
+
+        self.common_funcs = CommonFuncs(
+            api_version=self._apiVersion
+        )
+
+        self.environment = EnvironmentApi(
+            application_name=self._applicationName,
+            environment=self._enviromentName,
+            authorization_api=self.authorization,
+            common_funcs=self.common_funcs
+        )
 
 
     def _getToken(self):

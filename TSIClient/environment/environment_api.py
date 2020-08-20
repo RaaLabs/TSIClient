@@ -1,9 +1,9 @@
 import requests
 import logging
 import json
-from TSIClient.authorization import AuthorizationApi
-from TSIClient.exceptions import TSIEnvironmentError
-from TSIClient.common import CommonFuncs
+from ..authorization.authorization_api import AuthorizationApi
+from ..exceptions import TSIEnvironmentError
+from ..common.common_funcs import CommonFuncs
 
 
 class EnvironmentApi:
