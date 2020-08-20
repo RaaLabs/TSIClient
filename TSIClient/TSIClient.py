@@ -7,8 +7,9 @@ import requests
 import logging
 from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
 from TSIClient.authorization.authorization_api import AuthorizationApi
-from TSIClient.environment.environment_api import EnvironmentApi
 from TSIClient.common.common_funcs import CommonFuncs
+from TSIClient.environment.environment_api import EnvironmentApi
+from TSIClient.hierarchies.hierarchies_api import HierarchiesApi
 
 
 class TSIClient():
@@ -99,6 +100,10 @@ class TSIClient():
             environment=self._enviromentName,
             authorization_api=self.authorization,
             common_funcs=self.common_funcs
+        )
+
+        self.hierarchies = HierarchiesApi(
+            authorization_api=self.authorization
         )
 
 
