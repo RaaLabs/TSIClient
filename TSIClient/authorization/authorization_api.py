@@ -62,3 +62,4 @@ class AuthorizationApi:
         authorizationToken = tokenType + " " + jsonResp["access_token"]
 
         return authorizationToken
+        
