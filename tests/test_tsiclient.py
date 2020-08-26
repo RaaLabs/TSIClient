@@ -11,7 +11,7 @@ from tests.mock_responses import MockURLs, MockResponses
 class TestTSIClient():
     def test_create_TSICLient_success(self, client):
         assert client._applicationName == "postmanServicePrincipal"
-        assert client._enviromentName == "Test_Environment"
+        assert client._environmentName == "Test_Environment"
         assert client._client_id == "MyClientID"
         assert client._client_secret == "a_very_secret_password"
         assert client._tenant_id == "yet_another_tenant_id"
@@ -20,25 +20,25 @@ class TestTSIClient():
 
     def test_create_TSICLient_with_api_version_success(self, client):
         client = tsi.TSIClient(
-            enviroment='Test_Environment',
+            environment='Test_Environment',
             client_id="MyClientID",
             client_secret="a_very_secret_password",
             applicationName="postmanServicePrincipal",
             tenant_id="yet_another_tenant_id",
-            api_version="2018-11-01-preview"
+            api_version="2020-07-31"
         )
 
         assert client._applicationName == "postmanServicePrincipal"
-        assert client._enviromentName == "Test_Environment"
+        assert client._environmentName == "Test_Environment"
         assert client._client_id == "MyClientID"
         assert client._client_secret == "a_very_secret_password"
         assert client._tenant_id == "yet_another_tenant_id"
-        assert client._apiVersion == "2018-11-01-preview"
+        assert client._apiVersion == "2020-07-31"
 
 
     def test_create_TSIClient_from_env(self, client_from_env):
         assert client_from_env._applicationName == "my_app"
-        assert client_from_env._enviromentName == "my_environment"
+        assert client_from_env._environmentName == "my_environment"
         assert client_from_env._client_id == "my_client_id"
         assert client_from_env._client_secret == "my_client_secret"
         assert client_from_env._tenant_id == "my_tenant_id"
@@ -51,15 +51,15 @@ class TestTSIClient():
         os.environ["TSICLIENT_CLIENT_ID"] = "my_client_id"
         os.environ["TSICLIENT_CLIENT_SECRET"] = "my_client_secret"
         os.environ["TSICLIENT_TENANT_ID"] = "my_tenant_id"
-        os.environ["TSI_API_VERSION"] = "2018-11-01-preview"
+        os.environ["TSI_API_VERSION"] = "2020-07-31"
         client_from_env = tsi.TSIClient()
 
         assert client_from_env._applicationName == "my_app"
-        assert client_from_env._enviromentName == "my_environment"
+        assert client_from_env._environmentName == "my_environment"
         assert client_from_env._client_id == "my_client_id"
         assert client_from_env._client_secret == "my_client_secret"
         assert client_from_env._tenant_id == "my_tenant_id"
-        assert client_from_env._apiVersion == "2018-11-01-preview"
+        assert client_from_env._apiVersion == "2020-07-31"
 
 
     def test__getToken_success(self, requests_mock, client):
@@ -69,7 +69,7 @@ class TestTSIClient():
             json=MockResponses.mock_oauth
         )
 
-        token = client._getToken()
+        token = client.authorization._getToken()
 
         assert token == "some_type token"
 
@@ -83,7 +83,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            client._getToken()
+            client.authorization._getToken()
 
         assert "TSIClient: Authentication with the TSI api was unsuccessful. Check your client secret." in caplog.text
 
@@ -96,7 +96,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            client._getToken()
+            client.authorization._getToken()
 
 
     def test__getVariableAggregate_with_no_aggregate_returns_None_and_getSeries(self, requests_mock, client):
@@ -108,15 +108,15 @@ class TestTSIClient():
 
     def test__getVariableAggregate_with_unsupported_aggregate_raises_TSIQueryError(self, requests_mock, client, caplog):
         with pytest.raises(TSIQueryError):
-            client._getVariableAggregate(aggregate="unsupported_aggregate")
+            client.query._getVariableAggregate(aggregate="unsupported_aggregate")
 
 
     def test__getVariableAggregate_with_avg_aggregate_returns_aggregate_and_aggregateSeries(self, requests_mock, client):
-        aggregate, requestType = client._getVariableAggregate(aggregate="avg")
+        inlineVar, variableName = client.query._getVariableAggregate(aggregate="avg", interpolationKind=None, interpolationSpan=None)
         
-        assert aggregate == {'tsx': 'avg($value)'}
-        assert isinstance(aggregate, dict)
-        assert requestType == "aggregateSeries"
+        assert inlineVar == {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,"aggregation": {"tsx": "avg($value)"}}
+        assert isinstance(inlineVar, dict)
+        assert variableName == "AvgVarAggregate"
 
 
     def test_getEnvironment_success(self, requests_mock, client):
@@ -131,7 +131,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        env_id = client.getEnviroment()
+        env_id = client.environment.getEnvironmentId()
 
         assert env_id == "00000000-0000-0000-0000-000000000000"
 
@@ -149,7 +149,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            client.getEnviroment()
+            client.environment.getEnvironmentId()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -167,7 +167,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            client.getEnviroment()
+            client.environment.getEnvironmentId()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -185,7 +185,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIEnvironmentError) as exc_info:
-            client.getEnviroment()
+            client.environment.getEnvironmentId()
 
         assert "Azure TSI environment not found. Check the spelling or create an environment in Azure TSI." in str(exc_info.value)
 
@@ -207,7 +207,7 @@ class TestTSIClient():
             json=MockResponses.mock_environment_availability
         )
 
-        resp = client.getEnvironmentAvailability()
+        resp = client.environment.getEnvironmentAvailability()
 
         assert isinstance(resp["availability"], dict)
         assert "intervalSize" in resp["availability"]
@@ -233,7 +233,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            client.getEnvironmentAvailability()
+            client.environment.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -256,7 +256,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            client.getEnvironmentAvailability()
+            client.environment.getEnvironmentAvailability()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -278,7 +278,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        resp = client.getHierarchies()
+        resp = client.hierarchies.getHierarchies()
 
         assert len(resp["hierarchies"]) == 1
         assert isinstance(resp["hierarchies"], list)
@@ -304,7 +304,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            client.getHierarchies()
+            client.hierarchies.getHierarchies()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -327,7 +327,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            client.getHierarchies()
+            client.hierarchies.getHierarchies()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -349,7 +349,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        resp = client.getTypes()
+        resp = client.types.getTypes()
 
         assert len(resp["types"]) == 2
         assert isinstance(resp["types"], list)
@@ -375,7 +375,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            client.getTypes()
+            client.types.getTypes()
 
         assert "TSIClient: The request to the TSI api returned an unsuccessfull status code." in caplog.text
 
@@ -398,7 +398,7 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            client.getTypes()
+            client.types.getTypes()
 
         assert "TSIClient: The request to the TSI api timed out." in caplog.text
 
@@ -420,7 +420,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        resp = client.getInstances()
+        resp = client.instances.getInstances()
 
         assert len(resp["instances"]) == 1
         assert isinstance(resp["instances"], list)
@@ -446,7 +446,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        timeSeriesNames = client.getNameById(
+        timeSeriesNames = client.query.getNameById(
             ids=["006dfc2d-0324-4937-998c-d16f3b4f1952", "made_up_id"]
         )
 
@@ -472,7 +472,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        timeSeriesIds = client.getIdByAssets(asset="F1W7")
+        timeSeriesIds = client.query.getIdByAssets(asset="F1W7")
 
         assert len(timeSeriesIds) == 1
         assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
@@ -495,7 +495,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        timeSeriesIds = client.getIdByAssets(asset="made_up_asset_name")
+        timeSeriesIds = client.query.getIdByAssets(asset="made_up_asset_name")
 
         assert len(timeSeriesIds) == 0
 
@@ -517,7 +517,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        timeSeriesIds = client.getIdByName(
+        timeSeriesIds = client.query.getIdByName(
             names=["F1W7.GS1", "made_up_name"]
         )
 
@@ -543,7 +543,7 @@ class TestTSIClient():
             json=MockResponses.mock_environments
         )
 
-        timeSeriesIds = client.getIdByDescription(
+        timeSeriesIds = client.query.getIdByDescription(
             names=["ContosoFarm1W7_GenSpeed1", "made_up_description"]
         )
 
@@ -579,11 +579,11 @@ class TestTSIClient():
             json=MockResponses.mock_instances
         )
 
-        data_by_id = client.getDataById(
+        data_by_id = client.query.getDataById(
             timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
             timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
             interval="PT1S",
-            aggregate="avg",
+            aggregateList="avg",
             useWarmStore=False
         )
 
@@ -624,11 +624,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIStoreError):
-            data_by_id = client.getDataById(
+            data_by_id = client.query.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=True
             )
 
@@ -661,11 +661,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIQueryError):
-            data_by_id = client.getDataById(
+            data_by_id = client.query.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=False
             )
 
@@ -698,11 +698,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.HTTPError):
-            data_by_id = client.getDataById(
+            data_by_id = client.query.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=False
             )
 
@@ -735,11 +735,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            data_by_id = client.getDataById(
+            data_by_id = client.query.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=False
             )
 
@@ -771,12 +771,12 @@ class TestTSIClient():
             json=MockResponses.mock_types
         )
 
-        data_by_description = client.getDataByDescription(
+        data_by_description = client.query.getDataByDescription(
             variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
             TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
             timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
             interval="PT1S",
-            aggregate="avg",
+            aggregateList="avg",
             useWarmStore=False
         )
 
@@ -818,12 +818,12 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIStoreError):
-            data_by_description = client.getDataByDescription(
+            data_by_description = client.query.getDataByDescription(
                 variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
                 TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=True
             )
 
@@ -856,12 +856,12 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIQueryError):
-            data_by_description = client.getDataByDescription(
+            data_by_description = client.query.getDataByDescription(
                 variables=["ContosoFarm1W7_GenSpeed1", "DescriptionOfNonExistantTimeseries"],
                 TSName=["MyTimeSeriesName", "NameOfNonExistantTimeSeries"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=False
             )
 
@@ -893,11 +893,11 @@ class TestTSIClient():
             json=MockResponses.mock_types
         )
 
-        data_by_name = client.getDataByName(
+        data_by_name = client.query.getDataByName(
             variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
             timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
             interval="PT1S",
-            aggregate="avg",
+            aggregateList="avg",
             useWarmStore=False
         )
 
@@ -939,11 +939,11 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIStoreError):
-            data_by_name = client.getDataByName(
+            data_by_name = client.query.getDataByName(
                 variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=True
             )
 
@@ -976,10 +976,10 @@ class TestTSIClient():
         )
 
         with pytest.raises(TSIQueryError):
-            data_by_name = client.getDataByName(
+            data_by_name = client.query.getDataByName(
                 variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
-                aggregate="avg",
+                aggregateList="avg",
                 useWarmStore=False
             )
