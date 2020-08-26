@@ -51,7 +51,7 @@ class InstancesApi():
         
         result = jsonResponse
         
-        while 'continuationToken' in list(jsonResponse.keys()):#len(jsonResponse['instances'])>999 and 'continuationToken' in list(jsonResponse.keys()):
+        while len(jsonResponse['instances'])>999 and 'continuationToken' in list(jsonResponse.keys()):
             headers = {
                 'x-ms-client-application-name': self._applicationName,
                 'Authorization': authorizationToken,
