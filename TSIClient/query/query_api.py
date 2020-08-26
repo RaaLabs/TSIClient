@@ -558,7 +558,7 @@ class QueryApi():
                         if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
                             raise TSIStoreError(
                                 "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                    .format(id=self._environmentName),
+                                    .format(id=self.environmentId),
                             )
                     else:
                         logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
