@@ -467,7 +467,7 @@ class QueryApi():
         authorizationToken,
         otherColNamesThanTimeseriesIds=None,
     ):
-        df = None
+        df = pd.DataFrame()
         typeList = self.types_api.getTypeTsx()
         if not isinstance(types,list):
             types = [types]
@@ -625,7 +625,6 @@ class QueryApi():
                     result["timestamps"].extend(response["timestamps"])
 
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
-                df = pd.DataFrame()
                 try:
                     assert i == 0
                     df = pd.DataFrame(
@@ -684,7 +683,6 @@ class QueryApi():
                         response = json.loads(jsonResponse.text)
                     result["timestamps"].extend(response["timestamps"])
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
-                df = pd.DataFrame()
                 try:
                     assert i == 0
                     df = pd.DataFrame(
