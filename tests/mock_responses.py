@@ -12,7 +12,6 @@ class MockURLs():
     environment_availability_url = "https://{}.env.timeseries.azure.com/availability".format("00000000-0000-0000-0000-000000000000")
     query_getseries_url = "https://{}.env.timeseries.azure.com/timeseries/query?".format("00000000-0000-0000-0000-000000000000")
 
-    oauth_url_from_env = "https://login.microsoftonline.com/{}/oauth2/token".format("my_tenant_id")
 
 class MockResponses():
     """This class holds mocked request responses which can be used across tests.
@@ -79,17 +78,6 @@ class MockResponses():
         "environments": [
             {
                 "displayName":"Test_Environment",
-                "environmentFqdn": "00000000-0000-0000-0000-000000000000.env.timeseries.azure.com",
-                "environmentId": "00000000-0000-0000-0000-000000000000",
-                "resourceId": "resourceId"
-            }
-        ]
-    }
-
-    mock_environments_from_env = {
-        "environments": [
-            {
-                "displayName":"my_environment",
                 "environmentFqdn": "00000000-0000-0000-0000-000000000000.env.timeseries.azure.com",
                 "environmentId": "00000000-0000-0000-0000-000000000000",
                 "resourceId": "resourceId"
