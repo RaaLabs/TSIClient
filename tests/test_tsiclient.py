@@ -39,20 +39,20 @@ def client(requests_mock):
 @pytest.fixture
 def client_from_env(requests_mock):
     os.environ["TSICLIENT_APPLICATION_NAME"] = "my_app"
-    os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "my_environment"
+    os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "Test_Environment"
     os.environ["TSICLIENT_CLIENT_ID"] = "my_client_id"
     os.environ["TSICLIENT_CLIENT_SECRET"] = "my_client_secret"
-    os.environ["TSICLIENT_TENANT_ID"] = "my_tenant_id"
+    os.environ["TSICLIENT_TENANT_ID"] = "yet_another_tenant_id"
 
     requests_mock.request(
         "POST",
-        MockURLs.oauth_url_from_env,
+        MockURLs.oauth_url,
         json=MockResponses.mock_oauth
     )
     requests_mock.request(
         "GET",
         MockURLs.env_url,
-        json=MockResponses.mock_environments_from_env
+        json=MockResponses.mock_environments
     )
     requests_mock.request(
         "GET",
@@ -85,26 +85,26 @@ class TestTSIClient():
 
     def test_create_TSIClient_from_env(self, client_from_env):
         assert client_from_env._applicationName == "my_app"
-        assert client_from_env._environmentName == "my_environment"
+        assert client_from_env._environmentName == "Test_Environment"
         assert client_from_env._client_id == "my_client_id"
         assert client_from_env._client_secret == "my_client_secret"
-        assert client_from_env._tenant_id == "my_tenant_id"
+        assert client_from_env._tenant_id == "yet_another_tenant_id"
         assert client_from_env._apiVersion == "2020-07-31"
 
     
     def test_create_TSIClient_from_env_with_api_version(self, client_from_env):
         os.environ["TSICLIENT_APPLICATION_NAME"] = "my_app"
-        os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "my_environment"
+        os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "Test_Environment"
         os.environ["TSICLIENT_CLIENT_ID"] = "my_client_id"
         os.environ["TSICLIENT_CLIENT_SECRET"] = "my_client_secret"
-        os.environ["TSICLIENT_TENANT_ID"] = "my_tenant_id"
+        os.environ["TSICLIENT_TENANT_ID"] = "yet_another_tenant_id"
         os.environ["TSI_API_VERSION"] = "2020-07-31"
 
         assert client_from_env._applicationName == "my_app"
-        assert client_from_env._environmentName == "my_environment"
+        assert client_from_env._environmentName == "Test_Environment"
         assert client_from_env._client_id == "my_client_id"
         assert client_from_env._client_secret == "my_client_secret"
-        assert client_from_env._tenant_id == "my_tenant_id"
+        assert client_from_env._tenant_id == "yet_another_tenant_id"
         assert client_from_env._apiVersion == "2020-07-31"
 
 
