@@ -106,20 +106,20 @@ class TSIClient():
         )
         self._environmentId = self.environment.getEnvironmentId()
 
-        self.instancesAPI = InstancesApi(
+        self.instances = InstancesApi(
             application_name = self._applicationName,
             environment_id = self._environmentId,
             authorization_api = self.authorization,
             common_funcs = self.common_funcs
         )
-        self.instances = self.instancesAPI.getInstances()
+        self.instancesRetrieved = self.instances.getInstances()
 
         self.types = TypesApi(
             application_name = self._applicationName,
             environment_id = self._environmentId,
             authorization_api = self.authorization,
             common_funcs = self.common_funcs,
-            instances = self.instances
+            instances = self.instancesRetrieved
         )
 
         self.query = QueryApi(
@@ -128,7 +128,7 @@ class TSIClient():
             authorization_api = self.authorization,
             common_funcs = self.common_funcs,
             typesApi = self.types,
-            instances = self.instances,
+            instances = self.instancesRetrieved,
         )
 
         self.hierarchies = HierarchiesApi(
