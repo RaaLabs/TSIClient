@@ -625,7 +625,7 @@ class QueryApi():
                     result["timestamps"].extend(response["timestamps"])
 
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
-
+                df = pd.DataFrame()
                 try:
                     assert i == 0
                     df = pd.DataFrame(
@@ -638,16 +638,26 @@ class QueryApi():
                     df.sort_values(by=['timestamp'], inplace=True)
 
                 except:
-                    df_temp = pd.DataFrame(
-                        {
-                            "timestamp": result["timestamps"],
-                            colNames[i] : result["properties"][0]["values"],
-                        }
-                    )
-                    df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
-                    df_temp.sort_values(by=['timestamp'], inplace=True)
-                    """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                    df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                    if df.empty:
+                        df = pd.DataFrame(
+                                {
+                                    "timestamp": result["timestamps"],
+                                    colNames[i] : result["properties"][0]["values"],
+                                }
+                            )
+                        df['timestamp'] = pd.to_datetime(df['timestamp'])
+                        df.sort_values(by=['timestamp'], inplace=True)
+                    else:
+                        df_temp = pd.DataFrame(
+                            {
+                                "timestamp": result["timestamps"],
+                                colNames[i] : result["properties"][0]["values"],
+                            }
+                        )
+                        df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
+                        df_temp.sort_values(by=['timestamp'], inplace=True)
+                        """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
+                        df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
 
@@ -674,7 +684,7 @@ class QueryApi():
                         response = json.loads(jsonResponse.text)
                     result["timestamps"].extend(response["timestamps"])
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
-
+                df = pd.DataFrame()
                 try:
                     assert i == 0
                     df = pd.DataFrame(
@@ -687,16 +697,26 @@ class QueryApi():
                     df.sort_values(by=['timestamp'], inplace=True)
 
                 except:
-                    df_temp = pd.DataFrame(
-                        {
-                            "timestamp": result["timestamps"],
-                            colNames[i] : result["properties"][0]["values"],
-                        }
-                    )
-                    df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
-                    df_temp.sort_values(by=['timestamp'], inplace=True)
-                    """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                    df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
+                    if df.empty:
+                        df = pd.DataFrame(
+                                {
+                                    "timestamp": result["timestamps"],
+                                    colNames[i] : result["properties"][0]["values"],
+                                }
+                            )
+                        df['timestamp'] = pd.to_datetime(df['timestamp'])
+                        df.sort_values(by=['timestamp'], inplace=True)
+                    else:
+                        df_temp = pd.DataFrame(
+                            {
+                                "timestamp": result["timestamps"],
+                                colNames[i] : result["properties"][0]["values"],
+                            }
+                        )
+                        df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
+                        df_temp.sort_values(by=['timestamp'], inplace=True)
+                        """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
+                        df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
         return df
