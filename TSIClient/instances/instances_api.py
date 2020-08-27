@@ -67,39 +67,10 @@ class InstancesApi():
         return result
 
     def writeInstance(self, payload):
-        jsonResponse = self._updateTimeSeries(payload, 'instances')
-        return jsonResponse
-
-    def _updateTimeSeries(self, payload, timeseries):
-        """Writes instances to the TSI environment.
-
-        Args:
-            payload (str): A json-serializable payload that is posted to the TSI environment.
-                The format of the payload is specified in the Azure TSI documentation.
-
-        Returns:
-            dict: The response of the TSI api call.
-        """
-
         authorizationToken = self.authorization_api._getToken()
-
-        url = "https://{environmentId}.env.timeseries.azure.com/timeseries/{timeseries}/$batch".format(environmentId=self.environmentId,timeseries=timeseries)
-        
-        querystring = self.common_funcs._getQueryString()
-
-        headers = {
-            'x-ms-client-application-name': self._applicationName,
-            'Authorization': authorizationToken,
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        response = requests.request("POST", url, data=json.dumps(payload), headers=headers, params=querystring)
-
-        if response.text:
-            jsonResponse = json.loads(response.text)
-
+        jsonResponse = self.common_funcs._updateTimeSeries(payload, 'instances', self._applicationName, self.environmentId, authorizationToken)
         return jsonResponse
+
 
     def deleteInstancesById(self, instances):
         """ instances are the list of the timeseries ids to delete"""
