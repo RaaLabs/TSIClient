@@ -8,7 +8,7 @@ from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryErr
 from tests.mock_responses import MockURLs, MockResponses
 
 
-class TestTSIClient():
+class TestTSIClient:
     def test_create_TSICLient_success(self, client):
         assert client._applicationName == "postmanServicePrincipal"
         assert client._environmentName == "Test_Environment"
@@ -16,7 +16,6 @@ class TestTSIClient():
         assert client._client_secret == "a_very_secret_password"
         assert client._tenant_id == "yet_another_tenant_id"
         assert client._apiVersion == "2020-07-31"
-
 
     def test_create_TSICLient_with_api_version_success(self, client):
         assert client._applicationName == "postmanServicePrincipal"
@@ -26,7 +25,6 @@ class TestTSIClient():
         assert client._tenant_id == "yet_another_tenant_id"
         assert client._apiVersion == "2020-07-31"
 
-
     def test_create_TSIClient_from_env(self, client_from_env):
         assert client_from_env._applicationName == "my_app"
         assert client_from_env._environmentName == "Test_Environment"
@@ -35,7 +33,6 @@ class TestTSIClient():
         assert client_from_env._tenant_id == "yet_another_tenant_id"
         assert client_from_env._apiVersion == "2020-07-31"
 
-    
     def test_create_TSIClient_from_env_with_api_version(self, client_from_env):
         os.environ["TSICLIENT_APPLICATION_NAME"] = "my_app"
         os.environ["TSICLIENT_ENVIRONMENT_NAME"] = "Test_Environment"
@@ -50,6 +47,3 @@ class TestTSIClient():
         assert client_from_env._client_secret == "my_client_secret"
         assert client_from_env._tenant_id == "yet_another_tenant_id"
         assert client_from_env._apiVersion == "2020-07-31"
-
-
-    
