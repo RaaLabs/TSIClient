@@ -41,7 +41,7 @@ client = tsi.TSIClient(
 You can query your timeseries data by timeseries id, timeseries name or timeseries description. The Microsoft TSI apis support aggregation, so you can specify a sampling freqency and an aggregation method. Refer to the documentation for detailed information.
 
 ````python
-data = client.getDataById(
+data = client.query.getDataById(
     timeseries=["timeseries_id1", "timeseries_id2"],
     timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
     interval="PT5M",
