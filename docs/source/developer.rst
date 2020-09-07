@@ -14,6 +14,7 @@ Below are the commands for Mac/Linux.
 
     $ git clone https://github.com/<your-github-name>/TSIClient
     $ cd TSIClient
+    $ pip install virtualenv
     $ virtualenv venv
     $ source venv/bin/activate
     $ pip install -r requirements.txt
