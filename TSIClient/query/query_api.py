@@ -268,7 +268,7 @@ class QueryApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> data = client.getDataByName(
+            >>> data = client.query.getDataByName(
             ...     variables=["timeseries_name_1", "timeseries_name_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
@@ -339,7 +339,7 @@ class QueryApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> data = client.getDataByDescription(
+            >>> data = client.query.getDataByDescription(
             ...     variables=["timeseries_description_1", "timeseries_description_2"],
             ...     TSName=["my_timeseries_name_1", "my_timeseries_name_2"]
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
@@ -409,7 +409,7 @@ class QueryApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> data = client.getDataById(
+            >>> data = client.query.getDataById(
             ...     timeseries=["timeseries_id_1", "timeseries_id_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
