@@ -97,7 +97,8 @@ class QueryApi():
 
     def getInlineVariablesAggregate(self, aggregateList=None, interpolationList=None, interpolationSpanList=None):
         """Returns a tuple of lists to apply in the payload consisiting of the InlineVariables and the 
-            projectedVariables. 
+            projectedVariables.
+
         Args:
             aggregateList (list): List of the aggregation methods to be used without interpolation:
                 ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
@@ -105,10 +106,12 @@ class QueryApi():
                 ("twsum", "twavg", "left", "right")
             interpolationList (list): A list of interpolation methods. Either Linear or Step.
             interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
-                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation..
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+
         Returns:
             A tuple of lists to apply in the payload consisiting of the InlineVariables and the 
-            projectedVariables. 
+            projectedVariables.
+
         Raises:
             TSIQueryError: Raised if there was an error in the aggregation lists, 
             the list have either different length or interpolation aggregation 
