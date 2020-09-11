@@ -32,7 +32,7 @@ class EnvironmentApi:
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> env = client.getEnvironment()
+            >>> env = client.environment.getEnvironmentId()
         """
 
         authorizationToken = self.authorization_api._getToken()
@@ -90,7 +90,7 @@ class EnvironmentApi:
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> env_availability = client.getEnvironmentAvailability()
+            >>> env_availability = client.environment.getEnvironmentAvailability()
         """
 
         environmentId = self.getEnvironmentId()
