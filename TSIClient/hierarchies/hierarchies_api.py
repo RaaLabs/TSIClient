@@ -29,7 +29,7 @@ class HierarchiesApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> hierarchies = client.getHierarchies()
+            >>> hierarchies = client.hierarchies.getHierarchies()
         """
 
         authorizationToken = self.authorization_api._getToken()

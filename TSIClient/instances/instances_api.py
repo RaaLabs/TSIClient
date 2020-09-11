@@ -28,7 +28,7 @@ class InstancesApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> instances = client.getInstances()
+            >>> instances = client.instances.getInstances()
         """
 
         authorizationToken = self.authorization_api._getToken()
