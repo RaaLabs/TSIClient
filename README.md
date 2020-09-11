@@ -1,8 +1,8 @@
 # TSIClient
 [![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e4ddf7b091dc4d4ebbe3bcd572487f02)](https://www.codacy.com/gh/RaaLabs/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RaaLabs/TSIClient&amp;utm_campaign=Badge_Grade)
+[![codecov](https://codecov.io/gh/rafaelschlatter/TSIClient/branch/master/graph/badge.svg)](https://codecov.io/gh/rafaelschlatter/TSIClient)
 [![Documentation Status](https://readthedocs.org/projects/raalabs-tsiclient/badge/?version=latest)](https://raalabs-tsiclient.readthedocs.io/en/latest/?badge=latest)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d73dafb558f64d8580a4a87517c32340)](https://www.codacy.com/manual/rafaelschlatter/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=rafaelschlatter/TSIClient&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e4ddf7b091dc4d4ebbe3bcd572487f02)](https://www.codacy.com/gh/RaaLabs/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RaaLabs/TSIClient&amp;utm_campaign=Badge_Grade)
 [![PyPI version](https://badge.fury.io/py/TSIClient.svg)](https://badge.fury.io/py/TSIClient)
 [![Downloads](https://pepy.tech/badge/tsiclient/month)](https://pepy.tech/project/tsiclient/month)
 
