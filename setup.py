@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 with open('README.md') as f:
@@ -6,7 +6,7 @@ with open('README.md') as f:
 
 setup(
   name = 'TSIClient',
-  packages = ['TSIClient'],
+  packages = find_packages(),
   version = '1.2.0',
   license='MIT',
   long_description=long_description,
