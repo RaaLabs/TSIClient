@@ -31,7 +31,7 @@ class TypesApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> types = client.getTypes()
+            >>> types = client.types.getTypes()
         """
 
         authorizationToken = self.authorization_api._getToken()
@@ -80,7 +80,7 @@ class TypesApi():
         Example:
             >>> from TSIClient import TSIClient as tsi
             >>> client = tsi.TSIClient()
-            >>> types = client.getTypeTsx()
+            >>> types = client.types.getTypeTsx()
         """
 
         types={}
