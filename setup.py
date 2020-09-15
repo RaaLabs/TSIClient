@@ -7,11 +7,11 @@ with open('README.md') as f:
 setup(
   name = 'TSIClient',
   packages = find_packages(),
-  version = '1.2.0',
+  version = '2.0.0',
   license='MIT',
   long_description=long_description,
   long_description_content_type='text/markdown',
-  author = 'Anders Gill',
+  author = 'Raa Labs',
   author_email = 'gill@outlook.com',
   url = 'https://github.com/RaaLabs/TSIClient',
   #download_url = 'https://github.com/RaaLabs/TSIClient/archive/v_0.7.tar.gz',    # I explain this later on
