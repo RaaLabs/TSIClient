@@ -105,7 +105,7 @@ class QueryApi():
 
     def getInlineVariablesAggregate(self, typeList=None, currType=None, aggregateList=None, interpolationList=None, interpolationSpanList=None):
         """Returns a tuple of lists to apply in the payload consisiting of the InlineVariables and the 
-            projectedVariables. 
+            projectedVariables.
         Args:
             aggregateList (list): List of the aggregation methods to be used without interpolation:
                 ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
