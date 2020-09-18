@@ -92,7 +92,6 @@ class TypesApi():
                 types[typeElement['id']] = typeElement['variables']['Value']['value']['tsx']
             except:
                 logging.error('"Value" for type id {type} cannot be extracted'.format(type = typeElement['id']))
-                pass
 
         return types
 
