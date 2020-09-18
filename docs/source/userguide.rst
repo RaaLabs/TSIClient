@@ -54,7 +54,7 @@ access FQDN (you find it on the overview on your TSI environment page in Azure).
 
 .. code-block:: python
 
-    >>> client.getEnviroment()
+    >>> client.environment.getEnvironmentId()
     'azbf6395-3459-143u-j931-6io92e473892'
 
 
@@ -63,7 +63,7 @@ to make qyering data easy. Use ``getInstances()`` to retrieve all timeseries ins
 
 .. code-block:: python
 
-    >>> response = client.getInstances()
+    >>> response = client.instances.getInstances()
     >>> print(response["instances"][0])
     {"instances": [{"typeId": "9b84e946-7b36-4aa0-9d26-71bf48cb2aff", "name": "F1W7.GS1",
     "timeSeriesId": ["006dfc2d-0324-4937-998c-d16f3b4f1952", "T1"], "description": "ContosoFarm1W7_GenSpeed1",
@@ -78,7 +78,7 @@ and ``getNameById()`` work accordingly.
 
 .. code-block:: python
 
-    >>> client.getIdByName(["GeneratorSpeed"])
+    >>> client.query.getIdByName(["GeneratorSpeed"])
     ['006dfc2d-0324-4937-998c-d16f3b4f1952']
 
 
@@ -89,7 +89,7 @@ is convenient for further statistical analysis.
 
 .. code-block:: python
 
-    >>> data = client.getDataById(
+    >>> data = client.query.getDataById(
     ...     timeseries=["timeseries_id1", "timeseries_id2"],
     ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
     ...     interval="PT5M",
