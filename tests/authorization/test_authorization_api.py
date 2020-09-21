@@ -1,7 +1,7 @@
 import requests
 import pytest
 from collections import namedtuple
-from tests.mock_responses import MockURLs, MockResponses
+from tests.mock_responses import MockURLs
 
 
 class TestAuthorizationApi:

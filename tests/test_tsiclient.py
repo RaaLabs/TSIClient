@@ -1,11 +1,4 @@
 import os
-import pytest
-import requests
-
-from collections import namedtuple
-from TSIClient import TSIClient as tsi
-from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
-from tests.mock_responses import MockURLs, MockResponses
 
 
 class TestTSIClient:

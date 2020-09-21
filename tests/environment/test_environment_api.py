@@ -1,6 +1,6 @@
 import pytest
 import requests
-from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
+from TSIClient.exceptions import TSIEnvironmentError
 from tests.mock_responses import MockURLs, MockResponses
 
 

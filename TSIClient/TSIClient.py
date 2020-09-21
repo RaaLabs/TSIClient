@@ -1,11 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import os
-import json
-import pandas as pd
-import requests
-import logging
-from TSIClient.exceptions import TSIEnvironmentError, TSIStoreError, TSIQueryError
 from TSIClient.authorization.authorization_api import AuthorizationApi
 from TSIClient.common.common_funcs import CommonFuncs
 from TSIClient.environment.environment_api import EnvironmentApi

@@ -2,7 +2,7 @@ from ..authorization.authorization_api import AuthorizationApi
 from ..common.common_funcs import CommonFuncs
 import json
 import requests
-import logging
+
 
 class InstancesApi():
     def __init__(
