@@ -26,7 +26,7 @@ class QueryApi():
         self.instances = instances
         self.types_api = typesApi
 
-    def _getVariableAggregate(self, aggregate=None, interpolationKind=None, interpolationSpan=None):
+    def _getVariableAggregate(self, typeList=None, currType=None, aggregate=None, interpolationKind=None, interpolationSpan=None):
         """Creates the fields of the payload corresponding to the inlineVariable 
             and to the projectedVariables name
 
@@ -67,18 +67,26 @@ class QueryApi():
                         "Need interpolation boundary."
                     )
                 variableName = interpolationKind.capitalize() + aggregate.capitalize() + 'Interpolation'
-
-                inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
-                    "interpolation":{"kind": "{0!s}".format(interpolationKind),\
-                    "boundary":{"span": "{0!s}".format(interpolationSpan)}},\
-                    "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                if typeList == None or currType == None:
+                    inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
+                        "interpolation":{"kind": "{0!s}".format(interpolationKind),\
+                        "boundary":{"span": "{0!s}".format(interpolationSpan)}},\
+                        "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                else:
+                    inlineVar = {"kind":"numeric", "value": {"tsx": typeList[currType]}, "filter": None,\
+                        "interpolation":{"kind": "{0!s}".format(interpolationKind),\
+                        "boundary":{"span": "{0!s}".format(interpolationSpan)}},\
+                        "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
 
 
             else: 
                 variableName = aggregate.capitalize() + 'VarAggregate'
-
-                inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
-                    "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                if typeList == None or currType == None:
+                    inlineVar = {"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None,\
+                        "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
+                else:
+                    inlineVar = {"kind":"numeric", "value": {"tsx": typeList[currType]}, "filter": None,\
+                        "aggregation": {"tsx": "{0!s}($value)".format(aggregate)}}
 
         return (inlineVar, variableName)
 
@@ -95,10 +103,9 @@ class QueryApi():
             )
         return requestType
 
-    def getInlineVariablesAggregate(self, aggregateList=None, interpolationList=None, interpolationSpanList=None):
+    def getInlineVariablesAggregate(self, typeList=None, currType=None, aggregateList=None, interpolationList=None, interpolationSpanList=None):
         """Returns a tuple of lists to apply in the payload consisiting of the InlineVariables and the 
             projectedVariables.
-
         Args:
             aggregateList (list): List of the aggregation methods to be used without interpolation:
                 ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
@@ -106,12 +113,10 @@ class QueryApi():
                 ("twsum", "twavg", "left", "right")
             interpolationList (list): A list of interpolation methods. Either Linear or Step.
             interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
-                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
-
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation..
         Returns:
             A tuple of lists to apply in the payload consisiting of the InlineVariables and the 
-            projectedVariables.
-
+            projectedVariables. 
         Raises:
             TSIQueryError: Raised if there was an error in the aggregation lists, 
             the list have either different length or interpolation aggregation 
@@ -127,7 +132,7 @@ class QueryApi():
             projectedVarNames = []
             inlineVarPayload = []
             for i in range(0,len(aggregateList)):
-                (inlineVar, variableName) = self._getVariableAggregate(aggregate=aggregateList[i],\
+                (inlineVar, variableName) = self._getVariableAggregate(typeList=typeList, currType=currType, aggregate=aggregateList[i],\
                     interpolationKind=interpolationList[i], interpolationSpan=interpolationSpanList[i])
                 projectedVarNames.append(variableName)
                 inlineVarPayload.append(inlineVar)
@@ -137,7 +142,7 @@ class QueryApi():
 
             projectedVarNames = []
             inlineVarPayload = []
-            (inlineVar, variableName) = self._getVariableAggregate(aggregate=aggregateList,\
+            (inlineVar, variableName) = self._getVariableAggregate(typeList=typeList, currType=currType, aggregate=aggregateList,\
                 interpolationKind=interpolationList, interpolationSpan=interpolationSpanList)
             projectedVarNames.append(variableName)
             inlineVarPayload.append(inlineVar)
@@ -482,19 +487,6 @@ class QueryApi():
         else:
             colNames = timeseries
         
-        if requestType == 'aggregateSeries':
-            (inlineVarPayload, projectedVarNames) = self.getInlineVariablesAggregate(aggregateList=aggregateList,\
-                interpolationList=interpolationList,interpolationSpanList=interpolationSpanList)
-        elif requestType == 'getSeries':
-            inlineVarPayload = [{"kind":"numeric", "value": {"tsx": "$event.value"}, "filter": None}]
-            projectedVarNames = ['tagData']
-        elif requestType == 'getEvents':
-            projectedVarNames = None
-
-        else:
-            raise TSIQueryError(
-                "TSIClient: Not a valid request type "
-            )
 
         for i, _ in enumerate(timeseries):
             if timeseries[i] == None:
@@ -504,6 +496,19 @@ class QueryApi():
                 logging.error("Type not defined for {timeseries}".format(timeseries=timeseries[i]))
                 continue
             logging.info(f'Timeseries {colNames[i]} has type {typeList[types[i]]}')
+            if requestType == 'aggregateSeries':
+                (inlineVarPayload, projectedVarNames) = self.getInlineVariablesAggregate(typeList=typeList,currType=types[i], aggregateList=aggregateList,\
+                    interpolationList=interpolationList,interpolationSpanList=interpolationSpanList)
+            elif requestType == 'getSeries':
+                inlineVarPayload = [{"kind":"numeric", "value": {"tsx": typeList[types[i]]}, "filter": None}]
+                projectedVarNames = ['tagData']
+            elif requestType == 'getEvents':
+                projectedVarNames = None
+
+            else:
+                raise TSIQueryError(
+                    "TSIClient: Not a valid request type "
+                )
             payload = {
                 requestType: {
                     "timeSeriesId": [timeseries[i]],
@@ -593,12 +598,33 @@ class QueryApi():
                                     }
                                 )
                 except:
-                    if isinstance(aggregateList, list):
-                        for idx, agg in enumerate(aggregateList):
-                            currColName  = colNames[i] + "/" + agg
-                            df[currColName] = response["properties"][idx]["values"]
+                    if df.empty:
+                        if isinstance(aggregateList, list):
+                            for idx, agg in enumerate(aggregateList):
+                                currColName = colNames[i] + "/" + agg
+                                if idx == 0:
+                                    df = pd.DataFrame(
+                                        {
+                                            "timestamp": response["timestamps"],
+                                            currColName : response["properties"][idx]["values"],
+                                        }
+                                    )
+                                else:
+                                    df[currColName] = response["properties"][idx]["values"]
+                        else:
+                            df = pd.DataFrame(
+                                        {
+                                            "timestamp": response["timestamps"],
+                                            colNames[i] : response["properties"][0]["values"],
+                                        }
+                                    )
                     else:
-                        df[colNames[i]] = response["properties"][0]["values"]
+                        if isinstance(aggregateList, list):
+                            for idx, agg in enumerate(aggregateList):
+                                currColName  = colNames[i] + "/" + agg
+                                df[currColName] = response["properties"][idx]["values"]
+                        else:
+                            df[colNames[i]] = response["properties"][0]["values"]
 
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
