@@ -123,7 +123,7 @@ class TestQueryApi:
         requests_mock.request("GET", MockURLs.types_url, json=MockResponses.mock_types)
 
         with pytest.raises(TSIQueryError):
-            data_by_id = client.query.getDataById(
+            client.query.getDataById(
                 timeseries=["006dfc2d-0324-4937-998c-d16f3b4f1952"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
@@ -222,7 +222,7 @@ class TestQueryApi:
         requests_mock.request("GET", MockURLs.types_url, json=MockResponses.mock_types)
 
         with pytest.raises(TSIQueryError):
-            data_by_description = client.query.getDataByDescription(
+            client.query.getDataByDescription(
                 variables=[
                     "ContosoFarm1W7_GenSpeed1",
                     "DescriptionOfNonExistantTimeseries",
@@ -285,7 +285,7 @@ class TestQueryApi:
         requests_mock.request("GET", MockURLs.types_url, json=MockResponses.mock_types)
 
         with pytest.raises(TSIQueryError):
-            data_by_name = client.query.getDataByName(
+            client.query.getDataByName(
                 variables=["F1W7.GS1", "NameOfNonExistantTimeseries"],
                 timespan=["2016-08-01T00:00:10Z", "2016-08-01T00:00:20Z"],
                 interval="PT1S",
