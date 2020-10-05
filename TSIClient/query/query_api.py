@@ -559,21 +559,20 @@ class QueryApi():
                 logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
                 raise
 
-            if jsonResponse.text:
-                response = json.loads(jsonResponse.text)
-                if "error" in response:
-                    if "innerError" in response["error"]:
-                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
-                            raise TSIStoreError(
-                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                    .format(id=self.environmentId),
-                            )
-                    else:
-                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
-                        raise TSIQueryError(response["error"])
-                if response["timestamps"] == []:
-                    logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
-                    continue
+            response = json.loads(jsonResponse.text)
+            if "error" in response:
+                if "innerError" in response["error"]:
+                    if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                        raise TSIStoreError(
+                            "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                .format(id=self.environmentId),
+                        )
+                else:
+                    logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                    raise TSIQueryError(response["error"])
+            if response["timestamps"] == []:
+                logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
+                continue
 
             if requestType == 'aggregateSeries':
                 try:
@@ -629,7 +628,7 @@ class QueryApi():
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
 
-            elif requestType == 'getSeries':
+            else:
                 result = response
                 while 'continuationToken' in list(response.keys()):
                     print("continuation token found, appending")
@@ -653,64 +652,6 @@ class QueryApi():
                         response = json.loads(jsonResponse.text)
                     result["timestamps"].extend(response["timestamps"])
 
-                    result["properties"][0]["values"].extend(response["properties"][0]["values"])
-                try:
-                    assert i == 0
-                    df = pd.DataFrame(
-                            {
-                                "timestamp": result["timestamps"],
-                                colNames[i] : result["properties"][0]["values"],
-                            }
-                        )
-                    df['timestamp'] = pd.to_datetime(df['timestamp'])
-                    df.sort_values(by=['timestamp'], inplace=True)
-
-                except:
-                    if df.empty:
-                        df = pd.DataFrame(
-                                {
-                                    "timestamp": result["timestamps"],
-                                    colNames[i] : result["properties"][0]["values"],
-                                }
-                            )
-                        df['timestamp'] = pd.to_datetime(df['timestamp'])
-                        df.sort_values(by=['timestamp'], inplace=True)
-                    else:
-                        df_temp = pd.DataFrame(
-                            {
-                                "timestamp": result["timestamps"],
-                                colNames[i] : result["properties"][0]["values"],
-                            }
-                        )
-                        df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
-                        df_temp.sort_values(by=['timestamp'], inplace=True)
-                        """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                        df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
-                finally:
-                    logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
-
-            elif requestType == 'getEvents':
-                result = response
-                while 'continuationToken' in list(response.keys()):
-                    print("continuation token found, appending")
-                    headers = {
-                        "x-ms-client-application-name": self._applicationName,
-                        "Authorization": authorizationToken,
-                        "Content-Type": "application/json",
-                        "cache-control": "no-cache",
-                        'x-ms-continuation': response['continuationToken'], 
-                    }
-                    jsonResponse = requests.request(
-                        "POST",
-                        url,
-                        data=json.dumps(payload),
-                        headers=headers,
-                        params=querystring,
-                    )
-                    jsonResponse.raise_for_status()
-                    if jsonResponse.text:
-                        response = json.loads(jsonResponse.text)
-                    result["timestamps"].extend(response["timestamps"])
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
                 try:
                     assert i == 0
