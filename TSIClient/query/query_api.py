@@ -109,11 +109,11 @@ class QueryApi():
         Args:
             aggregateList (list): List of the aggregation methods to be used without interpolation:
                 ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
-            The aggregation method to be used with interpolation:
+                The aggregation method to be used with interpolation:
                 ("twsum", "twavg", "left", "right")
             interpolationList (list): A list of interpolation methods. Either Linear or Step.
             interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
-                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation..
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
         Returns:
             A tuple of lists to apply in the payload consisiting of the InlineVariables and the 
             projectedVariables. 
@@ -252,7 +252,17 @@ class QueryApi():
         return timeSeriesIds
 
 
-    def getDataByName(self, variables, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
+    def getDataByName(
+        self,
+        variables,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
 
         Can be used to return data for single and multiple timeseries. Names must be exact matches.
@@ -263,7 +273,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -280,7 +297,7 @@ class QueryApi():
             ...     variables=["timeseries_name_1", "timeseries_name_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
@@ -321,7 +338,18 @@ class QueryApi():
         )
 
 
-    def getDataByDescription(self, variables, TSName, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None,useWarmStore=False):
+    def getDataByDescription(
+        self,
+        variables,
+        TSName,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
 
         Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
@@ -334,7 +362,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -352,7 +387,7 @@ class QueryApi():
             ...     TSName=["my_timeseries_name_1", "my_timeseries_name_2"]
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
@@ -393,7 +428,17 @@ class QueryApi():
         )
 
 
-    def getDataById(self, timeseries, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
+    def getDataById(
+        self,
+        timeseries,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
 
         Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
@@ -404,7 +449,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -421,7 +473,7 @@ class QueryApi():
             ...     timeseries=["timeseries_id_1", "timeseries_id_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
