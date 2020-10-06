@@ -505,10 +505,6 @@ class QueryApi():
             elif requestType == 'getEvents':
                 projectedVarNames = None
 
-            else:
-                raise TSIQueryError(
-                    "TSIClient: Not a valid request type "
-                )
             payload = {
                 requestType: {
                     "timeSeriesId": [timeseries[i]],
