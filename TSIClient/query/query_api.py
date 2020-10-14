@@ -109,11 +109,11 @@ class QueryApi():
         Args:
             aggregateList (list): List of the aggregation methods to be used without interpolation:
                 ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
-            The aggregation method to be used with interpolation:
+                The aggregation method to be used with interpolation:
                 ("twsum", "twavg", "left", "right")
             interpolationList (list): A list of interpolation methods. Either Linear or Step.
             interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
-                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation..
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
         Returns:
             A tuple of lists to apply in the payload consisiting of the InlineVariables and the 
             projectedVariables. 
@@ -252,7 +252,17 @@ class QueryApi():
         return timeSeriesIds
 
 
-    def getDataByName(self, variables, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
+    def getDataByName(
+        self,
+        variables,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamps and values for the time series names given in "variables".
 
         Can be used to return data for single and multiple timeseries. Names must be exact matches.
@@ -263,7 +273,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -280,7 +297,7 @@ class QueryApi():
             ...     variables=["timeseries_name_1", "timeseries_name_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
@@ -321,7 +338,18 @@ class QueryApi():
         )
 
 
-    def getDataByDescription(self, variables, TSName, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None,useWarmStore=False):
+    def getDataByDescription(
+        self,
+        variables,
+        TSName,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "variables".
 
         Can be used to return data for single and multiple timeseries. Descriptions must be exact matches.
@@ -334,7 +362,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -352,7 +387,7 @@ class QueryApi():
             ...     TSName=["my_timeseries_name_1", "my_timeseries_name_2"]
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
@@ -393,7 +428,17 @@ class QueryApi():
         )
 
 
-    def getDataById(self, timeseries, timespan, interval, aggregateList=None, interpolationList=None, interpolationSpanList=None, requestBodyType=None, useWarmStore=False):
+    def getDataById(
+        self,
+        timeseries,
+        timespan,
+        interval,
+        aggregateList=None,
+        interpolationList=None,
+        interpolationSpanList=None,
+        requestBodyType=None,
+        useWarmStore=False
+    ):
         """Returns a dataframe with timestamp and values for the time series that match the description given in "timeseries".
 
         Can be used to return data for single and multiple timeseries. Timeseries ids must be an exact matches.
@@ -404,7 +449,14 @@ class QueryApi():
                 Example: timespan=['2019-12-12T15:35:11.68Z', '2019-12-12T17:02:05.958Z']
             interval (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
                 Example: interval="PT1M", for 1 minute aggregation. If "aggregate" is None, the raw events are returned.
-            aggregate (str): Supports "min", "max", "avg". Can be None, in which case the raw events are returned. Defaults to None.
+            aggregateList (list): List of the aggregation methods to be used without interpolation:
+                ("min", "max", "sum", "avg", "first", "last", "median", "stdev").
+                The aggregation method to be used with interpolation:
+                ("twsum", "twavg", "left", "right")
+            interpolationList (list): A list of interpolation methods. Either "Linear" or "Step".
+            interpolationSpanList (str): The time interval that is used during aggregation. Must follow the ISO-8601 duration format.
+                Example: interpolation Boundary span ="P1D", for 1 day to the left and right of the search span to be used for Interpolation.
+            requestBodyType (str): Type of the request, either "getSeries", "aggregateSeries" or "getEvents".
             useWarmStore (bool): If True, the query is executed on the warm storage (free of charge), otherwise on the cold storage. Defaults to False.
 
         Returns:
@@ -421,7 +473,7 @@ class QueryApi():
             ...     timeseries=["timeseries_id_1", "timeseries_id_2"],
             ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
             ...     interval="PT5M",
-            ...     aggregate="avg",
+            ...     aggregateList=["avg"],
             ...     useWarmStore=False
             ... )
         """
@@ -505,10 +557,6 @@ class QueryApi():
             elif requestType == 'getEvents':
                 projectedVarNames = None
 
-            else:
-                raise TSIQueryError(
-                    "TSIClient: Not a valid request type "
-                )
             payload = {
                 requestType: {
                     "timeSeriesId": [timeseries[i]],
@@ -559,21 +607,20 @@ class QueryApi():
                 logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
                 raise
 
-            if jsonResponse.text:
-                response = json.loads(jsonResponse.text)
-                if "error" in response:
-                    if "innerError" in response["error"]:
-                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
-                            raise TSIStoreError(
-                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                    .format(id=self.environmentId),
-                            )
-                    else:
-                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
-                        raise TSIQueryError(response["error"])
-                if response["timestamps"] == []:
-                    logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
-                    continue
+            response = json.loads(jsonResponse.text)
+            if "error" in response:
+                if "innerError" in response["error"]:
+                    if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                        raise TSIStoreError(
+                            "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                .format(id=self.environmentId),
+                        )
+                else:
+                    logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                    raise TSIQueryError(response["error"])
+            if response["timestamps"] == []:
+                logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
+                continue
 
             if requestType == 'aggregateSeries':
                 try:
@@ -629,7 +676,7 @@ class QueryApi():
                 finally:
                     logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
 
-            elif requestType == 'getSeries':
+            else:
                 result = response
                 while 'continuationToken' in list(response.keys()):
                     print("continuation token found, appending")
@@ -653,64 +700,6 @@ class QueryApi():
                         response = json.loads(jsonResponse.text)
                     result["timestamps"].extend(response["timestamps"])
 
-                    result["properties"][0]["values"].extend(response["properties"][0]["values"])
-                try:
-                    assert i == 0
-                    df = pd.DataFrame(
-                            {
-                                "timestamp": result["timestamps"],
-                                colNames[i] : result["properties"][0]["values"],
-                            }
-                        )
-                    df['timestamp'] = pd.to_datetime(df['timestamp'])
-                    df.sort_values(by=['timestamp'], inplace=True)
-
-                except:
-                    if df.empty:
-                        df = pd.DataFrame(
-                                {
-                                    "timestamp": result["timestamps"],
-                                    colNames[i] : result["properties"][0]["values"],
-                                }
-                            )
-                        df['timestamp'] = pd.to_datetime(df['timestamp'])
-                        df.sort_values(by=['timestamp'], inplace=True)
-                    else:
-                        df_temp = pd.DataFrame(
-                            {
-                                "timestamp": result["timestamps"],
-                                colNames[i] : result["properties"][0]["values"],
-                            }
-                        )
-                        df_temp['timestamp'] = pd.to_datetime(df_temp['timestamp'])
-                        df_temp.sort_values(by=['timestamp'], inplace=True)
-                        """ Tolerance: Limits to merge asof so there will be placed Nones if no values"""
-                        df = pd.merge_asof(df,df_temp,on=['timestamp'],direction='nearest',tolerance=pd.Timedelta(seconds=30))
-                finally:
-                    logging.critical("Loaded data for tag: {tag}".format(tag=colNames[i]))
-
-            elif requestType == 'getEvents':
-                result = response
-                while 'continuationToken' in list(response.keys()):
-                    print("continuation token found, appending")
-                    headers = {
-                        "x-ms-client-application-name": self._applicationName,
-                        "Authorization": authorizationToken,
-                        "Content-Type": "application/json",
-                        "cache-control": "no-cache",
-                        'x-ms-continuation': response['continuationToken'], 
-                    }
-                    jsonResponse = requests.request(
-                        "POST",
-                        url,
-                        data=json.dumps(payload),
-                        headers=headers,
-                        params=querystring,
-                    )
-                    jsonResponse.raise_for_status()
-                    if jsonResponse.text:
-                        response = json.loads(jsonResponse.text)
-                    result["timestamps"].extend(response["timestamps"])
                     result["properties"][0]["values"].extend(response["properties"][0]["values"])
                 try:
                     assert i == 0
