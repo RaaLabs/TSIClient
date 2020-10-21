@@ -1,5 +1,5 @@
 # TSIClient
-[![Build Status](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_apis/build/status/RaaLabs.TSIClient?branchName=master)](https://dev.azure.com/raalabs/One%20Operation%20Analytics%20Serving/_build/latest?definitionId=8&branchName=master)
+[![build](https://github.com/RaaLabs/TSIClient/workflows/Python%20CI/badge.svg)](https://github.com/RaaLabs/TSIClient/actions)
 [![codecov](https://codecov.io/gh/RaaLabs/TSIClient/branch/master/graph/badge.svg?token=8qlhjGp0Yu)](https://codecov.io/gh/RaaLabs/TSIClient)
 [![Documentation Status](https://readthedocs.org/projects/raalabs-tsiclient/badge/?version=latest)](https://raalabs-tsiclient.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e4ddf7b091dc4d4ebbe3bcd572487f02)](https://www.codacy.com/gh/RaaLabs/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RaaLabs/TSIClient&amp;utm_campaign=Badge_Grade)
