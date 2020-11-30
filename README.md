@@ -4,7 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/raalabs-tsiclient/badge/?version=latest)](https://raalabs-tsiclient.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e4ddf7b091dc4d4ebbe3bcd572487f02)](https://www.codacy.com/gh/RaaLabs/TSIClient?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RaaLabs/TSIClient&amp;utm_campaign=Badge_Grade)
 [![PyPI version](https://badge.fury.io/py/TSIClient.svg)](https://badge.fury.io/py/TSIClient)
-[![Downloads](https://pepy.tech/badge/tsiclient/month)](https://pepy.tech/project/tsiclient/month)
+[![Downloads](https://pepy.tech/badge/tsiclient/month)](https://pepy.tech/project/tsiclient)
 
 The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data and is designed
 for analysts, data scientists and developers working with time series data in Azure TSI.
