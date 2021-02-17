@@ -37,6 +37,10 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
         verbose: false
+    - name: fix code coverage paths
+      working-directory: .
+      run: |
+        sed -i 's/\/home\/runner\/work\/TSIClient\/TSIClient\//\/github\/workspace\//g' coverage.xml
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
