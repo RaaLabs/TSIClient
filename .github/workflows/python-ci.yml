@@ -43,9 +43,11 @@ jobs:
         args: >
           -Dsonar.organization=raalabs
           -Dsonar.projectKey=RaaLabs_TSIClient
-          -Dsonar.python.coverage.reportPaths=${{ github.workspace }}/coverage.xml
-          -Dsonar.sources=TSIClient/
-          -Dsonar.tests=tests/
+          -Dsonar.python.coverage.reportPaths=/github/workspace/coverage.xml
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/test_*.py,**/docs
+          -Dsonar.tests=. 
+          -Dsonar.test.inclusions=**/test_*.py
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
