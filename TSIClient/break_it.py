@@ -1,4 +1,39 @@
 class BreakQualityQate:
-    def()
-        This is not Python code
-        return
+    def():
+        break
+
+        
+
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
+        variable = "Duplicated line here ...."
