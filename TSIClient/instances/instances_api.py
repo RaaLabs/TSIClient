@@ -4,6 +4,16 @@ import json
 import requests
 
 
+class BreakGate():
+    def func(number):
+        if number == 1:
+            return number * 2
+        elif number == 2:
+            return number * 2
+        else:
+            return number * 2
+
+
 class InstancesApi():
     def __init__(
         self,
