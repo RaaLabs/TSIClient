@@ -9,44 +9,19 @@ TSIClient.
     APIs. Find it here: https://docs.microsoft.com/en-us/rest/api/time-series-insights/.
 
 
-First you have to instantiate the TSIClient. Authentication works through the use of
-a service principal. When you create the service principal in Azure, make sure to
-note down the details, since you need them to use the TSIClient. Note that one instance
-of the TSIClient can only connect to one TSI environment, if you wish to connect to
-multiple TSI environments, you need to create multiple instances of the TSIClient.
+First you have to instantiate the TSIClient. If you authenticated using the Azure CLI,
+you can instantiate the client like this:
 
 .. code-block:: python
 
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
     ...     enviroment="<your-tsi-env-name>",
-    ...     client_id="<your-client-id>",
-    ...     client_secret="<your-client-secret>",
-    ...     tenant_id="<your-tenant-id>",
     ...     applicationName="<your-app-name>">,
     ...     api_version="2020-07-31"
     ... )
 
-Alternatively, you can use environment variables to instantiate the TSIClient.
-Set the following variables (commands for Mac/Linux):
 
-.. code-block:: console
-
-    $ export TSICLIENT_APPLICATION_NAME=<your-app-name>
-    $ export TSICLIENT_ENVIRONMENT_NAME=<your-tsi-env-name>
-    $ export TSICLIENT_CLIENT_ID=<your-client-id>
-    $ export TSICLIENT_CLIENT_SECRET=<your-client-secret>
-    $ export TSICLIENT_TENANT_ID=<your-tenant-id>
-    $ export TSI_API_VERSION="2020-07-31"
-
-Now you can instantiate the TSIClient without passing any arguments. Be aware
-that the constructor arguments take precedence over the environment variables. Specifying the
-TSI api version is optional (defaults to '2020-07-31'). Allowed values are '2018-11-01-preview' and '2020-07-31'.
-
-.. code-block:: python
-
-    >>> from TSIClient import TSIClient as tsi
-    >>> client = tsi.TSIClient()
 
 You can verify that the TSIClient is pointing at the right TSI environment by running the
 following command. It returns the environment id, which you can compare with your data
