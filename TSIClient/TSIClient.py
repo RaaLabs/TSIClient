@@ -80,12 +80,7 @@ class TSIClient():
         else:
             self._apiVersion = "2020-07-31"
 
-        self.authorization = AuthorizationApi(
-            client_id = self._client_id,
-            client_secret = self._client_secret,
-            tenant_id = self._tenant_id,
-            api_version = self._apiVersion
-        )
+        self.authorization = AuthorizationApi()
 
         self.common_funcs = CommonFuncs(
             api_version = self._apiVersion
