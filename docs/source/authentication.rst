@@ -1,7 +1,7 @@
 Authentication with Azure
 =========================
 
-We recommend to your logged in Azure account to authenticate with the TSIClient. For that you need to install
+We recommend to use your Azure account to authenticate with the TSIClient. For that you need to install
 the Azure CLI. Follow the docs here: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 
 Log in to Azure with the following command:
