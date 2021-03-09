@@ -8,7 +8,10 @@ class AuthorizationApi:
         self._client_id = client_id
         self._client_secret = client_secret
         self._tenant_id = tenant_id
-        self.credentials = DefaultAzureCredential(exclude_shared_token_cache_credential=True)
+        self.credentials = DefaultAzureCredential(
+            exclude_shared_token_cache_credential=True,
+            exclude_visual_studio_code_credential=True
+        )
 
 
     def _getToken(self):
