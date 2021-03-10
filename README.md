@@ -24,19 +24,24 @@ Or if you want to get the latest code, directly fom GitHub:
 pip install git+https://github.com/RaaLabs/TSIClient.git
 ````
 ## Quickstart
-Instantiate the TSIClient to query your TSI environment. Use the credentials from your service principal in Azure that has access to the TSI environment (you can also use environment variables to instantiate the TSIClient or provide a specific TSI api version, check the documentation).
+Instantiate the TSIClient to query your TSI environment. Log in to Azure using the Azure CLI:
+````bash
+az login --tenant <your-azure-tenant-id>
+````
+
+Now instantiate the client like this:
 
 ````python
 from TSIClient import TSIClient as tsi
 
 client = tsi.TSIClient(
     enviroment="<your-tsi-env-name>",
-    client_id="<your-client-id>",
-    client_secret="<your-client-secret>",
-    tenant_id="<your-tenant-id>",
     applicationName="<your-app-name>">
 )
 ````
+
+You can check the docs at <https://raalabs-tsiclient.readthedocs.io/en/latest/authentication.html> for more information on authentication, and check
+the old way of authentication (these will be removed in a future version).
 
 You can query your timeseries data by timeseries id, timeseries name or timeseries description. The Microsoft TSI apis support aggregation, so you can specify a sampling freqency and an aggregation method. Refer to the documentation for detailed information.
 

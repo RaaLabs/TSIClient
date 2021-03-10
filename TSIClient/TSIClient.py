@@ -65,11 +65,18 @@ class TSIClient():
             tenant_id=None,
             api_version=None
         ):
-        self._applicationName = applicationName if applicationName is not None else os.environ["TSICLIENT_APPLICATION_NAME"]
-        self._environmentName = environment if environment is not None else os.environ["TSICLIENT_ENVIRONMENT_NAME"]
-        self._client_id = client_id if client_id is not None else os.environ["TSICLIENT_CLIENT_ID"]
-        self._client_secret = client_secret if client_secret is not None else os.environ["TSICLIENT_CLIENT_SECRET"]
-        self._tenant_id = tenant_id if tenant_id is not None else os.environ["TSICLIENT_TENANT_ID"]
+        self._applicationName = applicationName if applicationName is not None else os.getenv("TSICLIENT_APPLICATION_NAME")
+        self._environmentName = environment if environment is not None else os.getenv("TSICLIENT_ENVIRONMENT_NAME")
+        self._client_id = client_id if client_id is not None else os.getenv("TSICLIENT_CLIENT_ID")
+        self._client_secret = client_secret if client_secret is not None else os.getenv("TSICLIENT_CLIENT_SECRET")
+        self._tenant_id = tenant_id if tenant_id is not None else os.getenv("TSICLIENT_TENANT_ID")
+
+        if self._client_id is not None or self._client_secret is not None or self._tenant_id is not None:
+            print("TSIClient deprecation warning:")
+            print("------------------------------")
+            print("Authentication by providing service principal details to the constructor of the TSIClient will be removed in a future version.")
+            print("Authentication with the environmental variables TSICLIENT_CLIENT_ID, TSICLIENT_CLIENT_SECRET and TSICLIENT_TENANT_ID will be removed in a future version")
+            print("Authenticate with the DefaultAzureCredential. Check the docs at readthedocs on how to authenticate with your TSI environment: https://raalabs-tsiclient.readthedocs.io/en/latest/authentication.html.")
 
         allowed_api_versions = ["2020-07-31", "2018-11-01-preview"]
         if api_version in allowed_api_versions:
@@ -86,6 +93,7 @@ class TSIClient():
             tenant_id = self._tenant_id,
             api_version = self._apiVersion
         )
+
 
         self.common_funcs = CommonFuncs(
             api_version = self._apiVersion

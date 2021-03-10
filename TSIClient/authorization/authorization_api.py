@@ -1,13 +1,17 @@
 import requests
 import logging
 import json
-
+from azure.identity import DefaultAzureCredential
 
 class AuthorizationApi:
     def __init__(self, client_id, client_secret, tenant_id, api_version):
         self._client_id = client_id
         self._client_secret = client_secret
         self._tenant_id = tenant_id
+        self.credentials = DefaultAzureCredential(
+            exclude_shared_token_cache_credential=True,
+            exclude_visual_studio_code_credential=True
+        )
 
 
     def _getToken(self):
@@ -16,6 +20,9 @@ class AuthorizationApi:
         Returns:
             str: The authorization token.
         """
+        if self._client_secret is None or self._client_id is None or self._tenant_id is None:
+            azure_token_object = self.credentials.get_token("https://api.timeseries.azure.com/")
+            return f"Bearer {azure_token_object.token}"
 
         url = "https://login.microsoftonline.com/{0!s}/oauth2/token".format(
             self._tenant_id
@@ -62,4 +69,4 @@ class AuthorizationApi:
         authorizationToken = tokenType + " " + jsonResp["access_token"]
 
         return authorizationToken
-        
+
