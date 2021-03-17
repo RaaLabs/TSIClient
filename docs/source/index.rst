@@ -12,14 +12,13 @@ please visit the official documentation:
 https://docs.microsoft.com/en-us/rest/api/time-series-insights/
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Table of contents:
 
-   installation.rst
-   authentication.rst
-   userguide.rst
-   _autogen/modules.rst
+   quickstart.rst
    developer.rst
+   raalabs.rst
+   _autogen/modules.rst
 
 
 Indices and tables
