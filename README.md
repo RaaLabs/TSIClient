@@ -1,6 +1,6 @@
-<a href="https://www.strava.com/">
+<a href="https://raalabs.com/">
     <img src=docs/source/RAA_labs_logo_sRGB.png
-    alt="Raa Labs" title="Raa Labs" align="right" height="70" />
+    alt="Raa Labs" title="Raa Labs" align="right" height="50" />
 </a>
 
 # TSIClient
