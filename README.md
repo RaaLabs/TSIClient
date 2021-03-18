@@ -1,3 +1,8 @@
+<a href="https://raalabs.com/">
+    <img src=docs/source/RAA_labs_logo_sRGB.png
+    alt="Raa Labs" title="Raa Labs" align="right" height="50" />
+</a>
+
 # TSIClient
 [![build](https://github.com/RaaLabs/TSIClient/workflows/Python%20CI/badge.svg)](https://github.com/RaaLabs/TSIClient/actions)
 [![codecov](https://codecov.io/gh/RaaLabs/TSIClient/branch/master/graph/badge.svg?token=8qlhjGp0Yu)](https://codecov.io/gh/RaaLabs/TSIClient)

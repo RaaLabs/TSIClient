@@ -57,7 +57,7 @@ following commands (from the ``docs`` directory):
 .. code-block:: console
 
     $ cd docs
-    $ sphinx-apidoc -f -e -o ./source/_autogen/ ../TSIClient --ext-autodoc --private
+    $ sphinx-apidoc -f -o ./source/_autogen/ ../TSIClient --ext-autodoc
 
 
 And build the documentation with:
@@ -75,3 +75,5 @@ Pull requests
 Please write tests and docstrings for functionality that you add
 before submitting a pull request. Make sure to update/generate the
 .rst files by running the ``sphinx-apidoc`` command.
+
+

@@ -4,9 +4,14 @@ TSIClient.environment package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.environment.environment\_api module
+---------------------------------------------
 
-   TSIClient.environment.environment_api
+.. automodule:: TSIClient.environment.environment_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

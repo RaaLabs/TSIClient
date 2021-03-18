@@ -4,9 +4,14 @@ TSIClient.query package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.query.query\_api module
+---------------------------------
 
-   TSIClient.query.query_api
+.. automodule:: TSIClient.query.query_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
