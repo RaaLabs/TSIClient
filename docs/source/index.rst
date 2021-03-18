@@ -12,7 +12,7 @@ please visit the official documentation:
 https://docs.microsoft.com/en-us/rest/api/time-series-insights/
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Table of contents:
 
    quickstart.rst

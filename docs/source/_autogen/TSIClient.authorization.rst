@@ -4,9 +4,14 @@ TSIClient.authorization package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.authorization.authorization\_api module
+-------------------------------------------------
 
-   TSIClient.authorization.authorization_api
+.. automodule:: TSIClient.authorization.authorization_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

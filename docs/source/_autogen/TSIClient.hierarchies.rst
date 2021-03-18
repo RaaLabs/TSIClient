@@ -4,9 +4,14 @@ TSIClient.hierarchies package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.hierarchies.hierarchies\_api module
+---------------------------------------------
 
-   TSIClient.hierarchies.hierarchies_api
+.. automodule:: TSIClient.hierarchies.hierarchies_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

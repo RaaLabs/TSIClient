@@ -4,9 +4,14 @@ TSIClient.common package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.common.common\_funcs module
+-------------------------------------
 
-   TSIClient.common.common_funcs
+.. automodule:: TSIClient.common.common_funcs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

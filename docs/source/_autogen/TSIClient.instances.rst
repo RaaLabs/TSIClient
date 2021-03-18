@@ -4,9 +4,14 @@ TSIClient.instances package
 Submodules
 ----------
 
-.. toctree::
+TSIClient.instances.instances\_api module
+-----------------------------------------
 
-   TSIClient.instances.instances_api
+.. automodule:: TSIClient.instances.instances_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

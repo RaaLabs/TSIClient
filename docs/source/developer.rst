@@ -57,7 +57,7 @@ following commands (from the ``docs`` directory):
 .. code-block:: console
 
     $ cd docs
-    $ sphinx-apidoc -f -e -o ./source/_autogen/ ../TSIClient --ext-autodoc --private
+    $ sphinx-apidoc -f -o ./source/_autogen/ ../TSIClient --ext-autodoc
 
 
 And build the documentation with:

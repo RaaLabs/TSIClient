@@ -17,10 +17,22 @@ Subpackages
 Submodules
 ----------
 
-.. toctree::
+TSIClient.TSIClient module
+--------------------------
 
-   TSIClient.TSIClient
-   TSIClient.exceptions
+.. automodule:: TSIClient.TSIClient
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+TSIClient.exceptions module
+---------------------------
+
+.. automodule:: TSIClient.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
