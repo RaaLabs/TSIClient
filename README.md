@@ -5,8 +5,8 @@
 
 # TSIClient
 [![build](https://github.com/RaaLabs/TSIClient/workflows/Python%20CI/badge.svg)](https://github.com/RaaLabs/TSIClient/actions)
-[![codecov](https://codecov.io/gh/RaaLabs/TSIClient/branch/master/graph/badge.svg?token=8qlhjGp0Yu)](https://codecov.io/gh/RaaLabs/TSIClient)
 [![Documentation Status](https://readthedocs.org/projects/raalabs-tsiclient/badge/?version=latest)](https://raalabs-tsiclient.readthedocs.io/en/latest/?badge=latest)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=RaaLabs_TSIClient&metric=coverage)](https://sonarcloud.io/dashboard?id=RaaLabs_TSIClient)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RaaLabs_TSIClient&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=RaaLabs_TSIClient)
 [![PyPI version](https://badge.fury.io/py/TSIClient.svg)](https://badge.fury.io/py/TSIClient)
 [![Downloads](https://pepy.tech/badge/tsiclient/month)](https://pepy.tech/project/tsiclient)
