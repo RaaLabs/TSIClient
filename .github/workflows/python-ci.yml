@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6 , 3.7, 3.8]
+        python-version: [3.6]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,14 +29,6 @@ jobs:
       run: |
         pip install pytest
         python -m pytest -v --cov=./TSIClient --cov-report xml --cov-report term
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        fail_ci_if_error: false
-        verbose: false
     - name: fix code coverage paths
       working-directory: .
       run: |
