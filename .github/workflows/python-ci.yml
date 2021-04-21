@@ -1,5 +1,9 @@
 name: Python CI
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 on:
   push:
     branches:
@@ -42,6 +46,3 @@ jobs:
           -Dsonar.python.coverage.reportPaths=coverage.xml
           -Dsonar.sources=TSIClient
           -Dsonar.tests=tests
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
