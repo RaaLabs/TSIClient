@@ -1,12 +1,9 @@
-name: Python CI
+name: SonarCloud
 
 on:
   push:
     branches:
       - '**'
-  pull_request:
-    branches:
-      - master
 
 jobs:
   build:
@@ -29,3 +26,19 @@ jobs:
       run: |
         pip install pytest
         python -m pytest -v --cov=./TSIClient --cov-report xml --cov-report term
+    - name: fix code coverage paths
+      working-directory: .
+      run: |
+        sed -i 's/\/home\/runner\/work\/TSIClient\/TSIClient\//\/github\/workspace\//g' coverage.xml
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        args: >
+          -Dsonar.organization=raalabs
+          -Dsonar.projectKey=RaaLabs_TSIClient
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.sources=TSIClient
+          -Dsonar.tests=tests
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
