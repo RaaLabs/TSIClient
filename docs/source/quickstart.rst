@@ -23,7 +23,10 @@ Or directly from GitHub:
 Authentication
 ##############
 We recommend to use your Azure account to authenticate with the TSIClient. For that you need to install
-the Azure CLI. Follow the docs here: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli.
+the Azure CLI. Follow the docs here: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli. Using your
+Azure account to authenticate makes use of the `azure-identity` Python library from Microsoft. You can read on the
+supported ways of logging in here: https://docs.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python
+(authentication with a Visual Studio token disabled for the TSIClient).
 Authentication using a service principal is discouraged.
 
 Log in to Azure with the following command:
@@ -105,13 +108,14 @@ The example walks you through a typical workflow with the TSIClient.
 
 
 First you have to instantiate the TSIClient. If you authenticated using the Azure CLI,
-you can instantiate the client like this:
+you can instantiate the client like this (there will be some warnings displayed from
+the Azure credential library, depending on what authentication method you use):
 
 .. code-block:: python
 
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
-    ...     enviroment="<your-tsi-env-name>",
+    ...     environment="<your-tsi-env-name>",
     ...     applicationName="<your-app-name>">,
     ...     api_version="2020-07-31"
     ... )
