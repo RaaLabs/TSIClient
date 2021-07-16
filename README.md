@@ -1,6 +1,6 @@
 <a href="https://raalabs.com/">
-    <img src=docs/source/RAA_labs_logo_sRGB.png
-    alt="Raa Labs" title="Raa Labs" align="right" height="50" />
+    <img src=docs/source/raalabs-logo-blue-yellow-RGB.png
+    alt="Raa Labs" title="Raa Labs" align="right" height="100" />
 </a>
 
 # TSIClient
