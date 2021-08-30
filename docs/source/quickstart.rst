@@ -33,7 +33,7 @@ Log in to Azure with the following command:
 
 .. code-block:: console
 
-    $ az login --tenant <your-azure-tenant-id>
+    $ az login --tenant <your-azure-tenant-id> --allow-no-subscriptions
 
 You can find your Azure tenant id by opening the Azure portal > Azure active directory > Overview.
 If you are unable to see your tenant id in AAD, ask your Azure adminstrator for the tenant id.
