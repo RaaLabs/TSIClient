@@ -46,7 +46,7 @@ the `applicationName` and `environment` arguments:
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
     ...     enviroment="<your-tsi-env-name>",
-    ...     applicationName="<your-app-name>">,
+    ...     applicationName="<your-app-name>",
     ...     api_version="2020-07-31"
     ... )
 
@@ -71,7 +71,7 @@ multiple TSI environments, you need to create multiple instances of the TSIClien
     ...     client_id="<your-client-id>",
     ...     client_secret="<your-client-secret>",
     ...     tenant_id="<your-tenant-id>",
-    ...     applicationName="<your-app-name>">,
+    ...     applicationName="<your-app-name>",
     ...     api_version="2020-07-31"
     ... )
 
@@ -116,7 +116,7 @@ the Azure credential library, depending on what authentication method you use):
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
     ...     environment="<your-tsi-env-name>",
-    ...     applicationName="<your-app-name>">,
+    ...     applicationName="<your-app-name>",
     ...     api_version="2020-07-31"
     ... )
 
