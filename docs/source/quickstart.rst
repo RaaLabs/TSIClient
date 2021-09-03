@@ -167,7 +167,7 @@ is convenient for further statistical analysis.
     ...     timeseries=["timeseries_id1", "timeseries_id2"],
     ...     timespan=["2020-01-25T10:00:11.68Z", "2020-01-26T13:45:11.68Z"],
     ...     interval="PT5M",
-    ...     aggregateList=["avg"],
+    ...     aggregateList=["avg", "avg"],
     ...     useWarmStore=False
     ... )
     >>> data
