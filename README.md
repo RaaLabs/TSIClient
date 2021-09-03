@@ -41,21 +41,21 @@ from TSIClient import TSIClient as tsi
 
 client = tsi.TSIClient(
     enviroment="<your-tsi-env-name>",
-    applicationName="<your-app-name>">
+    applicationName="<your-app-name>"
 )
 ````
 
 You can check the docs at <https://raalabs-tsiclient.readthedocs.io/en/latest/authentication.html> for more information on authentication, and check
 the old way of authentication (these will be removed in a future version).
 
-You can query your timeseries data by timeseries id, timeseries name or timeseries description. The Microsoft TSI apis support aggregation, so you can specify a sampling freqency and an aggregation method. Refer to the documentation for detailed information.
+You can query your timeseries data by timeseries id, timeseries name or timeseries description. The Microsoft TSI apis support aggregation, so you can specify a sampling freqency and aggregation methods. Refer to the documentation for detailed information.
 
 ````python
 data = client.query.getDataById(
     timeseries=["timeseries_id1", "timeseries_id2"],
     timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
     interval="PT5M",
-    aggregate="avg",
+    aggregateList=["avg", "max"],
     useWarmStore=False
 )
 ````
