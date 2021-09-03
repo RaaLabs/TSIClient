@@ -669,7 +669,12 @@ class QueryApi():
                         if isinstance(aggregateList, list):
                             for idx, agg in enumerate(aggregateList):
                                 currColName  = colNames[i] + "/" + agg
-                                df[currColName] = response["properties"][idx]["values"]
+                                # print(len(response['properties']))
+                                # print(type(response['properties']))
+
+                                # print(type(response['properties'][0]))
+
+                                df[currColName] = response["properties"][0]["values"]
                         else:
                             df[colNames[i]] = response["properties"][0]["values"]
 

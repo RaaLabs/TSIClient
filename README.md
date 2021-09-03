@@ -55,7 +55,7 @@ data = client.query.getDataById(
     timeseries=["timeseries_id1", "timeseries_id2"],
     timespan=["2019-12-12T15:35:11.68Z", "2019-12-12T17:02:05.958Z"],
     interval="PT5M",
-    aggregateList=["avg"],
+    aggregateList=["avg", "avg"],
     useWarmStore=False
 )
 ````
