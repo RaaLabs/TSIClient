@@ -27,8 +27,10 @@ the Azure CLI. Follow the docs here: https://docs.microsoft.com/en-us/cli/azure/
 Azure account to authenticate makes use of the `azure-identity` Python library from Microsoft. You can read on the
 supported ways of logging in here: https://docs.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python
 (authentication with a Visual Studio token disabled for the TSIClient).
-Authentication using a service principal is discouraged.
+Authentication using a service principal is only recommended when authentication using Azure is not feasible.
 
+Using Azure account & Azure CLI
++++++++++++++++++++++++++++++++
 Log in to Azure with the following command:
 
 .. code-block:: console
@@ -50,14 +52,9 @@ the `applicationName` and `environment` arguments:
     ...     api_version="2020-07-31"
     ... )
 
-
-.. warning::
-    Since version 2.1.0 authentication is preferrably done using a `DefaultAzureCredential` from the `azure-identity` package.
-    Authentication by providing constructor arguments or defining these environment variables: `TSICLIENT_CLIENT_ID`, `TSICLIENT_CLIENT_SECRET`, `TSICLIENT_TENANT_ID` will be
-    removed in a future version.
-
-You can still authenticate by passing arguments to the constructor, however,
-this will be removed in a future version. Authentication works through the use of
+Using Azure service principal
++++++++++++++++++++++++++++++
+Authentication works through the use of
 a service principal. When you create the service principal in Azure, make sure to
 note down the details, since you need them to use the TSIClient. Note that one instance
 of the TSIClient can only connect to one TSI environment, if you wish to connect to
