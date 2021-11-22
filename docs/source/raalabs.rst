@@ -21,4 +21,4 @@ This will create a ``build``, ``dist`` and ``TSIClient.egg-info`` folder.
 
 .. code-block:: console
 
-    $ python setup.py sdist bdist_wheel
+    $ twine upload dist/*
