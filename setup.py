@@ -7,13 +7,13 @@ with open("README.md") as f:
 setup(
     name="TSIClient",
     packages=find_packages(),
-    version="2.1.2",
+    version="2.1.3",
     license="MIT",
     description="The TSIClient is a Python SDK for Microsoft Azure time series insights.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Raa Labs",
-    author_email="gill@outlook.com",
+    author_email="post@raalabs.com",
     url="https://github.com/RaaLabs/TSIClient",
     project_urls={
         "Bug Tracker": "https://github.com/RaaLabs/TSIClient/issues",
