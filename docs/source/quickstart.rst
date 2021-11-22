@@ -27,7 +27,7 @@ the Azure CLI. Follow the docs here: https://docs.microsoft.com/en-us/cli/azure/
 Azure account to authenticate makes use of the `azure-identity` Python library from Microsoft. You can read on the
 supported ways of logging in here: https://docs.microsoft.com/en-us/python/api/overview/azure/identity-readme?view=azure-python
 (authentication with a Visual Studio token disabled for the TSIClient).
-Authentication using a service principal is only recommended when authentication using Azure is not feasibl.
+Authentication using a service principal is only recommended when authentication using Azure is not feasible.
 
 Using Azure account & Azure CLI
 +++++++++++++++++++++++++++++++
