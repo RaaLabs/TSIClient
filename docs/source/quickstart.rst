@@ -45,7 +45,7 @@ the `applicationName` and `environment` arguments:
 
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
-    ...     enviroment="<your-tsi-env-name>",
+    ...     environment="<your-tsi-env-name>",
     ...     applicationName="<your-app-name>",
     ...     api_version="2020-07-31"
     ... )
@@ -67,7 +67,7 @@ multiple TSI environments, you need to create multiple instances of the TSIClien
 
     >>> from TSIClient import TSIClient as tsi
     >>> client = tsi.TSIClient(
-    ...     enviroment="<your-tsi-env-name>",
+    ...     environment="<your-tsi-env-name>",
     ...     client_id="<your-client-id>",
     ...     client_secret="<your-client-secret>",
     ...     tenant_id="<your-tenant-id>",

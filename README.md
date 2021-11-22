@@ -40,7 +40,7 @@ Now instantiate the client like this:
 from TSIClient import TSIClient as tsi
 
 client = tsi.TSIClient(
-    enviroment="<your-tsi-env-name>",
+    environment="<your-tsi-env-name>",
     applicationName="<your-app-name>"
 )
 ````
