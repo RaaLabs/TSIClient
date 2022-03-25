@@ -609,6 +609,10 @@ class QueryApi():
                 logging.error("TSIClient: The request to the TSI api timed out.")
                 raise
             except requests.exceptions.HTTPError:
+                logging.error("url of the query", url)
+                logging.error("payload of the query", json.dumps(payload))
+                logging.error("headers of the query", headers)
+                logging.error("params of the query", querystring)
                 logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
                 raise
 
