@@ -593,10 +593,10 @@ class QueryApi():
             }
             try:
                 print("it works!")
-                logging.info("url of the query", url)
-                logging.info("payload of the query", json.dumps(payload))
-                logging.info("headers of the query", headers)
-                logging.info("params of the query", querystring)
+                logging.error("url of the query", url)
+                logging.error("payload of the query", json.dumps(payload))
+                logging.error("headers of the query", headers)
+                logging.error("params of the query", querystring)
                 jsonResponse = requests.request(
                     "POST",
                     url,
