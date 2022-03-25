@@ -592,10 +592,11 @@ class QueryApi():
                 "cache-control": "no-cache",
             }
             try:
-                logging.debug("url of the query", url)
-                logging.debug("payload of the query", json.dumps(payload))
-                logging.debug("headers of the query", headers)
-                logging.debug("params of the query", querystring)
+                print("it works!")
+                logging.info("url of the query", url)
+                logging.info("payload of the query", json.dumps(payload))
+                logging.info("headers of the query", headers)
+                logging.info("params of the query", querystring)
                 jsonResponse = requests.request(
                     "POST",
                     url,
