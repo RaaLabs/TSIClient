@@ -165,7 +165,6 @@ class TypesApi():
                 nameMap[instance['name']] = instance
         for name in names:
             if name in nameMap:
-                print("typeByName nameMap[name]['typeId']:", nameMap[name]['typeId'])
                 typeIds.append(nameMap[name]['typeId'])
             else:
                 typeIds.append(None)
