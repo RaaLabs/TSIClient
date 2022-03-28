@@ -216,7 +216,7 @@ class QueryApi():
         Returns:
             list: The timeseries ids, None if timeseries name does not exist in the TSI environment.
         """
-        print("2.2.7")
+        print("2.2.8")
         if not isinstance(names,list):
             names = [names]
         timeSeriesIds=[]
