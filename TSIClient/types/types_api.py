@@ -137,8 +137,10 @@ class TypesApi():
             if 'timeSeriesId' in instance:
                 idMap[instance['timeSeriesId'][0]] = instance
         for ID in ids:
-            if tuple(ID) in idMap:
-                typeIds.append(idMap[tuple(ID)]['typeId'])
+            if isinstance(ID,list):
+                ID = tuple(ID)
+            if ID in idMap:
+                typeIds.append(idMap[ID]['typeId'])
             else:
                 typeIds.append(None)
         return typeIds
