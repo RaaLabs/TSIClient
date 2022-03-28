@@ -174,6 +174,8 @@ class QueryApi():
             if 'timeSeriesId' in instance:
                 idMap[instance['timeSeriesId'][0]] = instance
         for ID in ids:
+            if isinstance(ID,list):
+                ID = tuple(ID)
             if ID in idMap:
                 timeSeriesNames.append(idMap[ID]['name'])
             else:
@@ -592,7 +594,7 @@ class QueryApi():
                 "cache-control": "no-cache",
             }
             try:
-                print("I'm here!")
+                print("I'm here 2!")
                 print("url of the query", url)
                 print("payload of the query", json.dumps(payload))
                 print("headers of the query", headers)
