@@ -51,7 +51,7 @@ class TestQueryApi:
         #assert timeSeriesIds[0] == "006dfc2d-0324-4937-998c-d16f3b4f1952"
 
     def test_getIdByAssets_with_non_existant_assets_returns_empty_list(self, client):
-        #timeSeriesIds = client.query.getIdByAssets(asset="made_up_asset_name")
+        timeSeriesIds = client.query.getIdByAssets(asset="made_up_asset_name")
 
         #assert len(timeSeriesIds) == 0
 
