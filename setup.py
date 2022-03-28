@@ -7,7 +7,7 @@ with open("README.md") as f:
 setup(
     name="TSIClient",
     packages=find_packages(),
-    version="2.2.6",
+    version="2.2.7",
     license="MIT",
     description="The TSIClient is a Python SDK for Microsoft Azure time series insights.",
     long_description=long_description,
