@@ -216,7 +216,7 @@ class QueryApi():
         Returns:
             list: The timeseries ids, None if timeseries name does not exist in the TSI environment.
         """
-
+        print("2.2.3")
         if not isinstance(names,list):
             names = [names]
         timeSeriesIds=[]
@@ -225,8 +225,13 @@ class QueryApi():
             if 'name' in instance:
                 nameMap[instance['name']] = instance
         for name in names:
+            if isinstance(nameMap[name]['timeSeriesId'])[0], list)
+                if name in nameMap:
+                    timeSeriesIds.append(nameMap[name]['timeSeriesId'])
+                else:
+                    timeSeriesIds.append(None)
             if name in nameMap:
-                timeSeriesIds.append(nameMap[name]['timeSeriesId'][0])
+                timeSeriesIds.append(nameMap[name]['timeSeriesId'])[0])
             else:
                 timeSeriesIds.append(None)
         return timeSeriesIds
