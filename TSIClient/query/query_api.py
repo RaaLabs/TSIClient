@@ -170,7 +170,10 @@ class QueryApi():
             ids = [ids]
         timeSeriesNames=[]
         idMap={}
+        
         for instance in self.instances['instances']:
+            if isinstance(instance,list):
+                ID = tuple(instance)
             if 'timeSeriesId' in instance:
                 idMap[instance['timeSeriesId'][0]] = instance
         for ID in ids:
