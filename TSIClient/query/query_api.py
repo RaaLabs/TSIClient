@@ -592,11 +592,11 @@ class QueryApi():
                 "cache-control": "no-cache",
             }
             try:
-                print("it works!")
-                logging.error("url of the query", url)
-                logging.error("payload of the query", json.dumps(payload))
-                logging.error("headers of the query", headers)
-                logging.error("params of the query", querystring)
+                print("I'm here!")
+                print("url of the query", url)
+                print("payload of the query", json.dumps(payload))
+                print("headers of the query", headers)
+                print("params of the query", querystring)
                 jsonResponse = requests.request(
                     "POST",
                     url,
@@ -609,10 +609,6 @@ class QueryApi():
                 logging.error("TSIClient: The request to the TSI api timed out.")
                 raise
             except requests.exceptions.HTTPError:
-                logging.error("url of the query", url)
-                logging.error("payload of the query", json.dumps(payload))
-                logging.error("headers of the query", headers)
-                logging.error("params of the query", querystring)
                 logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
                 raise
 
