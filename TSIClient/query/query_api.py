@@ -216,7 +216,7 @@ class QueryApi():
         Returns:
             list: The timeseries ids, None if timeseries name does not exist in the TSI environment.
         """
-        print("2.2.8")
+        print("2.2.9")
         if not isinstance(names,list):
             names = [names]
         timeSeriesIds=[]
@@ -227,9 +227,9 @@ class QueryApi():
         for name in names:
             if name in nameMap:
                 print("name: ", name)
-                print("nameMap[name]['timeSeriesId']", nameMap[name]['timeSeriesId'])
+                print("nameMap[name]['timeSeriesId']: ", nameMap[name]['timeSeriesId'])
                 print("nameMap[name]['timeSeriesId'][0]: ", nameMap[name]['timeSeriesId'][0])
-                timeSeriesIds.append(tuple(nameMap[name]['timeSeriesId']))
+                timeSeriesIds.append((nameMap[name]['timeSeriesId']))
             else:
                 timeSeriesIds.append(None)
         return timeSeriesIds
@@ -538,8 +538,10 @@ class QueryApi():
         df = pd.DataFrame()
         typeList = self.types_api.getTypeTsx()
         if not isinstance(types,list):
+            print("getData types", types)
             types = [types]
         if not isinstance(timeseries,list):
+            print("getData timeseries", timeseries)
             timeseries=[timeseries]
 
         if otherColNamesThanTimeseriesIds != None:
@@ -564,10 +566,10 @@ class QueryApi():
                 projectedVarNames = ['tagData']
             elif requestType == 'getEvents':
                 projectedVarNames = None
-
+            print("2.2.9\ngetData just before payload, timeseries[i]", timeseries[i])
             payload = {
                 requestType: {
-                    "timeSeriesId": [timeseries[i]],
+                    "timeSeriesId": timeseries[i],
                     "timeSeriesName": None,
                     "searchSpan": {"from": timespan[0], "to": timespan[1]},
                     "filter": None,
