@@ -594,8 +594,9 @@ class QueryApi():
                 "Content-Type": "application/json",
                 "cache-control": "no-cache",
             }
-            
+            retry_nb=0
             while True:
+                retry_nb = retry_nb +1
                 try:
                     jsonResponse = requests.request(
                         "POST",
@@ -623,7 +624,7 @@ class QueryApi():
                     else:
                         logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
                         raise TSIQueryError(response["error"])
-                if response["timestamps"] == []:
+                if (response["timestamps"] == []) and (retry_nb<10) :
                     logging.critical("No data in search span for tag: {tag} - Retry".format(tag=colNames[i]))
                 else:
                     break
