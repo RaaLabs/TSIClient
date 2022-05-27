@@ -625,7 +625,7 @@ class QueryApi():
                         logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
                         raise TSIQueryError(response["error"])
                 if (response["timestamps"] == []) and (retry_nb<10) :
-                    logging.critical("No data in search span for tag: {tag} - Retry".format(tag=colNames[i]))
+                    logging.critical("timestamps empty, No data in search span for tag: {tag} - Retry".format(tag=colNames[i]))
                 else:
                     break
 
