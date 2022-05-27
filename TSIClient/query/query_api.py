@@ -594,36 +594,39 @@ class QueryApi():
                 "Content-Type": "application/json",
                 "cache-control": "no-cache",
             }
-            try:
-                jsonResponse = requests.request(
-                    "POST",
-                    url,
-                    data=json.dumps(payload),
-                    headers=headers,
-                    params=querystring,
-                )
-                jsonResponse.raise_for_status()
-            except requests.exceptions.ConnectTimeout:
-                logging.error("TSIClient: The request to the TSI api timed out.")
-                raise
-            except requests.exceptions.HTTPError:
-                logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
-                raise
+            
+            while True:
+                try:
+                    jsonResponse = requests.request(
+                        "POST",
+                        url,
+                        data=json.dumps(payload),
+                        headers=headers,
+                        params=querystring,
+                    )
+                    jsonResponse.raise_for_status()
+                except requests.exceptions.ConnectTimeout:
+                    logging.error("TSIClient: The request to the TSI api timed out.")
+                    raise
+                except requests.exceptions.HTTPError:
+                    logging.error("TSIClient: The request to the TSI api returned an unsuccessfull status code.")
+                    raise
 
-            response = json.loads(jsonResponse.text)
-            if "error" in response:
-                if "innerError" in response["error"]:
-                    if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
-                        raise TSIStoreError(
-                            "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
-                                .format(id=self.environmentId),
-                        )
+                response = json.loads(jsonResponse.text)
+                if "error" in response:
+                    if "innerError" in response["error"]:
+                        if response["error"]["innerError"]["code"] == "TimeSeriesQueryNotSupported":
+                            raise TSIStoreError(
+                                "TSIClient: Warm store not enabled in TSI environment: {id}. Set useWarmStore to False."
+                                    .format(id=self.environmentId),
+                            )
+                    else:
+                        logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
+                        raise TSIQueryError(response["error"])
+                if response["timestamps"] == []:
+                    logging.critical("No data in search span for tag: {tag} - Retry".format(tag=colNames[i]))
                 else:
-                    logging.error("TSIClient: The query was unsuccessful, check the format of the function arguments.")
-                    raise TSIQueryError(response["error"])
-            if response["timestamps"] == []:
-                logging.critical("No data in search span for tag: {tag}".format(tag=colNames[i]))
-                continue
+                    break
 
             if requestType == 'aggregateSeries':
                 try:
