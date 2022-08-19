@@ -14,6 +14,10 @@
 The TSIClient is a Python SDK for Microsoft Azure time series insights. It provides methods to conveniently retrieve your data and is designed
 for analysts, data scientists and developers working with time series data in Azure TSI.
 
+> :warning: **Azure Time Series Insights will be deprecated on 31.3.2025**. Read the anncouncment from Microsoft here: https://azure.microsoft.com/en-us/updates/we-ll-retire-azure-time-series-insights-on-31-of-march-2025/.
+
+The TSIClient will not be developed further by Raa Labs.
+
 ## Documentation
 - Azure time series REST APIs: <https://docs.microsoft.com/en-us/rest/api/time-series-insights/>
 - TSIClient: <https://raalabs-tsiclient.readthedocs.io/en/latest/>
