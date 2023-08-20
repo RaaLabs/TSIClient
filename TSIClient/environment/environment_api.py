@@ -11,11 +11,13 @@ class EnvironmentApi:
         self,
         application_name: str,
         environment: str,
+        environmentId: str,
         authorization_api: AuthorizationApi,
         common_funcs: CommonFuncs,
     ):
         self._applicationName = application_name
         self._environmentName = environment
+        self._environmentId = environmentId
         self.authorization_api = authorization_api
         self.common_funcs = common_funcs
 
@@ -34,6 +36,29 @@ class EnvironmentApi:
             >>> client = tsi.TSIClient()
             >>> env = client.environment.getEnvironmentId()
         """
+        
+        # if environmentId is specified during client initiation, no need to fetch it
+        if (self._environmentId is not None):
+            # check if the environment exists
+            try:
+                authorizationToken = self.authorization_api._getToken()
+                url = f"https://{self._environmentId}.env.timeseries.azure.com/availability?api-version=2020-07-31"
+                headers = {
+                    "Authorization": authorizationToken,
+                }
+
+                response = requests.request(
+                "GET",
+                url,
+                headers=headers,
+                timeout=10,
+                )
+
+                response.raise_for_status()
+                return self._environmentId
+            except:
+                logging.error(f"TSIClient: Error accessing TSI environment with ID {self._environmentId}")
+                raise TSIEnvironmentError(f"TSIClient: Error accessing TSI environment with ID {self._environmentId}")
 
         authorizationToken = self.authorization_api._getToken()
         url = "https://api.timeseries.azure.com/environments"

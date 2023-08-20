@@ -49,6 +49,17 @@ client = tsi.TSIClient(
 )
 ````
 
+or directly with environmentId (GUID, first part of your environments Data Access FQDN)
+
+````python
+from TSIClient import TSIClient as tsi
+
+client = tsi.TSIClient(
+    environmentId="<your-tsi-env-id>",
+    applicationName="<your-app-name>"
+)
+````
+
 You can check the docs at <https://raalabs-tsiclient.readthedocs.io/en/latest/authentication.html> for more information on authentication, and check
 the old way of authentication (these will be removed in a future version).
 
