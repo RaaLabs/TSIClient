@@ -12,7 +12,6 @@ TSIClient.instances.instances\_api module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

@@ -12,7 +12,6 @@ TSIClient.query.query\_api module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

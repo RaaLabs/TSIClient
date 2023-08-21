@@ -12,7 +12,6 @@ TSIClient.authorization.authorization\_api module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

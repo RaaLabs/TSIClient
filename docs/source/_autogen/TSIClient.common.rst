@@ -12,7 +12,6 @@ TSIClient.common.common\_funcs module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 
