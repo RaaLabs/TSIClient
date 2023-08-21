@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    TSIClient.authorization
    TSIClient.common
@@ -32,7 +33,6 @@ TSIClient.exceptions module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------
