@@ -1,11 +1,11 @@
-alabaster==0.7.12
-azure-identity==1.5.0
+alabaster==0.7.13
+azure-identity==1.14.0
 coverage==7.3.0
-pandas==1.1.5
+pandas==1.5.3
 pytest==7.4.0
 pytest-cov==4.1.0
 pytest-mock==3.5.1
-requests==2.26.0
+requests==2.31.0
 requests-mock==1.7.0
 Sphinx==7.2.2
 sphinxcontrib-serializinghtml==1.1.9
