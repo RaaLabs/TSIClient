@@ -4,8 +4,8 @@ coverage==7.3.0
 pandas==1.1.5
 pytest==7.4.0
 pytest-cov==4.1.0
-pytest-mock==3.5.1
+pytest-mock==3.11.1
 requests==2.26.0
-requests-mock==1.7.0
+requests-mock==1.11.0
 Sphinx==7.2.2
 sphinxcontrib-serializinghtml==1.1.9
