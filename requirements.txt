@@ -1,5 +1,5 @@
 alabaster==0.7.13
-azure-identity==1.14.0
+azure-identity==1.14.1
 coverage==7.3.2
 pandas==1.5.3
 pytest==7.4.2
