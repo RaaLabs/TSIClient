@@ -7,5 +7,5 @@ pytest-cov==4.1.0
 pytest-mock==3.11.1
 requests==2.31.0
 requests-mock==1.11.0
-Sphinx==6.2.1
+Sphinx==7.2.6
 sphinxcontrib-serializinghtml==1.1.9
