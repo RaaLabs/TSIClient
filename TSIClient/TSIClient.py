@@ -59,6 +59,7 @@ class TSIClient():
     def __init__(
             self,
             environment=None,
+            environmentId=None,
             client_id=None,
             client_secret=None,
             applicationName=None,
@@ -67,6 +68,7 @@ class TSIClient():
         ):
         self._applicationName = applicationName if applicationName is not None else os.getenv("TSICLIENT_APPLICATION_NAME")
         self._environmentName = environment if environment is not None else os.getenv("TSICLIENT_ENVIRONMENT_NAME")
+        self._environmentId = environmentId if environmentId is not None else os.getenv("TSICLIENT_ENVIRONMENT_ID")
         self._client_id = client_id if client_id is not None else os.getenv("TSICLIENT_CLIENT_ID")
         self._client_secret = client_secret if client_secret is not None else os.getenv("TSICLIENT_CLIENT_SECRET")
         self._tenant_id = tenant_id if tenant_id is not None else os.getenv("TSICLIENT_TENANT_ID")
@@ -95,6 +97,7 @@ class TSIClient():
         self.environment = EnvironmentApi(
             application_name = self._applicationName,
             environment = self._environmentName,
+            environmentId = self._environmentId,
             authorization_api = self.authorization,
             common_funcs = self.common_funcs
         )
